@@ -1,0 +1,82 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Flow+Circular&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+html {
+  font-size: calc(10px + 0.15vw);
+  /* font-family: "open sans"; */
+  font-family: "montserrat";
+}
+
+body {
+  @apply bg-gray-200 max-w-full overflow-x-hidden;
+}
+
+.sidebar-link.active a {
+  @apply bg-gray-300;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.ant-table-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Light mode scrollbar */
+.light-mode *::-webkit-scrollbar {
+  width: 12px;
+}
+
+.light-mode *::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.light-mode *::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.light-mode * {
+  scrollbar-color: #b9b9b9 #f1f1f1;
+  scrollbar-width: thin;
+}
+
+/* Dark mode scrollbar */
+.dark-mode *::-webkit-scrollbar {
+  width: 12px;
+}
+
+.dark-mode *::-webkit-scrollbar-track {
+  background: #2e2e2e;
+}
+
+.dark-mode *::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+}
+
+.dark-mode * {
+  scrollbar-color: #353535 #2e2e2e;
+  scrollbar-width: thin;
+}
+
+.ant-tabs-tab {
+  min-width: 150px; /* Set the desired width for each tab */
+  display: flex;
+  justify-content: space-between; /* Center the text in the tab */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,23 @@
+import { z } from "zod";
+import WarehouseSchema from "../zodSchemas/warehouses";
+import { InventoryItemSchema } from "../zodSchemas/inventoryItems";
+import { PurchasesSchema } from "../zodSchemas/purchases";
+import { PurchasePaymentSchema } from "../zodSchemas/purchasePayment";
+import DispatchSchema from "../zodSchemas/dispatch";
+import ReceiveSchema from "../zodSchemas/receive";
+import { RequestSchema } from "../zodSchemas/requests";
+import { ProductionSchema } from "../zodSchemas/production";
+import { ProductSubmissionSchema } from "../zodSchemas/submission";
+import { userSignUpSchema } from "../zodSchemas/auth";
+
+export type NewWarehouse = z.TypeOf<typeof WarehouseSchema>;
+export type NewInventoryItem = z.TypeOf<typeof InventoryItemSchema>;
+export type NewPurchase = z.infer<typeof PurchasesSchema>;
+export type NewPurchasePayment = z.infer<typeof PurchasePaymentSchema>;
+export type Dispatch = z.infer<typeof DispatchSchema>;
+export type Receive = z.infer<typeof ReceiveSchema>;
+export type CreateRequest = z.infer<typeof RequestSchema>;
+export type CreateProduction = z.infer<typeof ProductionSchema>;
+export type CreateItemCollection = z.infer<typeof InventoryItemSchema>;
+export type AddProductionSubmission = z.infer<typeof ProductSubmissionSchema>;
+export type UserSignUp = z.infer<typeof userSignUpSchema>;
