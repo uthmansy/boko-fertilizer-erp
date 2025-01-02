@@ -21,7 +21,7 @@ function Transactions() {
   } = useAllPurchasePayments();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 py-20">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 py-10">
       <div>
         <h2 className="text-3xl mb-5">Inflow</h2>
         <Table

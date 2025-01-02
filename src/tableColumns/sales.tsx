@@ -34,8 +34,10 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
     title: "Quantity",
     dataIndex: "quantity",
     key: "quantity",
-    render: (text) => (
-      <span className="italic">{`${formatNumber(text)} BAGS`}</span>
+    render: (_, record) => (
+      <span className="italic">{`${formatNumber(record.quantity)} ${
+        record.item_info.unit
+      }`}</span>
     ),
     width: 120,
   },
@@ -43,9 +45,9 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
     title: "Balance",
     dataIndex: "balance",
     key: "balance",
-    render: (text) => (
+    render: (_, record) => (
       <span className="italic text-red-700">
-        {`${formatNumber(text)}`} bags
+        {`${formatNumber(record.balance)}`} {record.item_info.unit}
       </span>
     ),
     width: 120,

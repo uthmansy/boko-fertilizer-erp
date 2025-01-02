@@ -4,7 +4,7 @@ import useDispatchStore from "../../../store/dispatch";
 import SelectToCustomer from "./SelectToCustomer";
 import DispatchForm from "./DispatchForm";
 import { useEffect } from "react";
-import TransitWaybill from "../transit/TransitWaybill";
+import TransitWaybill from "../transit/TransitWaybillViewer";
 
 function ExternalDispatch() {
   const {} = useExternalDispatch();

@@ -14,7 +14,7 @@ interface Props {
 
 function Ledger({ isLoading, isRefetching, reports, csvHeaders }: Props) {
   return (
-    <div className="grid grid-cols-1 gap-5 py-20">
+    <div className="grid grid-cols-1 gap-5 py-10">
       <div>
         {reports && (
           <div className="mb-5 flex justify-end">

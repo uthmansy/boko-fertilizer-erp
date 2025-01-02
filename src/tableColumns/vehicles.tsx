@@ -3,6 +3,8 @@ import { VehiclesAndDestination } from "../types/db";
 import TransitTableActions from "../components/pages/transit/TransitTableActions";
 import useAuthStore from "../store/auth";
 import TableActions from "../components/pages/receivedVehicles/TableActions";
+import DispatchedTableActions from "../components/pages/dispatchedVehicles/DispatchedTableActions";
+import { formatNumber } from "../helpers/functions";
 
 export const useVehicleColumns = (): {
   transitColumns: ColumnsType<VehiclesAndDestination>;
@@ -52,7 +54,11 @@ export const useVehicleColumns = (): {
       title: "QTY",
       dataIndex: "qty_carried",
       key: "qty_carried",
-      render: (text) => <span className="capitalize">{text}</span>,
+      render: (_, record) => (
+        <span className="capitalize">
+          {formatNumber(record.qty_carried)} {record.item_info.unit}{" "}
+        </span>
+      ),
       width: 60,
     },
     ...((userProfile?.role === "SUPER ADMIN" || userProfile?.role === "ADMIN"
@@ -144,11 +150,11 @@ export const useVehicleColumns = (): {
       ),
       width: 150,
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => <ReceivedTableActions vehicle={record} />,
-    // },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => <DispatchedTableActions vehicle={record} />,
+    },
   ];
   return { dispatchedColumns, receivedColumns, transitColumns };
 };

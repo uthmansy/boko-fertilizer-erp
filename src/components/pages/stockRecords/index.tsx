@@ -1,9 +1,18 @@
-import { Avatar, Descriptions, Empty, Flex, Segmented, Spin } from "antd";
+import {
+  Avatar,
+  Breadcrumb,
+  Descriptions,
+  Empty,
+  Flex,
+  Segmented,
+  Spin,
+} from "antd";
 import { CiLocationOn } from "react-icons/ci";
 import useStockRecords from "../../../hooks/useStockRecords";
 import RefreshButton from "../../RefreshButton";
 import { stocksKeys } from "../../../constants/QUERY_KEYS";
 import useAuthStore from "../../../store/auth";
+import { HomeOutlined } from "@ant-design/icons";
 
 function StockRecords() {
   const {
@@ -20,6 +29,23 @@ function StockRecords() {
 
   return (
     <>
+      <Breadcrumb
+        className="mb-5"
+        items={[
+          {
+            href: "",
+            title: <HomeOutlined />,
+          },
+          {
+            href: "",
+            title: (
+              <>
+                <span className="uppercase">Stock Records</span>
+              </>
+            ),
+          },
+        ]}
+      />
       <div className="mb-2">
         <RefreshButton queryKey={stocksKeys.getItemRecord} />
       </div>

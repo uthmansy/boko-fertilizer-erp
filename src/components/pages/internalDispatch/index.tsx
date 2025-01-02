@@ -3,7 +3,7 @@ import useDispatchStore from "../../../store/dispatch";
 import { useEffect } from "react";
 import SelectToCustomer from "../externalDispatch/SelectToCustomer";
 import DispatchForm from "../externalDispatch/DispatchForm";
-import TransitWaybill from "../transit/TransitWaybill";
+import TransitWaybillViewer from "../transit/TransitWaybillViewer";
 
 function InternalDispatch() {
   // Changed the component name
@@ -49,7 +49,7 @@ function InternalDispatch() {
       {currentPage === 2 && <DispatchForm />}
       {currentPage === 3 &&
         (newDispatchVehicle ? (
-          <TransitWaybill vehicle={newDispatchVehicle} />
+          <TransitWaybillViewer vehicle={newDispatchVehicle} />
         ) : (
           <Alert
             message="Error"

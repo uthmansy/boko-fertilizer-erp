@@ -3,7 +3,7 @@ import { FieldConfig, SelectOption } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { addSalesPayment } from "../helpers/apiFunctions"; // Updated function
+import { addSalesPayment, uploadImage } from "../helpers/apiFunctions"; // Updated function
 
 import { PAYMENT_MODE } from "../constants/ENUMS";
 import { SalesPaymentSchema } from "../zodSchemas/salePayment"; // Updated schema
@@ -83,11 +83,22 @@ function useAddSalesPayment({ orderNumber }: Props): HookReturn {
       type: "text",
       required: false,
     },
+    {
+      name: "receipt",
+      label: "Receipt",
+      type: "image",
+      required: false,
+    },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
+        if (values.receipt) {
+          const data = await uploadImage(values.receipt.file, "receipts");
+          values.receipt_path = data.filePath;
+          values.receipt = data.publicUrl;
+        }
         values.date = values.date.format("YYYY-MM-DD");
         values.order_number = orderNumber;
         await SalesPaymentSchema.parseAsync(values); // Updated schema validation

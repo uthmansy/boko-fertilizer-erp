@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, QRCode, Segmented, Space } from "antd";
 import type { QRCodeProps } from "antd";
-import { LOGO } from "../assets/images";
 
 function doDownload(url: string, fileName: string) {
   const a = document.createElement("a");

@@ -314,26 +314,18 @@ function useDispatchForm(): HookReturn {
       type: "text",
       required: false,
     },
-    ...((toCustomer === false
-      ? [
-          {
-            name: "transport_fee",
-            label: "Transport Fee",
-            type: "money",
-            required: false,
-          },
-        ]
-      : []) as FieldConfig[]),
-    ...((toCustomer === false
-      ? [
-          {
-            name: "paid_on_dispatch",
-            label: "Transport Fee Paid",
-            type: "money",
-            required: false,
-          },
-        ]
-      : []) as FieldConfig[]),
+    {
+      name: "transport_fee",
+      label: "Transport Fee",
+      type: "money",
+      required: false,
+    },
+    {
+      name: "paid_on_dispatch",
+      label: "Transport Fee Paid",
+      type: "money",
+      required: false,
+    },
     {
       name: "vehicle_number",
       label: "Vehicle Number",

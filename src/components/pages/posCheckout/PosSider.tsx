@@ -29,14 +29,7 @@ const PosSider: React.FC = () => {
   };
 
   const {
-    token: {
-      colorBgElevated,
-      colorBgSpotlight,
-      colorTextLabel,
-      colorPrimary,
-      colorBgBase,
-      colorBgBlur,
-    },
+    token: { colorBgElevated, colorTextLabel, colorPrimary, colorBgBase },
   } = theme.useToken();
 
   return (

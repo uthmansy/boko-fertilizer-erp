@@ -1,4 +1,4 @@
-import { Tabs, TabsProps } from "antd";
+import { Breadcrumb, Tabs, TabsProps } from "antd";
 import useFinancialReports from "../../../hooks/useFinancialReports"; // Custom hook for financial reports
 import Ledger from "./Ledger";
 import Expenses from "../expenses";
@@ -15,6 +15,7 @@ import {
 import TabLabel from "../../TabLabel";
 import { VscEmptyWindow, VscFileSymlinkFile, VscFiles } from "react-icons/vsc";
 import Receivables from "./Receivables";
+import { HomeOutlined } from "@ant-design/icons";
 
 function FinancialReports() {
   const { isLoading, isRefetching, reports, csvHeaders } =
@@ -65,7 +66,28 @@ function FinancialReports() {
     },
   ];
 
-  return <Tabs size="large" defaultActiveKey="1" items={tabs} />;
+  return (
+    <>
+      <Breadcrumb
+        className="mb-5"
+        items={[
+          {
+            href: "",
+            title: <HomeOutlined />,
+          },
+          {
+            href: "",
+            title: (
+              <>
+                <span className="uppercase">Financial Reports</span>
+              </>
+            ),
+          },
+        ]}
+      />
+      <Tabs size="large" defaultActiveKey="1" items={tabs} />
+    </>
+  );
 }
 
 export default FinancialReports;

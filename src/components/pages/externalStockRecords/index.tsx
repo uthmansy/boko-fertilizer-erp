@@ -1,6 +1,15 @@
-import { Descriptions, Empty, Flex, Segmented, Space, Spin } from "antd";
+import {
+  Breadcrumb,
+  Descriptions,
+  Empty,
+  Flex,
+  Segmented,
+  Space,
+  Spin,
+} from "antd";
 import useExternalStockRecords from "../../../hooks/useExternalStockRecords";
 import { useMediaQuery } from "react-responsive";
+import { HomeOutlined } from "@ant-design/icons";
 
 function ExternalStockRecords() {
   const { items, tableItems, handleItem, isLoading, records } =
@@ -9,6 +18,23 @@ function ExternalStockRecords() {
 
   return (
     <>
+      <Breadcrumb
+        className="mb-5"
+        items={[
+          {
+            href: "",
+            title: <HomeOutlined />,
+          },
+          {
+            href: "",
+            title: (
+              <>
+                <span className="uppercase">External Stock Records</span>
+              </>
+            ),
+          },
+        ]}
+      />
       <div className="mb-10">
         <Flex
           gap="small"

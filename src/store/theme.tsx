@@ -8,7 +8,7 @@ interface Store {
 
 // Create the Zustand store
 const useDarkMode = create<Store>((set) => ({
-  darkMode: true,
+  darkMode: false,
   toggleMode: () => set((state) => ({ darkMode: !state.darkMode })),
 }));
 

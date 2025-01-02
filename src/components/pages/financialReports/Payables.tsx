@@ -14,7 +14,7 @@ function Payables() {
   } = usePayables();
 
   return (
-    <div className="py-20 grid grid-cols-1 md:grid-cols-6 gap-10">
+    <div className="py-10 grid grid-cols-1 md:grid-cols-6 gap-10">
       <div className="md:col-span-2">
         <Card
           title="Receivables Stats"

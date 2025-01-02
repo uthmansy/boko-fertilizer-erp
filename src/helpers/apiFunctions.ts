@@ -71,7 +71,7 @@ export const getAllStockPurchases = async (
 ): Promise<PurchasesAndPayments[]> => {
   const { data, error } = await supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*)")
+    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
     .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
     .order("created_at", { ascending: false });
 
@@ -198,7 +198,7 @@ export const getAllSales = async (
 ): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*)")
+    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
     .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
     .order("created_at", { ascending: false });
 
@@ -316,7 +316,7 @@ export const getVehicles = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
     )
     .eq("status", status);
 
@@ -325,7 +325,7 @@ export const getVehicles = async (
     query = supabase
       .from("vehicles")
       .select(
-        "*, receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!left(*, warehouse_info:warehouse (*)), sale:sale_order_number (*), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+        "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!left(*, warehouse_info:warehouse (*)), sale:sale_order_number (*), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
       )
       .eq("status", status);
   }
@@ -367,7 +367,7 @@ export const getVehicleByWaybill = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
     )
     .eq("waybill_number", waybillNumber)
     .single();
@@ -668,11 +668,11 @@ export const getItemExternalRecord = async (
 ): Promise<ExternalStocksAndPurchases[]> => {
   const { data, error } = await supabase
     .from("external_stocks")
-    .select("*, stock_purchases!inner(*)")
+    .select("*, purchase_item:order_number(item(*)), stock_purchases!inner(*)")
     .eq("stock_purchases.item", item);
 
   if (error) throw error.message;
-
+  console.log(data);
   return data;
 };
 
@@ -770,7 +770,7 @@ export const addNewVehicle = async (
     .from("vehicles")
     .insert([payload])
     .select(
-      "*, receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination (*,  warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination (*,  warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
     )
     .single();
 

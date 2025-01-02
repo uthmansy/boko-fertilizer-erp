@@ -72,6 +72,7 @@ export interface VehiclesAndDestination extends Vehicles {
   sale: Sales;
   dispatch_officer_info: UserProfile;
   receive_officer_info: UserProfile;
+  item_info: InventoryItems;
 }
 export interface RequestWithItems extends Requests {
   request_items: RequestItem[];
@@ -94,6 +95,7 @@ export type ExternalStocks =
   Database["public"]["Tables"]["external_stocks"]["Row"];
 export interface ExternalStocksAndPurchases extends ExternalStocks {
   stock_purchases: Purchases;
+  purchase_item: { item: InventoryItems };
   sales: Sales[];
 }
 export interface InventoryTransferWithStocks extends InventoryTransfer {
@@ -107,10 +109,12 @@ export interface StocksWithSoldBalance extends ExternalStocksAndPurchases {
 
 export interface PurchasesAndPayments extends Purchases {
   payments: PurchasePayments[];
+  item_info: InventoryItems;
 }
 
 export interface SalesAndPayments extends Sales {
   payments: SalesPayments[];
+  item_info: InventoryItems;
 }
 
 export interface StocksWithDetails extends Stocks {

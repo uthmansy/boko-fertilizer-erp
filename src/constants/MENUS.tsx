@@ -1,32 +1,9 @@
-import { BsQrCodeScan } from "react-icons/bs";
 import { SidebarMenuItem } from "../types/menu";
 import ROUTES from "./ROUTES";
 import {
-  CiBadgeDollar,
-  CiBag1,
-  CiBank,
-  CiBoxList,
-  CiBoxes,
-  CiCoins1,
-  CiDatabase,
-  CiDeliveryTruck,
-  CiFaceSmile,
-  CiHome,
-  CiLocationOn,
-  CiMedicalClipboard,
-  CiMoneyBill,
-  CiPaperplane,
-  CiSpeaker,
-  CiSquarePlus,
-  CiUser,
-} from "react-icons/ci";
-import { BiHome } from "react-icons/bi";
-import {
   HiArrowUpOnSquareStack,
   HiBanknotes,
-  HiBuildingLibrary,
   HiBuildingOffice2,
-  HiCalculator,
   HiChartPie,
   HiClipboardDocument,
   HiClipboardDocumentList,
@@ -46,7 +23,6 @@ import {
   HiSquare3Stack3D,
   HiTableCells,
   HiTruck,
-  HiUser,
   HiUserGroup,
   HiUserPlus,
   HiUsers,

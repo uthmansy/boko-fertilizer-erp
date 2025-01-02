@@ -11,4 +11,6 @@ export const SalesPaymentSchema = z.object({
   order_number: z.string(),
   payment_mode: paymentModeEnum,
   payment_ref: z.string().nullable().optional(),
+  receipt: z.string().nullable().optional(),
+  receipt_path: z.string().nullable().optional(),
 });

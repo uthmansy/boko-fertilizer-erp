@@ -6,6 +6,7 @@ import useAuthStore from "../../store/auth";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import useAdminMenu from "../../store/adminMenu";
 import useDarkMode from "../../store/theme";
+import { LOGO } from "../../assets/images";
 
 function Sider() {
   const {
@@ -33,6 +34,7 @@ function Sider() {
       collapsed={collapsed}
       style={{ zIndex: 100, position: isMobile ? "absolute" : "relative" }}
       width={250}
+      // className="pt-20"
     >
       <Button
         size="large"
@@ -48,6 +50,9 @@ function Sider() {
           zIndex: 100,
         }}
       />
+      <div className={`${collapsed ? "px-2" : "px-10"} py-5 mb-10`}>
+        <img src={LOGO} className="w-full h-auto" alt="" />
+      </div>
       <Menu
         onClick={handleMenuClick}
         theme={darkMode ? "dark" : "light"}

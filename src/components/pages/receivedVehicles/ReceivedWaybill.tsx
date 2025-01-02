@@ -10,7 +10,7 @@ import {
 import { VehiclesAndDestination } from "../../../types/db";
 import { COMPANY } from "../../../constants/COMPANY";
 import { LOGO } from "../../../assets/images";
-import { bagsToTons, formatNumber } from "../../../helpers/functions";
+import { formatNumber } from "../../../helpers/functions";
 
 // Define styles for the PDF document
 const styles = StyleSheet.create({
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   logo: {
-    width: 100,
+    width: "auto",
     height: 100,
     marginBottom: 7,
     alignSelf: "center", // Center the logo horizontally
@@ -297,19 +297,19 @@ const ReceivedWaybill: React.FC<ReceivedWaybillProps> = ({
             <View style={styles.verticalRow}>
               <Text style={styles.label}>Transport Fee:</Text>
               <Text style={styles.value}>
-                ₦{data.transport_fee && formatNumber(data.transport_fee)}
+                N{data.transport_fee && formatNumber(data.transport_fee)}
               </Text>
             </View>
             <View style={styles.verticalRow}>
               <Text style={styles.label}>Transport Fee Paid:</Text>
               <Text style={styles.value}>
-                ₦{data.paid_on_dispatch && formatNumber(data.paid_on_dispatch)}
+                N{data.paid_on_dispatch && formatNumber(data.paid_on_dispatch)}
               </Text>
             </View>
             <View style={styles.verticalRow}>
               <Text style={styles.label}>Transport Fee Balance:</Text>
               <Text style={styles.value}>
-                ₦
+                N
                 {data.transport_fee &&
                   data.paid_on_dispatch &&
                   formatNumber(data.transport_fee - data.paid_on_dispatch)}
@@ -323,11 +323,15 @@ const ReceivedWaybill: React.FC<ReceivedWaybillProps> = ({
               <Text style={styles.value}>QUANTITY RECEIVED</Text>
             </View>
             <View style={styles.verticalRow}>
-              <Text style={styles.label}>BAGS:</Text>
-              <Text style={styles.value}>{data.qty_carried} BAGS</Text>
-              <Text style={styles.value}>{data.qty_received} BAGS</Text>
+              <Text style={styles.label}>{data.item_info.unit}:</Text>
+              <Text style={styles.value}>
+                {data.qty_carried} {data.item_info.unit}
+              </Text>
+              <Text style={styles.value}>
+                {data.qty_received} {data.item_info.unit}
+              </Text>
             </View>
-            <View style={styles.verticalRow}>
+            {/* <View style={styles.verticalRow}>
               <Text style={styles.label}>MTS:</Text>
               <Text style={styles.value}>
                 {bagsToTons(data.qty_carried)} MTS
@@ -335,11 +339,13 @@ const ReceivedWaybill: React.FC<ReceivedWaybillProps> = ({
               <Text style={styles.value}>
                 {data.qty_received && bagsToTons(data.qty_received)} MTS
               </Text>
-            </View>
+            </View> */}
             <View style={styles.verticalRow}>
               <Text style={styles.label}>SHORTAGE:</Text>
-              <Text style={styles.value}>{data.shortage} BAGS</Text>
-              <Text style={styles.value}>{bagsToTons(data.shortage)} MTS</Text>
+              <Text style={styles.value}>
+                {data.shortage} {data.item_info.unit}
+              </Text>
+              {/* <Text style={styles.value}>{bagsToTons(data.shortage)} MTS</Text> */}
             </View>
           </View>
           {/* Signature and Stamp Section */}

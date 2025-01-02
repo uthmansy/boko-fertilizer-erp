@@ -28,8 +28,10 @@ export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
     title: "Quantity",
     dataIndex: "quantity",
     key: "quantity",
-    render: (text) => (
-      <span className="italic">{`${formatNumber(text)}`} BAGS</span>
+    render: (_, record) => (
+      <span className="italic">
+        {`${formatNumber(record.quantity)}`} {record.item_info.unit}
+      </span>
     ),
     width: 120,
   },

@@ -5,7 +5,7 @@ import AllExpenses from "./AllExpenses"; // Renamed component for displaying all
 
 function Expenses() {
   return (
-    <div className="py-20">
+    <div className="py-10">
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={expensesKeys.getExpenses} />
         {/* Updated query key */}

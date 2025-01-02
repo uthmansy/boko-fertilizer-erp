@@ -16,7 +16,7 @@ interface HookReturn {
 }
 
 function useDashboard(): HookReturn {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const { signOut } = useAuthStore();
   const { message } = App.useApp();
   const isDesktop = useMediaQuery({ minWidth: 1025 });

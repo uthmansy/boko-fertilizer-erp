@@ -15,7 +15,7 @@ function AddNewInventoryTransfer() {
   return (
     <>
       <Button onClick={handleOpenModal} type="primary">
-        Add Transfer Order
+        + Add Transfer Order
       </Button>
       <Modal
         footer={null}

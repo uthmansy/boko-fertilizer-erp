@@ -4,6 +4,7 @@ import DocumentViewer from "./utils/DocumentViewer";
 import TransitWaybill from "./documents/TransitWaybill";
 import { VehiclesAndDestination } from "../types/db";
 import ReceivedWaybill from "./pages/receivedVehicles/ReceivedWaybill";
+import DispatchedWaybill from "./documents/DispatchedWaybill";
 
 interface Props {
   vehicle: VehiclesAndDestination;
@@ -27,13 +28,13 @@ function ViewWaybill({ vehicle, type }: Props) {
         width={700}
       >
         {/* <Waybill data={vehicle} /> */}
-        <DocumentViewer fileName={`Transit-${vehicle.waybill_number}`}>
+        <DocumentViewer fileName={`${type}-${vehicle.waybill_number}`}>
           {type === "transit" ? (
             <TransitWaybill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
           ) : type === "received" ? (
             <ReceivedWaybill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
           ) : (
-            <TransitWaybill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
+            <DispatchedWaybill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
           )}
         </DocumentViewer>
       </Modal>

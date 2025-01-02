@@ -68,7 +68,7 @@ function App() {
         },
         components: {
           Layout: {
-            siderBg: darkMode ? "#222222" : "#222222",
+            siderBg: darkMode ? "#222222" : "#ffffff",
           },
 
           Table: {

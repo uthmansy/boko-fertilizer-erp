@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   logo: {
-    width: 100,
+    width: "auto",
     height: 100,
     marginBottom: 7,
     alignSelf: "center", // Center the logo horizontally
@@ -181,12 +181,12 @@ const styles = StyleSheet.create({
   },
 });
 
-interface TransitWaybillProps {
+interface DispatchedWaybillProps {
   data: VehiclesAndDestination;
   qrCodeDataUri: string;
 }
 
-const TransitWaybill: React.FC<TransitWaybillProps> = ({
+const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
   data,
   qrCodeDataUri,
 }) => {
@@ -209,7 +209,7 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               textTransform: "uppercase", // Uppercase for consistent styling
             }}
           >
-            {COMPANY.name} Delivery Waybill
+            {COMPANY.name} Customer Delivery Waybill
           </Text>
           <Text
             style={{
@@ -224,39 +224,10 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>
           {/* Vertical Grouped Table */}
           <View style={styles.section1}>
-            <View style={styles.storeTable}>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Destination:</Text>
-                <Text style={styles.value}>
-                  {data.destination_stock?.warehouse || ""}
-                </Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Address:</Text>
-                <Text style={styles.value}>
-                  {data.destination_stock?.warehouse_info.address || ""}
-                </Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Receiver:</Text>
-                <Text style={styles.value}>Store Keeper</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Receiver Phone:</Text>
-                <Text style={styles.value}>
-                  {data.destination_stock?.warehouse_info
-                    .stock_receiver_phone || ""}
-                </Text>
-              </View>
-            </View>
             <View style={styles.verticalTable}>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Waybill Number:</Text>
                 <Text style={styles.value}>{data.waybill_number}</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Sancham Number:</Text>
-                <Text style={styles.value}>{data.other_waybill_number}</Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Date Loaded:</Text>
@@ -265,6 +236,12 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Item Carried:</Text>
                 <Text style={styles.value}>{data.item}</Text>
+              </View>
+              <View style={styles.verticalRow}>
+                <Text style={styles.label}>Destination Address:</Text>
+                <Text style={styles.value}>
+                  {data.destination_address || ""}
+                </Text>
               </View>
             </View>
           </View>
@@ -321,14 +298,12 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
             <View style={styles.verticalRow}>
               <Text style={styles.label}>UNIT:</Text>
               <Text style={styles.value}>QUANTITY DISPATCHED</Text>
-              <Text style={styles.value}>QUANTITY RECEIVED</Text>
             </View>
             <View style={styles.verticalRow}>
               <Text style={styles.label}>{data.item_info.unit}:</Text>
               <Text style={styles.value}>
                 {data.qty_carried} {data.item_info.unit}
               </Text>
-              <Text style={styles.value}></Text>
             </View>
             {/* <View style={styles.verticalRow}>
               <Text style={styles.label}>MTS:</Text>
@@ -337,11 +312,6 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               </Text>
               <Text style={styles.value}></Text>
             </View> */}
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>SHORTAGE:</Text>
-              <Text style={styles.value}></Text>
-              <Text style={styles.value}></Text>
-            </View>
           </View>
           {/* Signature and Stamp Section */}
           <View style={styles.signatureStampContainer}>
@@ -351,17 +321,6 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               <Text style={styles.officerName}>
                 {data.dispatch_officer_info.full_name}
               </Text>
-              <View style={styles.signatureStamp}>
-                <View style={styles.signatureBox}>
-                  <Text>Signature & Stamp</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.officerSection}>
-              {/* Receiving Officer Section */}
-              <Text style={styles.officerTitle}>Receiving Officer</Text>
-              <Text style={styles.officerName}>Officer's Name:</Text>
               <View style={styles.signatureStamp}>
                 <View style={styles.signatureBox}>
                   <Text>Signature & Stamp</Text>
@@ -394,4 +353,4 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
   );
 };
 
-export default TransitWaybill;
+export default DispatchedWaybill;
