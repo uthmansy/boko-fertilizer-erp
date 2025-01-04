@@ -1,3 +1,4 @@
+import { HiTable } from "react-icons/hi";
 import { SidebarMenuItem } from "../types/menu";
 import ROUTES from "./ROUTES";
 import {
@@ -139,6 +140,11 @@ const menuItems = {
     icon: HiUsers,
     path: ROUTES.employees,
   },
+  dailyProduction: {
+    label: "Daily Production",
+    icon: HiTable,
+    path: ROUTES.dailyProduction,
+  },
 };
 
 const {
@@ -168,6 +174,7 @@ const {
   // expenses,
   financialReports,
   stockIn,
+  dailyProduction,
 } = menuItems;
 
 export const superAdminMenuItems: SidebarMenuItem[] = [
@@ -195,6 +202,7 @@ export const superAdminMenuItems: SidebarMenuItem[] = [
   requests,
   productionRuns,
   productSubmissions,
+  dailyProduction,
   employees,
 ];
 
@@ -205,8 +213,8 @@ export const adminMenuItems: SidebarMenuItem[] = [
   positions,
   payrolls,
   financialReports,
-  userManagement,
-  enrollment,
+  // userManagement,
+  // enrollment,
   stockRecords,
   externalStockRecords,
   inventoryItems,
@@ -220,6 +228,7 @@ export const adminMenuItems: SidebarMenuItem[] = [
   receivedTrucks,
   dispatchedTrucks,
   productionRuns,
+  dailyProduction,
   employees,
 ];
 
@@ -229,6 +238,7 @@ export const productionMenuItems: SidebarMenuItem[] = [
   requests,
   productionRuns,
   productSubmissions,
+  dailyProduction,
 ];
 export const inventoryMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -242,6 +252,7 @@ export const inventoryMenuItems: SidebarMenuItem[] = [
   dispatchedTrucks,
   requests,
   productSubmissions,
+  dailyProduction,
 ];
 export const accountingMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -250,6 +261,10 @@ export const accountingMenuItems: SidebarMenuItem[] = [
   // expenses,
   purchases,
   sales,
+  stockRecords,
+  dispatchedTrucks,
+  receivedTrucks,
+  dailyProduction,
 ];
 export const logisticsMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -275,6 +290,7 @@ export const managerMenuItems: SidebarMenuItem[] = [
   productionRuns,
   productSubmissions,
   employees,
+  dailyProduction,
   // expenses,
 ];
 export const defaultMenuItems: SidebarMenuItem[] = [menuItems.dashboard];

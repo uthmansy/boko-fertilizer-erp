@@ -28,6 +28,7 @@ import { LOGO } from "../../assets/images/index.ts";
 import ScanWaybill from "../../components/pages/scanWaybill/index.tsx";
 import FinancialReports from "../../components/pages/financialReports/index.tsx";
 import StockIn from "../../components/pages/stockIn/index.tsx";
+import DailyProduction from "../../components/pages/dailyProduction/index.tsx";
 
 const { Content } = Layout;
 
@@ -37,7 +38,7 @@ function SiteContent() {
   } = theme.useToken();
   return (
     <Content
-      className="m-5 mx-0 md:mx-5 p-5 md:p-10"
+      className="m-5 mx-0 md:mx-5 p-5 md:p-10 overflow-y-auto"
       style={{
         minHeight: 280,
         background: colorBgContainer,
@@ -56,71 +57,77 @@ function SiteContent() {
           opacity: 0.08, // Faint effect
         }}
       ></div>
-      <Routes>
-        <Route path={`${ROUTES.home}/*`} element={<Home />} />
-        <Route path={`${ROUTES.warehouses}/*`} element={<Warehouses />} />
-        <Route
-          path={`${ROUTES.inventoryItems}/*`}
-          element={<InventoryItems />}
-        />
-        <Route path={`${ROUTES.purchases}/*`} element={<Purchases />} />
-        <Route path={`${ROUTES.sales}/*`} element={<Sales />} />
-        <Route path={`${ROUTES.stockRecords}/*`} element={<StockRecords />} />
-        <Route path={`${ROUTES.stockIn}/*`} element={<StockIn />} />
-        <Route
-          path={`${ROUTES.externalStockRecords}/*`}
-          element={<ExternalStockRecords />}
-        />
-        <Route
-          path={`${ROUTES.externalDispatch}/*`}
-          element={<ExternalDispatch />}
-        />
-        <Route
-          path={`${ROUTES.internalDispatch}/*`}
-          element={<InternalDispatch />}
-        />
-        <Route path={`${ROUTES.transit}/*`} element={<Transit />} />
-        <Route path={`${ROUTES.scanWaybill}/*`} element={<ScanWaybill />} />
-        <Route
-          path={`${ROUTES.receivedVehicles}/*`}
-          element={<ReceivedVehicles />}
-        />
-        <Route
-          path={`${ROUTES.dispatchedVehicles}/*`}
-          element={<DispatchedVehicles />}
-        />
-        <Route path={`${ROUTES.requests}/*`} element={<Requests />} />
-        <Route
-          path={`${ROUTES.productionRuns}/*`}
-          element={<ProductionRuns />}
-        />
-        <Route
-          path={`${ROUTES.productSubmissions}/*`}
-          element={<ProductSubmissions />}
-        />
-        <Route
-          path={`${ROUTES.inventoryTransfers}/*`}
-          element={<InventoryTransfers />}
-        />
-        <Route path={`${ROUTES.employees}/*`} element={<Employees />} />
-        <Route path={`${ROUTES.departments}/*`} element={<Departments />} />
-        <Route path={`${ROUTES.positions}/*`} element={<Positions />} />
-        <Route path={`${ROUTES.payroll}/*`} element={<Payrolls />} />
-        <Route path={`${ROUTES.expenses}/*`} element={<Expenses />} />
-        <Route
-          path={`${ROUTES.financialReports}/*`}
-          element={<FinancialReports />}
-        />
-        <Route path={`${ROUTES.enrollment}/*`} element={<Enrollment />} />
-        {/* <Route
+      <div className="relative">
+        <Routes>
+          <Route path={`${ROUTES.home}/*`} element={<Home />} />
+          <Route path={`${ROUTES.warehouses}/*`} element={<Warehouses />} />
+          <Route
+            path={`${ROUTES.inventoryItems}/*`}
+            element={<InventoryItems />}
+          />
+          <Route path={`${ROUTES.purchases}/*`} element={<Purchases />} />
+          <Route path={`${ROUTES.sales}/*`} element={<Sales />} />
+          <Route path={`${ROUTES.stockRecords}/*`} element={<StockRecords />} />
+          <Route path={`${ROUTES.stockIn}/*`} element={<StockIn />} />
+          <Route
+            path={`${ROUTES.externalStockRecords}/*`}
+            element={<ExternalStockRecords />}
+          />
+          <Route
+            path={`${ROUTES.externalDispatch}/*`}
+            element={<ExternalDispatch />}
+          />
+          <Route
+            path={`${ROUTES.internalDispatch}/*`}
+            element={<InternalDispatch />}
+          />
+          <Route path={`${ROUTES.transit}/*`} element={<Transit />} />
+          <Route path={`${ROUTES.scanWaybill}/*`} element={<ScanWaybill />} />
+          <Route
+            path={`${ROUTES.receivedVehicles}/*`}
+            element={<ReceivedVehicles />}
+          />
+          <Route
+            path={`${ROUTES.dispatchedVehicles}/*`}
+            element={<DispatchedVehicles />}
+          />
+          <Route path={`${ROUTES.requests}/*`} element={<Requests />} />
+          <Route
+            path={`${ROUTES.productionRuns}/*`}
+            element={<ProductionRuns />}
+          />
+          <Route
+            path={`${ROUTES.productSubmissions}/*`}
+            element={<ProductSubmissions />}
+          />
+          <Route
+            path={`${ROUTES.inventoryTransfers}/*`}
+            element={<InventoryTransfers />}
+          />
+          <Route path={`${ROUTES.employees}/*`} element={<Employees />} />
+          <Route path={`${ROUTES.departments}/*`} element={<Departments />} />
+          <Route path={`${ROUTES.positions}/*`} element={<Positions />} />
+          <Route path={`${ROUTES.payroll}/*`} element={<Payrolls />} />
+          <Route path={`${ROUTES.expenses}/*`} element={<Expenses />} />
+          <Route
+            path={`${ROUTES.financialReports}/*`}
+            element={<FinancialReports />}
+          />
+          <Route path={`${ROUTES.enrollment}/*`} element={<Enrollment />} />
+          {/* <Route
               path={`${ROUTES.transportFees}/*`}
               element={<TransportFees />}
             /> */}
-        <Route
-          path={`${ROUTES.userManagement}/*`}
-          element={<UserManagement />}
-        />
-      </Routes>
+          <Route
+            path={`${ROUTES.userManagement}/*`}
+            element={<UserManagement />}
+          />
+          <Route
+            path={`${ROUTES.dailyProduction}/*`}
+            element={<DailyProduction />}
+          />
+        </Routes>
+      </div>
     </Content>
   );
 }

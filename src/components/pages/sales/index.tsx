@@ -33,7 +33,8 @@ function Sales() {
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={salesKeys.getAllSales} />
         {(userProfile?.role === "SUPER ADMIN" ||
-          userProfile?.role === "ADMIN") && <AddNew />}
+          userProfile?.role === "ADMIN" ||
+          userProfile?.role === "ACCOUNTING") && <AddNew />}
         {data && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink filename={"Sales.csv"} data={data} headers={headers}>

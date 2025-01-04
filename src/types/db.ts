@@ -132,3 +132,9 @@ export interface SubItemsWithDetails extends SubItems {
 export type UpdateInventoryItems =
   Database["public"]["Tables"]["inventory_items"]["Update"];
 export type Shifts = Database["public"]["Enums"]["shifts"];
+
+export type DailyProductionSummary = {
+  product_info: { id: string; name: string; unit: string };
+  shift: Shifts;
+  total_quantity_produced: number;
+};

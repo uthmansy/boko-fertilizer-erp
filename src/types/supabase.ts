@@ -1618,6 +1618,17 @@ export type Database = {
           profit: number
         }[]
       }
+      get_daily_production_summary: {
+        Args: {
+          p_date?: string
+          p_warehouse?: string
+        }
+        Returns: {
+          product: string
+          shift: string
+          total_quantity_produced: number
+        }[]
+      }
       get_total_purchases_payment_balance: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -1646,6 +1657,9 @@ export type Database = {
         | "Training and Development"
         | "Entertainment"
         | "Miscellaneous"
+        | "Transportation"
+        | "Medical"
+        | "Government Agencies"
       inventory_item_type: "raw" | "product"
       payment_mode: "cash" | "transfer" | "pos"
       payroll_status: "paid" | "pending"

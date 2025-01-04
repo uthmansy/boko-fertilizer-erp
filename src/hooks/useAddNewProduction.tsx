@@ -98,7 +98,7 @@ function useAddNewProduction(): HookReturn {
         },
         {
           name: "quantity",
-          label: "Quantity Used (bags)",
+          label: "Quantity Used",
           type: "number",
           required: true,
         },

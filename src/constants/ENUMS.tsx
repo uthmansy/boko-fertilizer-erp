@@ -67,6 +67,9 @@ export const EXPENSE_CATEGORY: ExpenseCategories[] = [
   "Employee Benefits",
   "Training and Development",
   "Entertainment",
+  "Transportation",
+  "Medical",
+  "Government Agencies",
   "Miscellaneous",
 ];
 export const USER_ROLE: UserRole[] = [

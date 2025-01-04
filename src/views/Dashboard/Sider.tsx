@@ -34,7 +34,6 @@ function Sider() {
       collapsed={collapsed}
       style={{ zIndex: 100, position: isMobile ? "absolute" : "relative" }}
       width={250}
-      // className="pt-20"
     >
       <Button
         size="large"
@@ -50,7 +49,11 @@ function Sider() {
           zIndex: 100,
         }}
       />
-      <div className={`${collapsed ? "px-2" : "px-10"} py-5 mb-10`}>
+      <div
+        className={`${
+          collapsed ? "px-2 h-[5rem]" : "px-10 h-[10rem]"
+        } w-full overflow-hidden flex items-center transition-all duration-[600]`}
+      >
         <img src={LOGO} className="w-full h-auto" alt="" />
       </div>
       <Menu
@@ -58,7 +61,9 @@ function Sider() {
         theme={darkMode ? "dark" : "light"}
         mode="inline"
         defaultSelectedKeys={["1"]}
-        className="h-screen overflow-y-auto"
+        className={`${
+          collapsed ? "max-h-[calc(100vh-7rem)]" : "max-h-[calc(100vh-10rem)]"
+        } overflow-y-auto`}
       >
         {sidebarMenuMapping[menu || "DEFAULT"].map((menu, index) => (
           <Menu.Item key={index + 1} icon={<menu.icon color="#ABC32F" />}>

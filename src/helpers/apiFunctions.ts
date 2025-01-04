@@ -1,6 +1,7 @@
 import { supabase } from "../lib/supabase";
 import { FinancialReport } from "../types/api";
 import {
+  DailyProductionSummary,
   Departments,
   Employees,
   Enrollment,
@@ -638,6 +639,20 @@ export const getItemRecord = async (
   return data;
 };
 
+export const getStockRecord = async (
+  warehouse: string | null | undefined
+): Promise<StocksWithDetails[]> => {
+  let query = supabase.from("stocks").select("*, item_info:item(*)");
+
+  if (warehouse) query = query.eq("warehouse", warehouse);
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+
+  return data;
+};
+
 export const verifyEmail = async (
   email: string
 ): Promise<Enrollment | null> => {
@@ -1107,3 +1122,20 @@ export const uploadImage = async (
   if (!publicUrl) throw new Error(`Failed to ertreive image URL`);
   return { filePath: data.path, publicUrl };
 };
+
+export async function getDailyProductionSummary(
+  date?: string | null,
+  warehouse?: string | null | undefined
+): Promise<DailyProductionSummary[]> {
+  const { data, error } = await supabase.rpc("get_daily_production_summary", {
+    p_date: date || null,
+    p_warehouse: warehouse || null,
+  });
+
+  if (error) {
+    console.error("Error fetching production summary:", error);
+    throw error;
+  }
+
+  return data || [];
+}

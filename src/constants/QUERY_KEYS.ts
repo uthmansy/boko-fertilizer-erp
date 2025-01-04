@@ -3,6 +3,7 @@ export const warehousesKeys = {
   getAllWarehousesPaginated: "getAllWarehousesPaginated",
   getWarehousesNames: "getWarehousesNames",
   getDispatchWarehouses: "getDispatchWarehouses",
+  getWarehouseOptions: "getWarehouseOptions",
 };
 export const departmentsKeys = {
   getDepartments: "getDepartments",
@@ -44,6 +45,7 @@ export const stocksKeys = {
   getItemRecord: "getItemRecord",
   getExternalStocks: "getExternalStocks",
   getInternalStocks: "getInternalStocks",
+  getStockRecords: "getStockRecords",
 };
 export const externalStocksKeys = {
   getItemExternalRecord: "getItemExternalRecord",
@@ -102,4 +104,7 @@ export const financialReportsKeys = {
 };
 export const stockInKeys = {
   getAll: "getAll",
+};
+export const dailyProductionKeys = {
+  getDay: "getDay",
 };
