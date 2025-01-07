@@ -24,7 +24,7 @@ function Payables() {
           }`}
         >
           <Card
-            title="Receivables Stats"
+            title="Payables Stats"
             bordered={true}
             style={{ width: "100%" }}
           >

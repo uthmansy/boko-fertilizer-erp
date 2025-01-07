@@ -18,20 +18,20 @@ interface Store {
 // Create the Zustand store
 const useSalesStore = create<Store>((set) => ({
   type: "internal", // Default type
-  currentPage: 1, // Default page
+  currentPage: 2, // Default page
   isModalOpen: false, // Default modal state
   setType: (value) => set({ type: value }),
   resetType: () => set({ type: "internal" }), // Reset to default value
   nextPage: () => set((state) => ({ currentPage: state.currentPage + 1 })),
   prevPage: () =>
     set((state) => ({ currentPage: Math.max(state.currentPage - 1, 1) })), // Ensure page number doesn't go below 1
-  resetPagination: () => set({ currentPage: 1 }), // Reset pagination to first page
+  resetPagination: () => set({ currentPage: 2 }), // bypass selecting type for abjar sacks
   handleOpenModal: () => set({ isModalOpen: true }), // Open the modal
   handleCloseModal: () => set({ isModalOpen: false }), // Close the modal
   resetState: () =>
     set({
       type: "internal", // Reset to default type
-      currentPage: 1, // Reset to default page
+      currentPage: 2, // Reset to default page
       isModalOpen: false, // Reset to default modal state
     }), // Reset everything to initial state
 }));

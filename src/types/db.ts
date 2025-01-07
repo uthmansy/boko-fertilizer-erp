@@ -18,6 +18,12 @@ export type Warehouses = Database["public"]["Tables"]["warehouses"]["Row"];
 export type Enrollment = Database["public"]["Tables"]["user_enrollment"]["Row"];
 export type InsertEnrollment =
   Database["public"]["Tables"]["user_enrollment"]["Insert"];
+export type PaymentAccounts =
+  Database["public"]["Tables"]["payment_accounts"]["Row"];
+export type InsertPaymentAccounts =
+  Database["public"]["Tables"]["payment_accounts"]["Insert"];
+export type UpdatePaymentAccounts =
+  Database["public"]["Tables"]["payment_accounts"]["Update"];
 export type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
 export type InsertExpenses = Database["public"]["Tables"]["expenses"]["Insert"];
 export type UpdateExpenses = Database["public"]["Tables"]["expenses"]["Update"];
@@ -81,6 +87,12 @@ export interface ProductionWithItems extends Productions {
   production_raw_materials: ProductionRawMaterials[];
 }
 export type Purchases = Database["public"]["Tables"]["stock_purchases"]["Row"];
+export type FinishedProducts =
+  Database["public"]["Tables"]["finished_products"]["Row"];
+export type InsertFinishedProducts =
+  Database["public"]["Tables"]["finished_products"]["Insert"];
+export type UpdateFinishedProducts =
+  Database["public"]["Tables"]["finished_products"]["Update"];
 export type Sales = Database["public"]["Tables"]["sales"]["Row"];
 export type SalesPayments =
   Database["public"]["Tables"]["sales_payments"]["Row"];
@@ -102,6 +114,9 @@ export interface InventoryTransferWithStocks extends InventoryTransfer {
   originStock: Stocks;
   destinationStock: Stocks;
   createdBy: UserProfile;
+}
+export interface FinishedProductsJoint extends FinishedProducts {
+  staff: UserProfile;
 }
 export interface StocksWithSoldBalance extends ExternalStocksAndPurchases {
   totalSoldBalance: number;
@@ -134,7 +149,14 @@ export type UpdateInventoryItems =
 export type Shifts = Database["public"]["Enums"]["shifts"];
 
 export type DailyProductionSummary = {
-  product_info: { id: string; name: string; unit: string };
+  product_info: {
+    id: string;
+    name: string;
+    unit: string;
+    length: number | null;
+  };
   shift: Shifts;
   total_quantity_produced: number;
+  pieces?: number | null;
+  bales?: number | null;
 };

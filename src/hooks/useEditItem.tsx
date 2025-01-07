@@ -83,6 +83,20 @@ function useEditItem({ item }: Prop): HookReturn {
       defaultValue: item.unit,
     },
     {
+      name: "width",
+      label: "Width",
+      type: "number",
+      required: false,
+      defaultValue: item.width || undefined,
+    },
+    {
+      name: "length",
+      label: "Length",
+      type: "number",
+      required: false,
+      defaultValue: item.length || undefined,
+    },
+    {
       name: "unit_price",
       label: "Price Per Item",
       type: "money",

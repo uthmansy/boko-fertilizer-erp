@@ -1,12 +1,12 @@
 import RefreshButton from "../../RefreshButton";
-import { productionsKeys } from "../../../constants/QUERY_KEYS";
+import { finishedProductsKeys } from "../../../constants/QUERY_KEYS";
 import AddNew from "./AddNew";
-import AllProductions from "./AllProductions";
+import AllFinishedProducts from "./AllFinishedProducts";
 import { Breadcrumb } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 // import AllItems from "./AllItems";
 
-function ProductionRuns() {
+function FinishedProducts() {
   return (
     <>
       {" "}
@@ -21,19 +21,19 @@ function ProductionRuns() {
             href: "",
             title: (
               <>
-                <span className="uppercase">Production Runs</span>
+                <span className="uppercase">Daily Finished Products</span>
               </>
             ),
           },
         ]}
       />
       <div className="mb-5 flex space-x-3">
-        <RefreshButton queryKey={productionsKeys.getAllProductions} />
+        <RefreshButton queryKey={finishedProductsKeys.getAll} />
         <AddNew />
       </div>
-      <AllProductions />
+      <AllFinishedProducts />
     </>
   );
 }
 
-export default ProductionRuns;
+export default FinishedProducts;

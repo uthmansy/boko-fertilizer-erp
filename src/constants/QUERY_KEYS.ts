@@ -40,6 +40,7 @@ export const inventoryItemsKeys = {
   getAllInventoryItemsPaginated: "getAllInventoryItemsPaginated",
   getItemsNames: "getItemsNames",
   getItemRecord: "getItemRecord",
+  getProductionRunProducts: "getProductionRunProducts",
 };
 export const stocksKeys = {
   getItemRecord: "getItemRecord",
@@ -65,6 +66,9 @@ export const salesKeys = {
   getUncompletedSales: "getUncompletedSales",
   getSalePayments: "getSalePayments",
   getCsvData: "getCsvData",
+};
+export const accountsKeys = {
+  getAll: "getAllAccounts",
 };
 export const vehiclesKeys = {
   getVehicles: "getVehicles",
@@ -100,11 +104,15 @@ export const transportFeesKeys = {
 };
 
 export const financialReportsKeys = {
-  getAll: "getAll",
+  getAll: "getAllFinancialReports",
 };
 export const stockInKeys = {
-  getAll: "getAll",
+  getAll: "getStockAll",
 };
 export const dailyProductionKeys = {
-  getDay: "getDay",
+  getDay: "getDailyProductionDay",
+};
+export const finishedProductsKeys = {
+  getAll: "getAllFinishedProducts",
+  getDailyProduction: "getAllFinishedProductsDailyProduction",
 };

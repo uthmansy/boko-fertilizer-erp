@@ -7,14 +7,18 @@ import {
   Enrollment,
   Expenses,
   ExternalStocksAndPurchases,
+  FinishedProductsJoint,
   InsertDepartments,
   InsertEmployees,
   InsertEnrollment,
   InsertExpenses,
+  InsertFinishedProducts,
+  InsertPaymentAccounts,
   InsertPayrolls,
   InventoryItems,
   InventoryTransferInsert,
   InventoryTransferWithStocks,
+  PaymentAccounts,
   PayrollsAndEmployees,
   Positions,
   ProductSubmission,
@@ -482,6 +486,20 @@ export const getAllProductions = async (
   return data;
 };
 
+export const getAllFinishedProducts = async (
+  pageNumber: number = 1
+): Promise<FinishedProductsJoint[]> => {
+  const { data, error } = await supabase
+    .from("finished_products")
+    .select("*, staff:added_by(*)")
+    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+
 export const getAllPurchasePayments = async (
   pageNumber: number = 1,
   orderNumber: string // Assuming orderNumber is of type string
@@ -653,6 +671,17 @@ export const getStockRecord = async (
   return data;
 };
 
+export const getAllPaymentAccounts = async (): Promise<PaymentAccounts[]> => {
+  let query = supabase
+    .from("payment_accounts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+  return data;
+};
+
 export const verifyEmail = async (
   email: string
 ): Promise<Enrollment | null> => {
@@ -742,6 +771,14 @@ export const addDepartment = async (
   payload: InsertDepartments
 ): Promise<void> => {
   const { error } = await supabase.from("departments").insert([payload]);
+
+  if (error) throw new Error(error.message);
+};
+
+export const addPaymentAccount = async (
+  payload: InsertPaymentAccounts
+): Promise<void> => {
+  const { error } = await supabase.from("payment_accounts").insert([payload]);
 
   if (error) throw new Error(error.message);
 };
@@ -998,6 +1035,18 @@ export const deleteProduction = async (productionId: string): Promise<void> => {
   }
 };
 
+export const deleteFinishedProduct = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from("finished_products")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Failed to delete:", error);
+    throw new Error(error.message);
+  }
+};
+
 export const deleteSubmission = async (submissionId: string): Promise<void> => {
   const { error } = await supabase
     .from("product_submission")
@@ -1014,6 +1063,15 @@ export const addPurchasePayment = async (payload: Purchases): Promise<void> => {
   const { error } = await supabase
     .from("purchase_order_payments")
     .insert([payload]);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+
+export const addFinishedProduct = async (
+  payload: InsertFinishedProducts
+): Promise<void> => {
+  console.log(payload);
+  const { error } = await supabase.from("finished_products").insert([payload]);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
@@ -1134,6 +1192,34 @@ export async function getDailyProductionSummary(
 
   if (error) {
     console.error("Error fetching production summary:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function getDailyFinishedProducts(
+  date?: string | null,
+  warehouse?: string | null | undefined
+): Promise<FinishedProductsJoint[]> {
+  if (!date) {
+    console.error("Error fetching finished Products: date must be selected");
+    throw new Error("Error fetching finished Products: date must be selected");
+  }
+  let query = supabase.from("finished_products").select("*, staff:added_by(*)");
+
+  if (date) {
+    query = query.eq("date", date);
+  }
+
+  if (warehouse) {
+    query = query.eq("warehouse", warehouse);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching finished Products:", error);
     throw error;
   }
 

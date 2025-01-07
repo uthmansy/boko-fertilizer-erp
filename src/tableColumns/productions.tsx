@@ -39,12 +39,12 @@ export const productionsAdminColumns: ColumnsType<ProductionWithItems> = [
     key: "quantity_produced",
     render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
   },
-  {
-    title: "Waste",
-    dataIndex: "waste",
-    key: "waste",
-    render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
-  },
+  // {
+  //   title: "Waste",
+  //   dataIndex: "waste",
+  //   key: "waste",
+  //   render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
+  // },
   {
     title: "Raw Materials",
     key: "production_raw_materials",

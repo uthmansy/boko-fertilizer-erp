@@ -330,6 +330,64 @@ export type Database = {
           },
         ]
       }
+      finished_products: {
+        Row: {
+          added_by: string
+          created_at: string | null
+          date: string
+          id: string
+          product: string
+          quantity_produced: number
+          shift: Database["public"]["Enums"]["shifts"]
+          warehouse: string
+          waste: number | null
+        }
+        Insert: {
+          added_by: string
+          created_at?: string | null
+          date: string
+          id?: string
+          product: string
+          quantity_produced: number
+          shift: Database["public"]["Enums"]["shifts"]
+          warehouse: string
+          waste?: number | null
+        }
+        Update: {
+          added_by?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          product?: string
+          quantity_produced?: number
+          shift?: Database["public"]["Enums"]["shifts"]
+          warehouse?: string
+          waste?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finished_products_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
+          },
+          {
+            foreignKeyName: "finished_products_product_fkey"
+            columns: ["product"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "finished_products_warehouse_fkey"
+            columns: ["warehouse"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           as_collection: boolean
@@ -339,11 +397,13 @@ export type Database = {
           id: string
           image_path: string | null
           image_public_url: string | null
+          length: number | null
           name: string
           purchase_cost: number | null
           type: Database["public"]["Enums"]["inventory_item_type"]
           unit: string
           unit_price: number | null
+          width: number | null
         }
         Insert: {
           as_collection?: boolean
@@ -353,11 +413,13 @@ export type Database = {
           id?: string
           image_path?: string | null
           image_public_url?: string | null
+          length?: number | null
           name: string
           purchase_cost?: number | null
           type: Database["public"]["Enums"]["inventory_item_type"]
           unit: string
           unit_price?: number | null
+          width?: number | null
         }
         Update: {
           as_collection?: boolean
@@ -367,11 +429,13 @@ export type Database = {
           id?: string
           image_path?: string | null
           image_public_url?: string | null
+          length?: number | null
           name?: string
           purchase_cost?: number | null
           type?: Database["public"]["Enums"]["inventory_item_type"]
           unit?: string
           unit_price?: number | null
+          width?: number | null
         }
         Relationships: []
       }
@@ -482,6 +546,44 @@ export type Database = {
           {
             foreignKeyName: "monthly_item_cost_updated_by_fkey"
             columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
+          },
+        ]
+      }
+      payment_accounts: {
+        Row: {
+          account_name: string
+          account_number: string
+          added_by: string | null
+          alias: string
+          bank_name: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          added_by?: string | null
+          alias: string
+          bank_name: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          added_by?: string | null
+          alias?: string
+          bank_name?: string
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_accounts_added_by_fkey"
+            columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["username"]
@@ -974,6 +1076,7 @@ export type Database = {
           quantity_taken: number
           sequence_number: number
           type: Database["public"]["Enums"]["sales_type"]
+          vat: number
           warehouse: string | null
         }
         Insert: {
@@ -993,6 +1096,7 @@ export type Database = {
           quantity_taken?: number
           sequence_number: number
           type: Database["public"]["Enums"]["sales_type"]
+          vat?: number
           warehouse?: string | null
         }
         Update: {
@@ -1012,6 +1116,7 @@ export type Database = {
           quantity_taken?: number
           sequence_number?: number
           type?: Database["public"]["Enums"]["sales_type"]
+          vat?: number
           warehouse?: string | null
         }
         Relationships: [
@@ -1636,6 +1741,14 @@ export type Database = {
       get_total_sales_payment_balance: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      update_finished_product_stock: {
+        Args: {
+          p_warehouse: string
+          p_product: string
+          p_quantity_produced: number
+        }
+        Returns: undefined
       }
     }
     Enums: {

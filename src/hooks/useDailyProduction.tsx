@@ -1,18 +1,24 @@
 import { useQuery } from "react-query";
 import {
   dailyProductionKeys,
+  finishedProductsKeys,
   stocksKeys,
   warehousesKeys,
 } from "../constants/QUERY_KEYS";
 import { useEffect, useState } from "react";
 import {
+  getDailyFinishedProducts,
   getDailyProductionSummary,
   getStockRecord,
   getWarehouses,
 } from "../helpers/apiFunctions";
 import useAuthStore from "../store/auth";
 import { App, DescriptionsProps } from "antd";
-import { DailyProductionSummary, StocksWithDetails } from "../types/db";
+import {
+  DailyProductionSummary,
+  FinishedProductsJoint,
+  StocksWithDetails,
+} from "../types/db";
 import { FieldConfig, SelectOption } from "../types/comps";
 import { formatNumber } from "../helpers/functions";
 import dayjs, { Dayjs } from "dayjs";
@@ -21,8 +27,13 @@ import { Headers } from "react-csv/lib/core";
 interface HookReturn {
   morningShift: DailyProductionSummary[] | undefined;
   nightShift: DailyProductionSummary[] | undefined;
+  allProductsPiecesQuantityMorning: DailyProductionSummary[] | undefined;
+  allProductsPiecesQuantityNight: DailyProductionSummary[] | undefined;
+  allProductsPiecesQuantity: DailyProductionSummary[] | undefined;
   isLoading: boolean;
+  isLoadingFinishedProducts: boolean;
   isRefetching: boolean;
+  isRefetchingFinishedProducts: boolean;
   date: string | null;
   formConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
@@ -30,6 +41,11 @@ interface HookReturn {
   handleName: (value: string) => void;
   handleWarehouse: (value: string) => void;
   totalQuantityProduced: number | undefined;
+  totalQuantityProducedMorning: number | undefined;
+  totalQuantityProducedNight: number | undefined;
+  totalBaleQuantityProduced: number | undefined;
+  totalBaleQuantityProducedMorning: number | undefined;
+  totalBaleQuantityProducedNight: number | undefined;
   isLoadingSummary: boolean;
   isRefetchingSummary: boolean;
   summaryTableItems: DescriptionsProps["items"];
@@ -47,6 +63,7 @@ interface HookReturn {
   isModalOpen: boolean;
   stockRecord: StocksWithDetails[] | undefined;
   warehouses: SelectOption[];
+  finishedProducts: FinishedProductsJoint[] | undefined;
 }
 function useDailyProduction(): HookReturn {
   const { message } = App.useApp();
@@ -106,6 +123,26 @@ function useDailyProduction(): HookReturn {
       },
       onError: () => {
         message.error("Error Generating Report");
+      },
+    }
+  );
+
+  const {
+    data: finishedProducts,
+    isLoading: isLoadingFinishedProducts,
+    isRefetching: isRefetchingFinishedProducts,
+  } = useQuery(
+    [finishedProductsKeys.getDailyProduction, date, warehouseFilter],
+    {
+      queryFn: async () => {
+        const finishedProducts = await getDailyFinishedProducts(
+          date,
+          warehouse
+        );
+        return finishedProducts;
+      },
+      onError: () => {
+        message.error("Error Getting Finished Products Report");
       },
     }
   );
@@ -185,11 +222,79 @@ function useDailyProduction(): HookReturn {
       ) || []) as SelectOption[]),
   ];
 
+  const allProductsPiecesQuantity = data?.map((product) => ({
+    ...product,
+    pieces:
+      product.total_quantity_produced /
+      ((product.product_info.length || 98) / 100),
+  }));
+  const allProductsPiecesQuantityMorning = data
+    ?.filter((pr) => pr.shift === "morning")
+    .map((product) => ({
+      ...product,
+      pieces:
+        product.total_quantity_produced /
+        ((product.product_info.length || 98) / 100),
+      bales: finishedProducts
+        ?.filter(
+          (fp) =>
+            fp.product === product.product_info.name && fp.shift === "morning"
+        )
+        .reduce((sum, fp) => sum + fp.quantity_produced, 0),
+    }));
+  const allProductsPiecesQuantityNight = data
+    ?.filter((pr) => pr.shift === "night")
+    .map((product) => ({
+      ...product,
+      pieces:
+        product.total_quantity_produced /
+        ((product.product_info.length || 98) / 100),
+      bales: finishedProducts
+        ?.filter(
+          (fp) =>
+            fp.product === product.product_info.name && fp.shift === "night"
+        )
+        .reduce((sum, fp) => sum + fp.quantity_produced, 0),
+    }));
+
   const totalQuantityProduced =
-    (data?.reduce(
+    data?.reduce(
       (sum, production) => sum + production.total_quantity_produced,
       0
-    ) || 0) / 500;
+    ) || 0;
+  const totalQuantityProducedMorning =
+    data
+      ?.filter((production) => production.shift === "morning")
+      .reduce(
+        (sum, production) => sum + production.total_quantity_produced,
+        0
+      ) || 0;
+  const totalQuantityProducedNight =
+    data
+      ?.filter((production) => production.shift === "night")
+      .reduce(
+        (sum, production) => sum + production.total_quantity_produced,
+        0
+      ) || 0;
+  const totalBaleQuantityProduced =
+    finishedProducts?.reduce(
+      (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
+      0
+    ) || 0;
+  const totalBaleQuantityProducedMorning =
+    finishedProducts
+      ?.filter((fp) => fp.shift === "morning")
+      .reduce(
+        (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
+        0
+      ) || 0;
+  const totalBaleQuantityProducedNight =
+    finishedProducts
+      ?.filter((fp) => fp.shift === "night")
+      .reduce(
+        (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
+        0
+      ) || 0;
 
   const csvHeaders: Headers = [
     { label: "Product", key: "product" },
@@ -226,6 +331,17 @@ function useDailyProduction(): HookReturn {
     stockRecord,
     warehouses: warehouses || [],
     handleWarehouse,
+    totalBaleQuantityProduced,
+    totalBaleQuantityProducedMorning,
+    totalBaleQuantityProducedNight,
+    totalQuantityProducedMorning,
+    totalQuantityProducedNight,
+    isLoadingFinishedProducts,
+    isRefetchingFinishedProducts,
+    allProductsPiecesQuantity,
+    allProductsPiecesQuantityMorning,
+    allProductsPiecesQuantityNight,
+    finishedProducts,
   };
 }
 

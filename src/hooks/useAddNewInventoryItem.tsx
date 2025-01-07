@@ -89,6 +89,18 @@ function useAddNewInventoryItem(): HookReturn {
       required: true,
     },
     {
+      name: "width",
+      label: "Width",
+      type: "number",
+      required: false,
+    },
+    {
+      name: "length",
+      label: "Length",
+      type: "number",
+      required: false,
+    },
+    {
       name: "unit_price",
       label: "Price Per Item",
       type: "money",

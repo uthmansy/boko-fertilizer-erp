@@ -50,6 +50,18 @@ export const inventoryItemsAdminColumns: ColumnsType<InventoryItems> = [
     ),
   },
   {
+    title: "Dimension",
+    key: "dimension",
+    dataIndex: "width",
+    render: (_, { width, length }) => (
+      <>
+        <Tag color="geekblue">
+          {width && length ? `${width}x${length} cm` : "NA"}
+        </Tag>
+      </>
+    ),
+  },
+  {
     title: "Unit Price",
     key: "unit_price",
     dataIndex: "unit_price",

@@ -9,7 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import { VehiclesAndDestination } from "../../types/db"; // Ensure this import is correct based on your project structure
 import { COMPANY } from "../../constants/COMPANY";
-import { LOGO } from "../../assets/images";
+import { ABJ_LOGO, LOGO } from "../../assets/images";
 import { formatNumber } from "../../helpers/functions";
 
 // Define styles for the PDF document
@@ -194,14 +194,20 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Watermark Logo */}
-        <Image src={LOGO} style={styles.watermark} />
+        {!data.item.toLowerCase().startsWith("olam") && (
+          <Image src={LOGO} style={styles.watermark} />
+        )}
         <View style={styles.topWaybillNumber}>
           <Text>{data.waybill_number}</Text>
         </View>
         {/* Header Section */}
         <View style={styles.header}>
           {/* Add the logo here */}
-          <Image src={LOGO} style={styles.logo} /> {/* Update this path */}
+          <Image
+            src={data.item.toLowerCase().startsWith("olam") ? ABJ_LOGO : LOGO}
+            style={styles.logo}
+          />{" "}
+          {/* Update this path */}
           <Text
             style={{
               fontSize: 18, // Larger size for heading
@@ -209,7 +215,8 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               textTransform: "uppercase", // Uppercase for consistent styling
             }}
           >
-            {COMPANY.name} Customer Delivery Waybill
+            {!data.item.toLowerCase().startsWith("olam") && COMPANY.name}{" "}
+            Customer Delivery Waybill
           </Text>
           <Text
             style={{

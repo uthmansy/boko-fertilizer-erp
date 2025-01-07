@@ -15,6 +15,7 @@ export const SalesSchema = z.object({
     ),
   item_purchased: z.string(),
   price: z.number(),
+  vat: z.number(),
   quantity: z.number(),
   balance: z.number(),
   payment_balance: z.number(),

@@ -4,11 +4,11 @@ import { App } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import { inventoryItemsKeys } from "../constants/QUERY_KEYS"; // Update to production keys
-import { ProductionSchema } from "../zodSchemas/production"; // Update to production schema
-import { createProduction, getInventoryItems } from "../helpers/apiFunctions"; // Update to production API function
+import { addFinishedProduct, getInventoryItems } from "../helpers/apiFunctions"; // Update to production API function
 
 import useAuthStore from "../store/auth";
 import { SHIFTS } from "../constants/ENUMS";
+import { finishedProductsSchema } from "../zodSchemas/finishedProducts";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -19,7 +19,7 @@ interface HookReturn {
   isLoading: boolean;
 }
 
-function useAddNewProduction(): HookReturn {
+function useAddNewFinishedProduct(): HookReturn {
   // Update hook name
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -32,21 +32,16 @@ function useAddNewProduction(): HookReturn {
     setIsModalOpen(false);
   };
 
-  const { data: items } = useQuery({
-    queryKey: inventoryItemsKeys.getProductionRunProducts,
-    queryFn: async (): Promise<Record<"raw" | "products", SelectOption[]>> => {
+  const { data: products } = useQuery({
+    queryKey: inventoryItemsKeys.getRawAndProduct,
+    queryFn: async (): Promise<SelectOption[]> => {
       const items = await getInventoryItems();
-      return {
-        raw: items
-          .filter((item) => item.type === "raw") // Filter raw materials
-          .map((item) => ({ label: item.name, value: item.name })),
-        products: items
-          .filter((item) => item.type === "product") // Filter finished products
-          .map((item) => ({ label: item.name, value: item.name })),
-      };
+      return items
+        .filter((item) => item.type === "product") // Filter finished products
+        .map((item) => ({ label: item.name, value: item.name }));
     },
     onError: () => {
-      message.error("Failed to Load Inventory Items");
+      message.error("Failed to Load Products List");
     },
   });
 
@@ -61,7 +56,7 @@ function useAddNewProduction(): HookReturn {
       name: "product",
       label: "Product",
       type: "select",
-      options: items?.products,
+      options: products,
       required: true,
     },
     {
@@ -78,25 +73,10 @@ function useAddNewProduction(): HookReturn {
       required: true,
     },
     {
-      name: "items",
-      label: "Raw Materials Used",
-      type: "dynamic",
+      name: "waste",
+      label: "Waste",
+      type: "number",
       required: true,
-      subFields: [
-        {
-          name: "item",
-          label: "Item",
-          type: "select",
-          options: items?.raw,
-          required: true,
-        },
-        {
-          name: "quantity",
-          label: "Quantity Used",
-          type: "number",
-          required: true,
-        },
-      ],
     },
   ];
 
@@ -106,10 +86,10 @@ function useAddNewProduction(): HookReturn {
     mutationFn: async (values: any) => {
       try {
         values.date = values.date.format("YYYY-MM-DD");
-        values.produced_by = userProfile?.username;
+        values.added_by = userProfile?.username;
         values.warehouse = userProfile?.warehouse;
-        await ProductionSchema.parseAsync(values); // Validate against production schema
-        await createProduction(values); // Use production creation API function
+        await finishedProductsSchema.parseAsync(values); // Validate against production schema
+        await addFinishedProduct(values); // Use production creation API function
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
@@ -131,7 +111,7 @@ function useAddNewProduction(): HookReturn {
       }
     },
     onSuccess: () => {
-      message.success("Production added successfully");
+      message.success("Added successfully");
       handleCloseModal();
       queryClient.invalidateQueries(); // Invalidate production queries
     },
@@ -147,4 +127,4 @@ function useAddNewProduction(): HookReturn {
   };
 }
 
-export default useAddNewProduction;
+export default useAddNewFinishedProduct;

@@ -1,7 +1,8 @@
-import { HiTable } from "react-icons/hi";
+import { HiCreditCard, HiTable } from "react-icons/hi";
 import { SidebarMenuItem } from "../types/menu";
 import ROUTES from "./ROUTES";
 import {
+  HiArchiveBox,
   HiArrowUpOnSquareStack,
   HiBanknotes,
   HiBuildingOffice2,
@@ -130,6 +131,11 @@ const menuItems = {
     icon: HiClipboardDocumentList,
     path: ROUTES.productionRuns,
   },
+  finishedProducts: {
+    label: "Finished Products",
+    icon: HiArchiveBox,
+    path: ROUTES.finishedProducts,
+  },
   productSubmissions: {
     label: "Product Submissions",
     icon: HiDocumentDuplicate,
@@ -144,6 +150,11 @@ const menuItems = {
     label: "Daily Production",
     icon: HiTable,
     path: ROUTES.dailyProduction,
+  },
+  invoices: {
+    label: "Invoices",
+    icon: HiCreditCard,
+    path: ROUTES.invoices,
   },
 };
 
@@ -169,12 +180,14 @@ const {
   dispatchedTrucks,
   requests,
   productionRuns,
+  finishedProducts,
   productSubmissions,
   employees,
   // expenses,
   financialReports,
   stockIn,
   dailyProduction,
+  invoices,
 } = menuItems;
 
 export const superAdminMenuItems: SidebarMenuItem[] = [
@@ -184,6 +197,7 @@ export const superAdminMenuItems: SidebarMenuItem[] = [
   positions,
   payrolls,
   financialReports,
+  invoices,
   userManagement,
   enrollment,
   stockRecords,
@@ -201,6 +215,7 @@ export const superAdminMenuItems: SidebarMenuItem[] = [
   dispatchedTrucks,
   requests,
   productionRuns,
+  finishedProducts,
   productSubmissions,
   dailyProduction,
   employees,
@@ -213,6 +228,7 @@ export const adminMenuItems: SidebarMenuItem[] = [
   positions,
   payrolls,
   financialReports,
+  invoices,
   // userManagement,
   // enrollment,
   stockRecords,
@@ -228,6 +244,7 @@ export const adminMenuItems: SidebarMenuItem[] = [
   receivedTrucks,
   dispatchedTrucks,
   productionRuns,
+  finishedProducts,
   dailyProduction,
   employees,
 ];
@@ -237,6 +254,7 @@ export const productionMenuItems: SidebarMenuItem[] = [
   stockRecords,
   requests,
   productionRuns,
+  finishedProducts,
   productSubmissions,
   dailyProduction,
 ];
@@ -258,6 +276,7 @@ export const accountingMenuItems: SidebarMenuItem[] = [
   dashboard,
   payrolls,
   financialReports,
+  invoices,
   // expenses,
   purchases,
   sales,
@@ -278,6 +297,7 @@ export const managerMenuItems: SidebarMenuItem[] = [
   positions,
   payrolls,
   financialReports,
+  invoices,
   userManagement,
   enrollment,
   stockRecords,

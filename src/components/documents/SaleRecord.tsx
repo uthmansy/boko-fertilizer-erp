@@ -280,7 +280,9 @@ const SaleRecord: React.FC<SaleRecordProps> = ({ data, qrCodeDataUri }) => {
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Quantity:</Text>
-                <Text style={styles.value}>{data.quantity} bags</Text>
+                <Text style={styles.value}>
+                  {data.quantity} {data.item_info.unit}
+                </Text>
               </View>
             </View>
           </View>

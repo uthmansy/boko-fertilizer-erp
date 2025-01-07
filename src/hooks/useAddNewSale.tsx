@@ -132,6 +132,14 @@ function useAddNewSale(): HookReturn {
       required: true,
     },
     {
+      name: "vat",
+      label: "VAT (%)",
+      type: "number",
+      required: true,
+      suffix: "%",
+      // defaultValue: 7.5,
+    },
+    {
       name: "quantity",
       label: "Quantity",
       type: "number",

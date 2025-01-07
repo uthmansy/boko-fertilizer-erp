@@ -16,23 +16,35 @@ export const dailyProductionColumns: ColumnsType<DailyProductionSummary> = [
     width: 100,
   },
   {
-    title: "Quantity",
+    title: "Quantity (metre)",
     dataIndex: "total_quantity_produced",
     key: "total_quantity_produced",
     render: (_, record) => (
       <span>
-        {formatNumber(record.total_quantity_produced)}{" "}
-        {record.product_info.unit}
+        {formatNumber(record.total_quantity_produced)} {"metre"}
       </span>
     ),
     width: 100,
   },
   {
-    title: "Converted Quantity",
-    dataIndex: "total_quantity_produced",
-    key: "total_quantity_produced",
+    title: "Quantity (pieces)",
+    dataIndex: "pieces",
+    key: "pieces",
     render: (_, record) => (
-      <span>{formatNumber(record.total_quantity_produced / 500)} bale</span>
+      <span>
+        {record.pieces ? formatNumber(record.pieces) : "NA"} {"pieces"}
+      </span>
+    ),
+    width: 100,
+  },
+  {
+    title: "Quantity (bale)",
+    dataIndex: "bale",
+    key: "bale",
+    render: (_, record) => (
+      <span>
+        {record.bales ? formatNumber(record.bales) : "NA"} {"bale"}
+      </span>
     ),
     width: 100,
   },

@@ -29,6 +29,8 @@ import ScanWaybill from "../../components/pages/scanWaybill/index.tsx";
 import FinancialReports from "../../components/pages/financialReports/index.tsx";
 import StockIn from "../../components/pages/stockIn/index.tsx";
 import DailyProduction from "../../components/pages/dailyProduction/index.tsx";
+import Invoices from "../../components/pages/invoices/index.tsx";
+import FinishedProducts from "../../components/pages/finishedProducts/index.tsx";
 
 const { Content } = Layout;
 
@@ -125,6 +127,11 @@ function SiteContent() {
           <Route
             path={`${ROUTES.dailyProduction}/*`}
             element={<DailyProduction />}
+          />
+          <Route path={`${ROUTES.invoices}/*`} element={<Invoices />} />
+          <Route
+            path={`${ROUTES.finishedProducts}/*`}
+            element={<FinishedProducts />}
           />
         </Routes>
       </div>
