@@ -9,6 +9,7 @@ import Enroll from "./components/pages/enroll";
 import { App as AntApp, ConfigProvider, theme } from "antd";
 import useDarkMode from "./store/theme";
 import Dashboard from "./views/Dashboard";
+import useTestNumbers from "./hooks/useTestNumbers";
 
 const AppWrapper = () => {
   const { isSessionLoading, checkLoginStatus } = useAuthStore();
@@ -19,6 +20,8 @@ const AppWrapper = () => {
     };
     handleSession();
   }, []);
+
+  useTestNumbers();
 
   if (isSessionLoading) {
     return (

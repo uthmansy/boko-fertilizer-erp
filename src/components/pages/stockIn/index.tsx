@@ -21,7 +21,7 @@ function StockIn() {
             href: "",
             title: (
               <>
-                <span className="uppercase">Stock In</span>
+                <span className="uppercase">Waste Record</span>
               </>
             ),
           },

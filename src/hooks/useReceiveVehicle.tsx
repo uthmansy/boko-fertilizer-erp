@@ -60,6 +60,7 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
       label: "Quantity Received",
       type: "number",
       required: true,
+      suffix: vehicle.item_info.unit,
     },
     // {
     //   name: "shortage",

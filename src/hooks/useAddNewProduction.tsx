@@ -73,31 +73,31 @@ function useAddNewProduction(): HookReturn {
     },
     {
       name: "quantity_produced",
-      label: "Quantity Produced",
+      label: "Quantity Produced (in Metres)",
       type: "number",
       required: true,
     },
-    {
-      name: "items",
-      label: "Raw Materials Used",
-      type: "dynamic",
-      required: true,
-      subFields: [
-        {
-          name: "item",
-          label: "Item",
-          type: "select",
-          options: items?.raw,
-          required: true,
-        },
-        {
-          name: "quantity",
-          label: "Quantity Used",
-          type: "number",
-          required: true,
-        },
-      ],
-    },
+    // {
+    //   name: "items",
+    //   label: "Raw Materials Used",
+    //   type: "dynamic",
+    //   required: true,
+    //   subFields: [
+    //     {
+    //       name: "item",
+    //       label: "Item",
+    //       type: "select",
+    //       options: items?.raw,
+    //       required: true,
+    //     },
+    //     {
+    //       name: "quantity",
+    //       label: "Quantity Used",
+    //       type: "number",
+    //       required: true,
+    //     },
+    //   ],
+    // },
   ];
 
   const { userProfile } = useAuthStore();
@@ -106,6 +106,7 @@ function useAddNewProduction(): HookReturn {
     mutationFn: async (values: any) => {
       try {
         values.date = values.date.format("YYYY-MM-DD");
+        values.items = [];
         values.produced_by = userProfile?.username;
         values.warehouse = userProfile?.warehouse;
         await ProductionSchema.parseAsync(values); // Validate against production schema

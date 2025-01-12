@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   logo: {
-    width: 100,
+    width: "auto",
     height: 100,
     marginBottom: 7,
     alignSelf: "center", // Center the logo horizontally
@@ -209,7 +209,7 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               textTransform: "uppercase", // Uppercase for consistent styling
             }}
           >
-            {COMPANY.name} Delivery Waybill
+            {COMPANY.name} Transit Waybill
           </Text>
           <Text
             style={{
@@ -255,7 +255,7 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
                 <Text style={styles.value}>{data.waybill_number}</Text>
               </View>
               <View style={styles.verticalRow}>
-                <Text style={styles.label}>Sancham Number:</Text>
+                <Text style={styles.label}>Other Waybill Number:</Text>
                 <Text style={styles.value}>{data.other_waybill_number}</Text>
               </View>
               <View style={styles.verticalRow}>
@@ -292,27 +292,37 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
                 <Text style={styles.label}>Transporter:</Text>
                 <Text style={styles.value}>{data.transporter}</Text>
               </View>
+              <View style={styles.verticalRow}>
+                <Text style={styles.label}>Driver Name:</Text>
+                <Text style={styles.value}>{data.driver_name}</Text>
+              </View>
+              <View style={styles.verticalRow}>
+                <Text style={styles.label}>Driver Number:</Text>
+                <Text style={styles.value}>{data.driver_number}</Text>
+              </View>
+              <View style={styles.verticalRow}>
+                <Text style={styles.label}>Driver Signature & Date:</Text>
+                <Text style={styles.value}></Text>
+              </View>
             </View>
           </View>
           <View style={styles.verticalTable}>
             <View style={styles.verticalRow}>
               <Text style={styles.label}>Transport Fee:</Text>
+              <Text style={styles.label}>Transport Fee Paid:</Text>
+              <Text style={styles.label}>Transport Fee Balance:</Text>
+            </View>
+            <View style={styles.verticalRow}>
               <Text style={styles.value}>
                 N{data.transport_fee && formatNumber(data.transport_fee)}
               </Text>
-            </View>
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>Transport Fee Paid:</Text>
               <Text style={styles.value}>
                 N{data.paid_on_dispatch && formatNumber(data.paid_on_dispatch)}
               </Text>
-            </View>
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>Transport Fee Balance:</Text>
               <Text style={styles.value}>
                 N
-                {data.transport_fee &&
-                  data.paid_on_dispatch &&
+                {data.paid_on_dispatch &&
+                  data.transport_fee &&
                   formatNumber(data.transport_fee - data.paid_on_dispatch)}
               </Text>
             </View>

@@ -72,13 +72,20 @@ export const getAllWarehouses = async (
 };
 
 export const getAllStockPurchases = async (
-  pageNumber: number = 1
+  pageNumber: number = 1,
+  dateFilter: string | null = null,
+  orderNumberFilter: string | null = null
 ): Promise<PurchasesAndPayments[]> => {
-  const { data, error } = await supabase
+  let query = supabase
     .from("stock_purchases")
     .select("*, payments:purchase_order_payments (*), item_info:item(*)")
     .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
     .order("created_at", { ascending: false });
+
+  if (dateFilter) query = query.eq("date", dateFilter);
+  if (orderNumberFilter) query = query.eq("order_number", orderNumberFilter);
+
+  const { data, error } = await query;
 
   if (error) throw error.message;
 
@@ -384,13 +391,18 @@ export const getVehicleByWaybill = async (
 };
 
 export const getAllRequests = async (
-  pageNumber: number = 1
+  pageNumber: number = 1,
+  warehouse: string | null = null
 ): Promise<RequestWithItems[]> => {
-  const { data, error } = await supabase
+  let q = supabase
     .from("requests")
     .select("*, request_items (*)")
     .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
     .order("created_at", { ascending: false });
+
+  if (warehouse) q = q.eq("warehouse", warehouse);
+
+  const { data, error } = await q;
 
   if (error) throw error.message;
 

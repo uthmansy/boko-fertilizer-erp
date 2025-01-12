@@ -47,13 +47,13 @@ function useStockIn(): HookReturn {
       type: "date",
       required: true,
     },
-    {
-      name: "item",
-      label: "Item",
-      type: "select",
-      options: items || [],
-      required: true,
-    },
+    // {
+    //   name: "item",
+    //   label: "Item",
+    //   type: "select",
+    //   options: items || [],
+    //   required: true,
+    // },
     {
       name: "quantity",
       label: "Quantity",
@@ -73,6 +73,7 @@ function useStockIn(): HookReturn {
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
+        values.item = items?.find((item) => item.value === "waste")?.value;
         values.date = values.date.format("YYYY-MM-DD");
         values.stocked_by = userProfile?.username;
         values.warehouse = userProfile?.warehouse;

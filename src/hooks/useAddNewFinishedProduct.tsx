@@ -68,13 +68,13 @@ function useAddNewFinishedProduct(): HookReturn {
     },
     {
       name: "quantity_produced",
-      label: "Quantity Produced",
+      label: "Quantity Produced (bales)",
       type: "number",
       required: true,
     },
     {
       name: "waste",
-      label: "Waste",
+      label: "Reject (pieces)",
       type: "number",
       required: true,
     },

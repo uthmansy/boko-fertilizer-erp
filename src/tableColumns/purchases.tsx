@@ -12,6 +12,13 @@ export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
     align: "center",
   },
   {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+    width: 120,
+  },
+  {
     title: "Order Number",
     dataIndex: "order_number",
     key: "order_number",

@@ -229,29 +229,51 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
           </Text>
         </View>
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>
-          {/* Vertical Grouped Table */}
-          <View style={styles.section1}>
-            <View style={styles.verticalTable}>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Waybill Number:</Text>
-                <Text style={styles.value}>{data.waybill_number}</Text>
+          <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+            <View style={{ ...styles.section1, width: "50%" }}>
+              <View style={styles.verticalTable}>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Waybill Number:</Text>
+                  <Text style={styles.value}>{data.waybill_number}</Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Date Loaded:</Text>
+                  <Text style={styles.value}>{data.date_dispatched}</Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Item Carried:</Text>
+                  <Text style={styles.value}>{data.item}</Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Delivery Address:</Text>
+                  <Text style={styles.value}>
+                    {data.destination_address || ""}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Date Loaded:</Text>
-                <Text style={styles.value}>{data.date_dispatched}</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Item Carried:</Text>
-                <Text style={styles.value}>{data.item}</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Destination Address:</Text>
-                <Text style={styles.value}>
-                  {data.destination_address || ""}
-                </Text>
+            </View>
+            <View style={{ ...styles.section1, width: "50%" }}>
+              <View style={styles.verticalTable}>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Driver Name:</Text>
+                  <Text style={styles.value}>{data.driver_name}</Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Driver Phone:</Text>
+                  <Text style={styles.value}>{data.driver_number}</Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Driver Signature:</Text>
+                  <Text style={styles.value}></Text>
+                </View>
+                <View style={styles.verticalRow}>
+                  <Text style={styles.label}>Date:</Text>
+                  <Text style={styles.value}></Text>
+                </View>
               </View>
             </View>
           </View>
+          {/* Vertical Grouped Table */}
 
           {/* Dispatch Details Table */}
           <View>
@@ -305,12 +327,16 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
             <View style={styles.verticalRow}>
               <Text style={styles.label}>UNIT:</Text>
               <Text style={styles.value}>QUANTITY DISPATCHED</Text>
+              <Text style={styles.value}>QUANTITY RECEIVED</Text>
+              <Text style={styles.value}>SHORTAGE</Text>
             </View>
             <View style={styles.verticalRow}>
               <Text style={styles.label}>{data.item_info.unit}:</Text>
               <Text style={styles.value}>
                 {data.qty_carried} {data.item_info.unit}
               </Text>
+              <Text style={styles.value}></Text>
+              <Text style={styles.value}></Text>
             </View>
             {/* <View style={styles.verticalRow}>
               <Text style={styles.label}>MTS:</Text>
@@ -328,6 +354,16 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               <Text style={styles.officerName}>
                 {data.dispatch_officer_info.full_name}
               </Text>
+              <View style={styles.signatureStamp}>
+                <View style={styles.signatureBox}>
+                  <Text>Signature & Stamp</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.officerSection}>
+              {/* Dispatch Officer Section */}
+              <Text style={styles.officerTitle}>Receiving Officer</Text>
+              <Text style={styles.officerName}>Name:</Text>
               <View style={styles.signatureStamp}>
                 <View style={styles.signatureBox}>
                   <Text>Signature & Stamp</Text>

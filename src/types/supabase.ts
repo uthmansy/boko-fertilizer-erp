@@ -997,10 +997,13 @@ export type Database = {
           date_accepted: string | null
           date_rejected: string | null
           date_requested: string
+          date_used: string | null
           id: string
           rejected_by: string | null
           requested_by: string
           status: Database["public"]["Enums"]["request_status"]
+          used: boolean
+          used_by: string | null
           warehouse: string
         }
         Insert: {
@@ -1009,10 +1012,13 @@ export type Database = {
           date_accepted?: string | null
           date_rejected?: string | null
           date_requested: string
+          date_used?: string | null
           id?: string
           rejected_by?: string | null
           requested_by: string
           status?: Database["public"]["Enums"]["request_status"]
+          used?: boolean
+          used_by?: string | null
           warehouse: string
         }
         Update: {
@@ -1021,10 +1027,13 @@ export type Database = {
           date_accepted?: string | null
           date_rejected?: string | null
           date_requested?: string
+          date_used?: string | null
           id?: string
           rejected_by?: string | null
           requested_by?: string
           status?: Database["public"]["Enums"]["request_status"]
+          used?: boolean
+          used_by?: string | null
           warehouse?: string
         }
         Relationships: [
@@ -1045,6 +1054,13 @@ export type Database = {
           {
             foreignKeyName: "requests_requested_by_fkey"
             columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
+          },
+          {
+            foreignKeyName: "requests_used_by_fkey"
+            columns: ["used_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["username"]
@@ -1729,7 +1745,7 @@ export type Database = {
           p_warehouse?: string
         }
         Returns: {
-          product: string
+          product_info: Json
           shift: string
           total_quantity_produced: number
         }[]

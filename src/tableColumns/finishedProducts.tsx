@@ -42,10 +42,12 @@ export const finishedProductsColumns: ColumnsType<FinishedProductsJoint> = [
     render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
   },
   {
-    title: "Waste",
+    title: "Reject",
     dataIndex: "waste",
     key: "waste",
-    render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
+    render: (text) => (
+      <span className="capitalize">{formatNumber(text)} pieces</span>
+    ),
   },
   {
     title: "Action",

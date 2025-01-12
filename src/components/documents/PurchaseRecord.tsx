@@ -230,7 +230,7 @@ const PurchaseRecord: React.FC<PurchaseRecordProps> = ({
               textTransform: "uppercase", // Uppercase for consistent styling
             }}
           >
-            {COMPANY.name} Purchase Record
+            {COMPANY.name} Purchase Order
           </Text>
           <Text
             style={{

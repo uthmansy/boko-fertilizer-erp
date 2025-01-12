@@ -34,10 +34,11 @@ function VehicleForm({
             {vehicle.item}
           </Tag>
           <Tag icon={<CheckCircleOutlined />} color="success">
-            Carried: {formatNumber(vehicle.qty_carried)} BAGS
+            Carried: {formatNumber(vehicle.qty_carried)}{" "}
+            {vehicle.item_info.unit}
           </Tag>
           <Tag icon={<CloseCircleOutlined />} color="error">
-            Shortage: {formatNumber(shortage)} BAGS
+            Shortage: {formatNumber(shortage)} {vehicle.item_info.unit}
           </Tag>
         </Flex>
       </div>

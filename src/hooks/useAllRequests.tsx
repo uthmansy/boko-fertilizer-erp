@@ -7,6 +7,7 @@ import { getAllRequests } from "../helpers/apiFunctions";
 import { RequestWithItems } from "../types/db";
 import { App } from "antd";
 import { requestsKeys } from "../constants/QUERY_KEYS";
+import useAuthStore from "../store/auth";
 
 interface HookReturn {
   requests: RequestWithItems[];
@@ -21,9 +22,13 @@ interface HookReturn {
 
 function useAllRequests(): HookReturn {
   const { message } = App.useApp();
+  const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const requests = await getAllRequests(pageParam);
+    const requests = await getAllRequests(
+      pageParam,
+      userProfile?.role === "SUPER ADMIN" ? null : userProfile?.warehouse
+    );
     return requests;
   };
 

@@ -195,12 +195,12 @@ function DailyProduction() {
                 />
               </Card>
               <Card
-                title="Waste Quantity"
+                title="Reject Quantity"
                 bordered={true}
                 style={{ width: "100%" }}
               >
                 <Statistic
-                  title="Accumulated Waste in Kg"
+                  title="Accumulated Rejects in pieces"
                   value={
                     finishedProducts
                       ?.filter((fp) => fp.shift === "morning")
@@ -210,7 +210,7 @@ function DailyProduction() {
                         0
                       ) || 0
                   }
-                  suffix={<span className="text-sm uppercase">Kg</span>}
+                  suffix={<span className="text-sm uppercase">Pieces</span>}
                 />
               </Card>
             </div>
@@ -284,12 +284,12 @@ function DailyProduction() {
                 />
               </Card>
               <Card
-                title="Waste Quantity"
+                title="Reject Quantity"
                 bordered={true}
                 style={{ width: "100%" }}
               >
                 <Statistic
-                  title="Accumulated Waste in Kg"
+                  title="Accumulated Rejects in pieces"
                   value={
                     finishedProducts
                       ?.filter((fp) => fp.shift === "night")
@@ -299,7 +299,7 @@ function DailyProduction() {
                         0
                       ) || 0
                   }
-                  suffix={<span className="text-sm uppercase">Kg</span>}
+                  suffix={<span className="text-sm uppercase">Pieces</span>}
                 />
               </Card>
             </div>
@@ -373,12 +373,12 @@ function DailyProduction() {
                 />
               </Card>
               <Card
-                title="Waste Quantity"
+                title="Reject Quantity"
                 bordered={true}
                 style={{ width: "100%" }}
               >
                 <Statistic
-                  title="Accumulated Waste in Kg"
+                  title="Accumulated Rejects in pieces"
                   value={
                     finishedProducts?.reduce(
                       (sum, finishedProduct) =>
@@ -386,7 +386,7 @@ function DailyProduction() {
                       0
                     ) || 0
                   }
-                  suffix={<span className="text-sm uppercase">Kg</span>}
+                  suffix={<span className="text-sm uppercase">Pieces</span>}
                 />
               </Card>
             </div>
