@@ -13,7 +13,7 @@ function AllItems() {
       columns={inventoryItemsAdminColumns}
       dataSource={items}
       pagination={false} // Disable pagination
-      scroll={{ y: 450, x: "max-content" }}
+      scroll={{ y: 550, x: "max-content" }}
       bordered
       onScroll={(e) => {
         const target = e.target as HTMLDivElement;

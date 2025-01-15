@@ -221,7 +221,7 @@ function DailyProduction() {
             columns={dailyProductionColumns}
             dataSource={allProductsPiecesQuantityMorning}
             pagination={false} // Disable pagination
-            scroll={{ y: 450, x: "max-content" }}
+            scroll={{ y: 550, x: "max-content" }}
             bordered
           />
         </div>
@@ -310,7 +310,7 @@ function DailyProduction() {
             columns={dailyProductionColumns}
             dataSource={allProductsPiecesQuantityNight}
             pagination={false} // Disable pagination
-            scroll={{ y: 450, x: "max-content" }}
+            scroll={{ y: 550, x: "max-content" }}
             bordered
           />
         </div>

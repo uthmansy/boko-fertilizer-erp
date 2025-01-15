@@ -48,7 +48,7 @@ function Receivables() {
           columns={receivablesColumns}
           dataSource={receivables}
           pagination={false}
-          scroll={{ y: 450, x: "max-content" }}
+          scroll={{ y: 550, x: "max-content" }}
           bordered
           onScroll={(e) => {
             const target = e.target as HTMLDivElement;

@@ -41,6 +41,7 @@ export const inventoryItemsKeys = {
   getItemsNames: "getItemsNames",
   getItemRecord: "getItemRecord",
   getProductionRunProducts: "getProductionRunProducts",
+  getAllItemsAsOptions: "getAllItemsAsOptions",
 };
 export const stocksKeys = {
   getItemRecord: "getItemRecord",

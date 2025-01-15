@@ -15,59 +15,47 @@ export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
     title: "Date",
     dataIndex: "date",
     key: "date",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
-    width: 120,
+    render: (text) => <span className="capitalize">{text}</span>,
   },
   {
     title: "Order Number",
     dataIndex: "order_number",
     key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
-    width: 120,
+    render: (text) => <span className="capitalize">{text}</span>,
   },
   {
     title: "Item",
     dataIndex: "item",
     key: "item",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+    render: (text) => <span className="capitalize">{text}</span>,
   },
   {
     title: "Quantity",
     dataIndex: "quantity",
     key: "quantity",
     render: (_, record) => (
-      <span className="italic">
+      <span className="">
         {`${formatNumber(record.quantity)}`} {record.item_info.unit}
       </span>
     ),
-    width: 120,
   },
   {
     title: "Price",
     dataIndex: "price",
     key: "price",
-    render: (text) => (
-      <span className="italic text-green-700">{`₦${formatNumber(text)}`}</span>
-    ),
-    width: 120,
+    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
   },
   {
     title: "Amount Paid",
     dataIndex: "paid",
     key: "paid",
-    render: (text) => (
-      <span className="italic text-green-700">{`₦${formatNumber(text)}`}</span>
-    ),
-    width: 120,
+    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
   },
   {
     title: "Balance",
     dataIndex: "balance",
     key: "balance",
-    render: (text) => (
-      <span className="italic text-red-700">{`₦${formatNumber(text)}`}</span>
-    ),
-    width: 120,
+    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
   },
   {
     title: "Action",

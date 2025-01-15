@@ -36,7 +36,7 @@ function Ledger({ isLoading, isRefetching, reports, csvHeaders }: Props) {
           columns={financialReportsColumns} // Updated columns for financial reports
           dataSource={reports} // Updated data source for financial reports
           pagination={false} // Disable pagination
-          scroll={{ y: 450, x: "max-content" }}
+          scroll={{ y: 550, x: "max-content" }}
           bordered
         />
       </div>

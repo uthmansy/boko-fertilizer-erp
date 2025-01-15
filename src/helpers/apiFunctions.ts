@@ -63,7 +63,7 @@ export const getAllWarehouses = async (
   const { data, error } = await supabase
     .from("warehouses")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -79,7 +79,7 @@ export const getAllStockPurchases = async (
   let query = supabase
     .from("stock_purchases")
     .select("*, payments:purchase_order_payments (*), item_info:item(*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
@@ -98,7 +98,7 @@ export const getDepartments = async (
   const { data, error } = await supabase
     .from("departments")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -112,7 +112,7 @@ export const getEnrollments = async (
   const { data, error } = await supabase
     .from("user_enrollment")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -132,7 +132,7 @@ export const getExpenses = async (
 
   // Apply ordering and pagination after filtering
   query = query
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   const { data, error } = await query;
@@ -148,7 +148,7 @@ export const getSalesPayments = async (
 
   // Apply ordering and pagination after filtering
   query = query
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   const { data, error } = await query;
@@ -164,7 +164,7 @@ export const getPurchasePayments = async (
 
   // Apply ordering and pagination after filtering
   query = query
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   const { data, error } = await query;
@@ -180,7 +180,7 @@ export const getPayrolls = async (
   const { data, error } = await supabase
     .from("payrolls")
     .select("*, employeePayrolls:employee_payroll(*, employee:employee_id(*))")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -194,7 +194,7 @@ export const getPositions = async (
   const { data, error } = await supabase
     .from("positions")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -211,7 +211,7 @@ export const getAllSales = async (
   let query = supabase
     .from("sales")
     .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   // If not an admin, apply the warehouse filter if it's provided
@@ -271,7 +271,7 @@ export const getUsers = async (
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -286,7 +286,7 @@ export const getUncompletedSales = async (
     .from("sales")
     .select("*")
     .gt("balance", 0)
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -397,7 +397,7 @@ export const getAllRequests = async (
   let q = supabase
     .from("requests")
     .select("*, request_items (*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (warehouse) q = q.eq("warehouse", warehouse);
@@ -415,7 +415,7 @@ export const getEmployees = async (
   const { data, error } = await supabase
     .from("employees")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -431,7 +431,7 @@ export const getInventoryTransfers = async (
     .select(
       "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*), createdBy:created_by (*)"
     )
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -476,7 +476,7 @@ export const getAllProductSubmissions = async (
   const { data, error } = await supabase
     .from("product_submission")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -490,7 +490,7 @@ export const getAllProductions = async (
   const { data, error } = await supabase
     .from("production_runs")
     .select("*, production_raw_materials (*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -504,7 +504,7 @@ export const getAllFinishedProducts = async (
   const { data, error } = await supabase
     .from("finished_products")
     .select("*, staff:added_by(*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -520,7 +520,7 @@ export const getAllPurchasePayments = async (
     .from("purchase_order_payments")
     .select("*")
     .eq("order_number", orderNumber) // Filter by order_number
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -536,7 +536,7 @@ export const getAllSalesPayments = async (
     .from("sales_payments")
     .select("*")
     .eq("order_number", orderNumber) // Filter by order_number
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -550,7 +550,7 @@ export const getAllInventoryItems = async (
   const { data, error } = await supabase
     .from("inventory_items")
     .select("*")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -565,7 +565,7 @@ export const getSubItems = async (
     .from("sub_items")
     .select("*, item_info:item(*)")
     .eq("parent_item", parentItem)
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -579,7 +579,7 @@ export const getAllStockIns = async (
   const { data, error } = await supabase
     .from("stock_in")
     .select("*, stocked_by_info:stocked_by(*), item_info:item(*)")
-    .range((pageNumber - 1) * 10, pageNumber * 10 - 1)
+    .range((pageNumber - 1) * 100, pageNumber * 100 - 1)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;

@@ -8,6 +8,7 @@ import { RequestSchema } from "../zodSchemas/requests";
 import { createRequest, getInventoryItems } from "../helpers/apiFunctions";
 
 import useAuthStore from "../store/auth";
+import { InventoryItems } from "../types/db";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -31,12 +32,10 @@ function useAddNewRequest(): HookReturn {
   };
 
   const { data: items } = useQuery({
-    queryKey: inventoryItemsKeys.getAllItems,
-    queryFn: async (): Promise<SelectOption[]> => {
+    queryKey: inventoryItemsKeys.getAllItemsAsOptions,
+    queryFn: async (): Promise<InventoryItems[]> => {
       const items = await getInventoryItems();
-      return items
-        .filter((item) => item.type === "raw")
-        .map((item) => ({ label: item.name, value: item.name }));
+      return items;
     },
     onError: () => {
       message.error("Failed to Load Inventory Items");
@@ -60,7 +59,13 @@ function useAddNewRequest(): HookReturn {
           name: "item",
           label: "Item",
           type: "select",
-          options: items,
+          options:
+            items
+              ?.filter((item) => item.type === "raw")
+              .map((item) => ({
+                label: `${item.name} (in ${item.unit})`,
+                value: item.name,
+              })) || [],
           required: true,
         },
         {
