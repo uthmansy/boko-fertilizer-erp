@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FieldConfig, SelectOption } from "../types/comps";
+import { FieldConfig } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
