@@ -12,7 +12,7 @@ function AllAccounts() {
       columns={paymentAccountsColumns}
       dataSource={accounts}
       pagination={false} // Disable pagination
-      scroll={{ y: 550, x: "max-content" }}
+      scroll={{ y: 450, x: "max-content" }}
       bordered
     />
   );

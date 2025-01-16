@@ -21,7 +21,7 @@
 //       scroll={{ y: 600 , x:1100 }}
 //       onScroll={(e) => {
 //         const target = e.target as HTMLDivElement;
-//         if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+//         if (Math.round(target.scrollHeight - target.scrollTop) === target.clientHeight) {
 //           fetchNextPage();
 //         }
 //       }}
