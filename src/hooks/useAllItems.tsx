@@ -20,27 +20,37 @@ interface HookReturn {
   isFetchingNextPage: boolean;
   isRefetching: boolean;
   handleSearchByName: (value: any) => void;
+  handleType: (value: any) => void;
   resetFilters: (value: any) => void;
 }
 
 function useAllItems(): HookReturn {
   const { message } = App.useApp();
   const [searchByName, setSearchByName] = useState<string | null>();
+  const [searchByType, setSearchByType] = useState<string | null>();
   const queryClient = useQueryClient();
 
   const handleSearchByName = (value: any) => {
     setSearchByName(value.target.value);
   };
+  const handleType = (value: string) => {
+    setSearchByType(value);
+  };
 
   const resetFilters = () => {
     setSearchByName(null);
+    setSearchByType(null);
     queryClient.invalidateQueries(
       inventoryItemsKeys.getAllInventoryItemsPaginated
     );
   };
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const items = await getAllInventoryItems(pageParam, searchByName);
+    const items = await getAllInventoryItems(
+      pageParam,
+      searchByName,
+      searchByType
+    );
     return items;
   };
 
@@ -52,7 +62,11 @@ function useAllItems(): HookReturn {
     isFetchingNextPage,
     isRefetching,
   } = useInfiniteQuery(
-    [inventoryItemsKeys.getAllInventoryItemsPaginated, searchByName],
+    [
+      inventoryItemsKeys.getAllInventoryItemsPaginated,
+      searchByName,
+      searchByType,
+    ],
     fetchData,
     {
       getNextPageParam: (lastPage, allPages) => {
@@ -78,6 +92,7 @@ function useAllItems(): HookReturn {
     isRefetching,
     handleSearchByName,
     resetFilters,
+    handleType,
   };
 }
 

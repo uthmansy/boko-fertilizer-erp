@@ -32,10 +32,4 @@ export const payablesColumns: ColumnsType<Purchases> = [
     key: "order_number",
     render: (text) => <span className="capitalize font-semibold">{text}</span>,
   },
-  {
-    title: "Order Number",
-    dataIndex: "order_number",
-    key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
-  },
 ];

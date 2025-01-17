@@ -546,13 +546,15 @@ export const getAllSalesPayments = async (
 
 export const getAllInventoryItems = async (
   pageNumber: number = 1,
-  searchByName: string | null = null
+  searchByName: string | null = null,
+  searchByType: string | null = null
 ): Promise<InventoryItems[]> => {
   let q = supabase
     .from("inventory_items")
     .select("*")
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
+  if (searchByType) q = q.eq("type", searchByType);
   if (searchByName) q = q.ilike("name", `%${searchByName}%`);
   const { data, error } = await q;
 

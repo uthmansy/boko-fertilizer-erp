@@ -1,4 +1,4 @@
-import { Button, Input, Table } from "antd";
+import { Button, Input, Select, Table } from "antd";
 import useAllItems from "../../../hooks/useAllItems";
 import { inventoryItemsAdminColumns } from "../../../tableColumns/inventoryItems";
 
@@ -11,6 +11,7 @@ function AllItems() {
     isRefetching,
     handleSearchByName,
     resetFilters,
+    handleType,
   } = useAllItems();
 
   return (
@@ -22,6 +23,15 @@ function AllItems() {
           onPressEnter={handleSearchByName}
           placeholder="Search by Name and hit enter"
           allowClear
+        />
+        <Select
+          placeholder="Filter by Item Type"
+          className="w-56"
+          options={[
+            { label: "Raw", value: "raw" },
+            { label: "Product", value: "product" },
+          ]}
+          onSelect={handleType}
         />
       </div>
       <Table
