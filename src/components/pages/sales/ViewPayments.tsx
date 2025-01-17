@@ -49,7 +49,7 @@ function ViewSalesPayments({ orderNumber, sale }: Props) {
           onScroll={(e) => {
             const target = e.target as HTMLDivElement;
             if (
-              target.scrollHeight - target.scrollTop ===
+              Math.round(target.scrollHeight - target.scrollTop) ===
               target.clientHeight
             ) {
               fetchNextPage();

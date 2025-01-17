@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import {
   inventoryItemsKeys,
   stocksKeys,
@@ -23,15 +23,28 @@ interface HookReturn {
   handleItem: (item: string) => void;
   record: Stocks | undefined;
   isLoading: boolean;
+  handleItemSearch: (value: any) => void;
+  resetFilters: (value: any) => void;
 }
 
 function useStockRecords(): HookReturn {
   const { message } = App.useApp();
   const [warehouse, setWarehouse] = useState<string>("");
   const [item, setItem] = useState<string>("");
+  const [searchByName, setSearchByName] = useState<string | null>();
+  const queryClient = useQueryClient();
 
   const handleWarehouse = (warehouse: string) => setWarehouse(warehouse);
   const handleItem = (item: string) => setItem(item);
+
+  const handleItemSearch = (value: any) => {
+    setSearchByName(value.target.value);
+  };
+
+  const resetFilters = () => {
+    setSearchByName(null);
+    queryClient.invalidateQueries(inventoryItemsKeys.getItemsNames);
+  };
 
   const { data: warehouses } = useQuery({
     queryKey: warehousesKeys.getWarehousesNames,
@@ -45,9 +58,9 @@ function useStockRecords(): HookReturn {
   });
 
   const { data: items } = useQuery({
-    queryKey: inventoryItemsKeys.getItemsNames,
+    queryKey: [inventoryItemsKeys.getItemsNames, searchByName],
     queryFn: async (): Promise<string[]> => {
-      const items = await getItemsNames();
+      const items = await getItemsNames(searchByName);
       return items.map((item) => item.name);
     },
     onError: () => {
@@ -190,6 +203,8 @@ function useStockRecords(): HookReturn {
     handleWarehouse,
     isLoading: isLoading || isRefetching,
     record,
+    handleItemSearch,
+    resetFilters,
   };
 }
 

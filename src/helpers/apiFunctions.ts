@@ -545,13 +545,16 @@ export const getAllSalesPayments = async (
 };
 
 export const getAllInventoryItems = async (
-  pageNumber: number = 1
+  pageNumber: number = 1,
+  searchByName: string | null = null
 ): Promise<InventoryItems[]> => {
-  const { data, error } = await supabase
+  let q = supabase
     .from("inventory_items")
     .select("*")
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
+  if (searchByName) q = q.ilike("name", `%${searchByName}%`);
+  const { data, error } = await q;
 
   if (error) throw error.message;
 
@@ -642,11 +645,15 @@ export const getWarehousesNames = async (): Promise<{ name: string }[]> => {
   return data;
 };
 
-export const getItemsNames = async (): Promise<{ name: string }[]> => {
-  const { data, error } = await supabase
+export const getItemsNames = async (
+  searchByName: string | null = null
+): Promise<{ name: string }[]> => {
+  let q = supabase
     .from("inventory_items")
     .select("name")
     .order("created_at", { ascending: false });
+  if (searchByName) q = q.ilike("name", `%${searchByName}%`);
+  const { data, error } = await q;
 
   if (error) throw error.message;
 

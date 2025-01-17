@@ -1,9 +1,11 @@
 import {
   Avatar,
   Breadcrumb,
+  Button,
   Descriptions,
   Empty,
   Flex,
+  Input,
   Segmented,
   Spin,
 } from "antd";
@@ -23,6 +25,8 @@ function StockRecords() {
     handleWarehouse,
     isLoading,
     record,
+    handleItemSearch,
+    resetFilters,
   } = useStockRecords();
 
   const { userProfile } = useAuthStore();
@@ -83,26 +87,37 @@ function StockRecords() {
             </Flex>
           )}
         {items && items.length > 0 && (
-          <Flex
-            gap="small"
-            align="flex-start"
-            vertical
-            className="max-w-max overflow-x-auto"
-          >
-            <Segmented
-              size="large"
-              defaultValue={items[0]}
-              options={items.map((item) => ({
-                label: (
-                  <div style={{ padding: 4 }}>
-                    <div className="uppercase">{item}</div>
-                  </div>
-                ),
-                value: item,
-              }))}
-              onChange={(value) => handleItem(value)}
-            />
-          </Flex>
+          <>
+            <div className="mb-5 flex space-x-3">
+              <Button onClick={resetFilters}>Reset Filters</Button>
+              <Input
+                className="w-56"
+                onPressEnter={handleItemSearch}
+                placeholder="Search by Name and hit enter"
+                allowClear
+              />
+            </div>
+            <Flex
+              gap="small"
+              align="flex-start"
+              vertical
+              className="max-w-max overflow-x-auto"
+            >
+              <Segmented
+                size="large"
+                defaultValue={items[0]}
+                options={items.map((item) => ({
+                  label: (
+                    <div style={{ padding: 4 }}>
+                      <div className="uppercase">{item}</div>
+                    </div>
+                  ),
+                  value: item,
+                }))}
+                onChange={(value) => handleItem(value)}
+              />
+            </Flex>
+          </>
         )}
       </div>
       {isLoading ? (

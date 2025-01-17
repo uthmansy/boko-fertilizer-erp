@@ -41,7 +41,7 @@ function useAllRequests(): HookReturn {
     isRefetching,
   } = useInfiniteQuery(requestsKeys.getAllRequests, fetchData, {
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 10) {
+      if (lastPage.length === 50) {
         return allPages.length + 1; // Increment page number
       }
       return undefined; // No more pages to fetch

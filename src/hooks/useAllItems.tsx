@@ -2,11 +2,13 @@ import {
   FetchNextPageOptions,
   InfiniteQueryObserverResult,
   useInfiniteQuery,
+  useQueryClient,
 } from "react-query";
 import { getAllInventoryItems } from "../helpers/apiFunctions";
 import { InventoryItems } from "../types/db";
 import { App } from "antd";
 import { inventoryItemsKeys } from "../constants/QUERY_KEYS";
+import { useState } from "react";
 
 interface HookReturn {
   items: InventoryItems[];
@@ -17,13 +19,28 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
+  handleSearchByName: (value: any) => void;
+  resetFilters: (value: any) => void;
 }
 
 function useAllItems(): HookReturn {
   const { message } = App.useApp();
+  const [searchByName, setSearchByName] = useState<string | null>();
+  const queryClient = useQueryClient();
+
+  const handleSearchByName = (value: any) => {
+    setSearchByName(value.target.value);
+  };
+
+  const resetFilters = () => {
+    setSearchByName(null);
+    queryClient.invalidateQueries(
+      inventoryItemsKeys.getAllInventoryItemsPaginated
+    );
+  };
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const items = await getAllInventoryItems(pageParam);
+    const items = await getAllInventoryItems(pageParam, searchByName);
     return items;
   };
 
@@ -35,7 +52,7 @@ function useAllItems(): HookReturn {
     isFetchingNextPage,
     isRefetching,
   } = useInfiniteQuery(
-    inventoryItemsKeys.getAllInventoryItemsPaginated,
+    [inventoryItemsKeys.getAllInventoryItemsPaginated, searchByName],
     fetchData,
     {
       getNextPageParam: (lastPage, allPages) => {
@@ -59,6 +76,8 @@ function useAllItems(): HookReturn {
     hasNextPage,
     fetchNextPage,
     isRefetching,
+    handleSearchByName,
+    resetFilters,
   };
 }
 
