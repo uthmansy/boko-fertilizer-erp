@@ -11,7 +11,7 @@ import {
   getWarehousesNames,
 } from "../helpers/apiFunctions";
 import { useEffect, useState } from "react";
-import { Stocks, StocksWithDetails } from "../types/db";
+import { StocksWithDetails } from "../types/db";
 import { formatNumber } from "../helpers/functions";
 import useAuthStore from "../store/auth";
 
@@ -21,7 +21,7 @@ interface HookReturn {
   tableItems: DescriptionsProps["items"];
   handleWarehouse: (warehouse: string) => void;
   handleItem: (item: string) => void;
-  record: Stocks | undefined;
+  record: StocksWithDetails | undefined;
   isLoading: boolean;
   handleItemSearch: (value: any) => void;
   resetFilters: (value: any) => void;

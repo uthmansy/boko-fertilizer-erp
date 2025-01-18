@@ -184,7 +184,6 @@ export const getPayrolls = async (
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
-  console.log(data);
   return data;
 };
 
@@ -737,7 +736,6 @@ export const getItemExternalRecord = async (
     .eq("stock_purchases.item", item);
 
   if (error) throw error.message;
-  console.log(data);
   return data;
 };
 
@@ -939,7 +937,6 @@ export const approveRequest = async (
 export const restrictUser = async (
   payload: UpdateUserProfile
 ): Promise<void> => {
-  console.log(payload);
   const { error } = await supabase
     .from("profiles")
     .update(payload)
@@ -1091,7 +1088,6 @@ export const addPurchasePayment = async (payload: Purchases): Promise<void> => {
 export const addFinishedProduct = async (
   payload: InsertFinishedProducts
 ): Promise<void> => {
-  console.log(payload);
   const { error } = await supabase.from("finished_products").insert([payload]);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
@@ -1165,7 +1161,6 @@ export const getMonthlyFinancialReprots = async (): Promise<
     console.error(error);
     throw new Error("Error fetching financial report");
   }
-  console.log(data);
 
   return data as FinancialReport[]; // Type assertion to FinancialReport array
 };

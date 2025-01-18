@@ -143,7 +143,7 @@ function DailyProduction() {
               darkMode ? "bg-black" : "bg-gray-200"
             }`}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid lg:grid-cols-2 gap-3">
               <Card
                 title="Bale Quantity"
                 bordered={true}
@@ -232,7 +232,7 @@ function DailyProduction() {
               darkMode ? "bg-black" : "bg-gray-200"
             }`}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid lg:grid-cols-2 gap-3">
               <Card
                 title="Bale Quantity"
                 bordered={true}
@@ -321,7 +321,7 @@ function DailyProduction() {
               darkMode ? "bg-black" : "bg-gray-200"
             }`}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid lg:grid-cols-2 gap-3">
               <Card
                 title="Bale Quantity"
                 bordered={true}

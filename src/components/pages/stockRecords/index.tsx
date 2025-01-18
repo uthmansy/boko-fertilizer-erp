@@ -2,12 +2,12 @@ import {
   Avatar,
   Breadcrumb,
   Button,
-  Descriptions,
   Empty,
   Flex,
   Input,
   Segmented,
   Spin,
+  Tabs,
 } from "antd";
 import { CiLocationOn } from "react-icons/ci";
 import useStockRecords from "../../../hooks/useStockRecords";
@@ -15,12 +15,14 @@ import RefreshButton from "../../RefreshButton";
 import { stocksKeys } from "../../../constants/QUERY_KEYS";
 import useAuthStore from "../../../store/auth";
 import { HomeOutlined } from "@ant-design/icons";
+import ProductionRecords from "./ProductionRecords";
+import InventoryRecords from "./InventoryRecords";
+import OverallRecords from "./OverallRecords";
 
 function StockRecords() {
   const {
     items,
     warehouses,
-    tableItems,
     handleItem,
     handleWarehouse,
     isLoading,
@@ -50,8 +52,15 @@ function StockRecords() {
           },
         ]}
       />
-      <div className="mb-2">
+      <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={stocksKeys.getItemRecord} />
+        <Button onClick={resetFilters}>Reset Filters</Button>
+        <Input
+          className="w-56"
+          onPressEnter={handleItemSearch}
+          placeholder="Search by Name and hit enter"
+          allowClear
+        />
       </div>
       <div className="mb-10">
         {warehouses &&
@@ -88,15 +97,6 @@ function StockRecords() {
           )}
         {items && items.length > 0 && (
           <>
-            <div className="mb-5 flex space-x-3">
-              <Button onClick={resetFilters}>Reset Filters</Button>
-              <Input
-                className="w-56"
-                onPressEnter={handleItemSearch}
-                placeholder="Search by Name and hit enter"
-                allowClear
-              />
-            </div>
             <Flex
               gap="small"
               align="flex-start"
@@ -125,14 +125,35 @@ function StockRecords() {
           <Spin />
         </div>
       ) : record ? (
-        <Descriptions
-          title={`Stock Record for ${record.item} in ${record.warehouse}`}
-          layout="horizontal"
-          bordered
-          items={tableItems}
-          column={1}
+        <Tabs
+          defaultActiveKey="overall"
+          tabPosition="top"
+          items={[
+            {
+              label: `OVERALL`,
+              key: "overall",
+              children: <OverallRecords record={record} />,
+            },
+            {
+              label: `INVENTORY`,
+              key: "inventory",
+              children: <InventoryRecords record={record} />,
+            },
+            {
+              label: `PRODUCTION`,
+              key: "production",
+              children: <ProductionRecords record={record} />,
+            },
+          ]}
         />
       ) : (
+        // <Descriptions
+        //   title={`Stock Record for ${record.item} in ${record.warehouse}`}
+        //   layout="horizontal"
+        //   bordered
+        //   items={tableItems}
+        //   column={1}
+        // />
         <Empty />
       )}
     </>
