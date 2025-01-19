@@ -39,6 +39,7 @@ export const inventoryItemsKeys = {
   getRawAndProduct: "getRawAndProduct",
   getAllInventoryItemsPaginated: "getAllInventoryItemsPaginated",
   getItemsNames: "getItemsNames",
+  getItemsNamesExternal: "getItemsNamesExternal",
   getItemRecord: "getItemRecord",
   getProductionRunProducts: "getProductionRunProducts",
   getAllItemsAsOptions: "getAllItemsAsOptions",
@@ -51,6 +52,7 @@ export const stocksKeys = {
 };
 export const externalStocksKeys = {
   getItemExternalRecord: "getItemExternalRecord",
+  getExternalStockRecords: "getExternalStockRecords",
 };
 export const purchasesKeys = {
   getAllPurchases: "getAllPurchases",

@@ -1,8 +1,10 @@
 import {
   Breadcrumb,
+  Button,
   Descriptions,
   Empty,
   Flex,
+  Input,
   Segmented,
   Space,
   Spin,
@@ -10,10 +12,19 @@ import {
 import useExternalStockRecords from "../../../hooks/useExternalStockRecords";
 import { useMediaQuery } from "react-responsive";
 import { HomeOutlined } from "@ant-design/icons";
+import RefreshButton from "../../RefreshButton";
+import { externalStocksKeys } from "../../../constants/QUERY_KEYS";
 
 function ExternalStockRecords() {
-  const { items, tableItems, handleItem, isLoading, records } =
-    useExternalStockRecords();
+  const {
+    items,
+    tableItems,
+    handleItem,
+    isLoading,
+    records,
+    handleItemSearch,
+    resetFilters,
+  } = useExternalStockRecords();
   const isMobile = useMediaQuery({ maxWidth: 1024 });
 
   return (
@@ -35,6 +46,16 @@ function ExternalStockRecords() {
           },
         ]}
       />
+      <div className="mb-5 flex space-x-3">
+        <RefreshButton queryKey={externalStocksKeys.getExternalStockRecords} />
+        <Button onClick={resetFilters}>Reset Filters</Button>
+        <Input
+          className="w-56"
+          onPressEnter={handleItemSearch}
+          placeholder="Search by Name and hit enter"
+          allowClear
+        />
+      </div>
       <div className="mb-10">
         <Flex
           gap="small"

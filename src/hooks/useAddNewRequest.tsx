@@ -8,7 +8,7 @@ import { RequestSchema } from "../zodSchemas/requests";
 import { createRequest, getInventoryItems } from "../helpers/apiFunctions";
 
 import useAuthStore from "../store/auth";
-import { InventoryItems } from "../types/db";
+import { InventoryItems, Shifts } from "../types/db";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -42,11 +42,20 @@ function useAddNewRequest(): HookReturn {
     },
   });
 
+  const shifts: Shifts[] = ["morning", "night"];
+
   const formConfig: FieldConfig[] = [
     {
       name: "date_requested",
       label: "Date",
       type: "date",
+      required: true,
+    },
+    {
+      name: "shift",
+      label: "Shift",
+      type: "select",
+      options: shifts.map((shift) => ({ label: shift, value: shift })),
       required: true,
     },
     {

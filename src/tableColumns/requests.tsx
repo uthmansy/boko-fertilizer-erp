@@ -18,6 +18,12 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
     width: 120,
   },
   {
+    title: "Shift",
+    dataIndex: "shift",
+    key: "shift",
+    render: (text) => <span className="capitalize">{text}</span>,
+  },
+  {
     title: "Status",
     dataIndex: "status",
     key: "status",

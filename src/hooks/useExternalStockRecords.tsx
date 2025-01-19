@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import {
   inventoryItemsKeys,
   externalStocksKeys,
@@ -19,18 +19,31 @@ interface HookReturn {
   handleItem: (item: string) => void;
   records: ExternalStocksAndPurchases[] | undefined;
   isLoading: boolean;
+  handleItemSearch: (value: any) => void;
+  resetFilters: (value: any) => void;
 }
 
 function useExternalStockRecordss(): HookReturn {
   const { message } = App.useApp();
   const [item, setItem] = useState("");
+  const [searchByName, setSearchByName] = useState<string | null>();
+  const queryClient = useQueryClient();
 
   const handleItem = (item: string) => setItem(item);
 
+  const handleItemSearch = (value: any) => {
+    setSearchByName(value.target.value);
+  };
+
+  const resetFilters = () => {
+    setSearchByName(null);
+    queryClient.invalidateQueries(inventoryItemsKeys.getItemsNamesExternal);
+  };
+
   const { data: items } = useQuery({
-    queryKey: inventoryItemsKeys.getItemsNames,
+    queryKey: [inventoryItemsKeys.getItemsNamesExternal, searchByName],
     queryFn: async (): Promise<string[]> => {
-      const items = await getItemsNames();
+      const items = await getItemsNames(searchByName);
       return items.map((item) => item.name);
     },
     onError: () => {
@@ -117,6 +130,8 @@ function useExternalStockRecordss(): HookReturn {
     handleItem,
     isLoading,
     records,
+    handleItemSearch,
+    resetFilters,
   };
 }
 
