@@ -16,7 +16,12 @@ export const productSubmissionsAdminColumns: ColumnsType<ProductSubmissionWithDe
       dataIndex: "date_submitted",
       key: "date_submitted",
       render: (text) => <span className="capitalize">{text}</span>,
-      width: 120,
+    },
+    {
+      title: "Shift",
+      dataIndex: "shift",
+      key: "shift",
+      render: (text) => <span className="capitalize">{text}</span>,
     },
     {
       title: "Product",

@@ -11,3 +11,13 @@ export type FinancialReport = {
   total_item_cost: number;
   total_payroll: number;
 };
+
+export interface ApiFilterOptions {
+  pageParam: number;
+  dateFilter?: string | null;
+  debouncedSearchTerm?: string | null;
+  itemFilter?: string | null;
+  warehouseFilter?: string | null;
+  shiftFilter?: string | null;
+  expenseCategoryFilter?: string | null;
+}

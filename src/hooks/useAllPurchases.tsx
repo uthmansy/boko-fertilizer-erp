@@ -7,8 +7,6 @@ import { getAllStockPurchases } from "../helpers/apiFunctions";
 import { PurchasesAndPayments } from "../types/db";
 import { App } from "antd";
 import { purchasesKeys } from "../constants/QUERY_KEYS";
-import { useState } from "react";
-import dayjs from "dayjs";
 
 interface HookReturn {
   purchases: PurchasesAndPayments[];
@@ -19,36 +17,29 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
-  handleDateFilter: (value: any) => void;
-  handleOrderNumberFilter: (value: any) => void;
-  resetFilters: () => void;
 }
 
-function useAllPurchases(): HookReturn {
+interface Props {
+  debouncedSearchTerm: string;
+  dateFilter: string | null;
+  itemFilter: string | null;
+}
+
+function useAllPurchases({
+  dateFilter,
+  debouncedSearchTerm,
+  itemFilter,
+}: Props): HookReturn {
   const { message } = App.useApp();
 
-  const [dateFilter, setDateFilter] = useState<string | null>();
-  const [orderNumberFilter, setOrderNumberFilter] = useState<string | null>();
-
   const fetchData = async ({ pageParam = 1 }) => {
-    const purchases = await getAllStockPurchases(
+    const purchases = await getAllStockPurchases({
       pageParam,
       dateFilter,
-      orderNumberFilter
-    );
+      debouncedSearchTerm,
+      itemFilter,
+    });
     return purchases;
-  };
-
-  const handleDateFilter = (value: dayjs.Dayjs) => {
-    setDateFilter(value.format("YYYY-MM-DD"));
-  };
-  const handleOrderNumberFilter = (value: any) => {
-    setOrderNumberFilter(value.target.value);
-  };
-
-  const resetFilters = () => {
-    setDateFilter(null);
-    setOrderNumberFilter(null);
   };
 
   const {
@@ -59,7 +50,12 @@ function useAllPurchases(): HookReturn {
     isFetchingNextPage,
     isRefetching,
   } = useInfiniteQuery(
-    [purchasesKeys.getAllPurchases, dateFilter, orderNumberFilter],
+    [
+      purchasesKeys.getAllPurchases,
+      dateFilter,
+      debouncedSearchTerm,
+      itemFilter,
+    ],
     fetchData,
     {
       getNextPageParam: (lastPage, allPages) => {
@@ -83,9 +79,6 @@ function useAllPurchases(): HookReturn {
     hasNextPage,
     fetchNextPage,
     isRefetching,
-    handleDateFilter,
-    handleOrderNumberFilter,
-    resetFilters,
   };
 }
 

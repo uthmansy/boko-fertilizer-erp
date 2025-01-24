@@ -7,6 +7,7 @@ import { getAllProductions } from "../helpers/apiFunctions"; // Update to the AP
 import { ProductionWithItems } from "../types/db"; // Update type to reflect production data
 import { App } from "antd";
 import { productionsKeys } from "../constants/QUERY_KEYS"; // Update query keys to productions
+import useAuthStore from "../store/auth";
 
 interface HookReturn {
   productions: ProductionWithItems[]; // Update type here
@@ -19,11 +20,31 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllProductions(): HookReturn {
+interface Props {
+  dateFilter: string | null;
+  itemFilter: string | null;
+  warehouseFilter: string | null;
+  shiftFilter: string | null;
+}
+
+function useAllProductions({
+  dateFilter,
+  itemFilter,
+  warehouseFilter,
+  shiftFilter,
+}: Props): HookReturn {
   const { message } = App.useApp();
+  const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const productions = await getAllProductions(pageParam); // Fetch production data
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const productions = await getAllProductions({
+      pageParam,
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      itemFilter,
+      dateFilter,
+      shiftFilter,
+    }); // Fetch production data
     return productions;
   };
 
@@ -34,18 +55,28 @@ function useAllProductions(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(productionsKeys.getAllProductions, fetchData, {
-    // Use productions keys
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [
+      productionsKeys.getAllProductions,
+      dateFilter,
+      itemFilter,
+      warehouseFilter,
+      shiftFilter,
+    ],
+    fetchData,
+    {
+      // Use productions keys
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const productions = data?.pages.flatMap((page) => page);
 

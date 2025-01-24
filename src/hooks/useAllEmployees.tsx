@@ -19,11 +19,18 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllEmployees(): HookReturn {
+interface Props {
+  debouncedSearchTerm: string;
+}
+
+function useAllEmployees({ debouncedSearchTerm }: Props): HookReturn {
   const { message } = App.useApp();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const employees = await getEmployees(pageParam);
+    const employees = await getEmployees({
+      pageParam,
+      debouncedSearchTerm,
+    });
     return employees;
   };
 
@@ -34,17 +41,21 @@ function useAllEmployees(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(employeesKeys.getAllEmployees, fetchData, {
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [employeesKeys.getAllEmployees, debouncedSearchTerm],
+    fetchData,
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const employees = data?.pages.flatMap((page) => page);
 

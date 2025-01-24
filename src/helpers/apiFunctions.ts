@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { FinancialReport } from "../types/api";
+import { ApiFilterOptions, FinancialReport } from "../types/api";
 import {
   DailyProductionSummary,
   Departments,
@@ -21,7 +21,7 @@ import {
   PaymentAccounts,
   PayrollsAndEmployees,
   Positions,
-  ProductSubmission,
+  ProductSubmissionWithDetails,
   ProductionWithItems,
   PurchasePayments,
   Purchases,
@@ -74,19 +74,22 @@ export const getAllWarehouses = async (
   return data;
 };
 
-export const getAllStockPurchases = async (
-  pageNumber: number = 1,
-  dateFilter: string | null = null,
-  orderNumberFilter: string | null = null
-): Promise<PurchasesAndPayments[]> => {
+export const getAllStockPurchases = async ({
+  pageParam,
+  dateFilter,
+  debouncedSearchTerm,
+  itemFilter,
+}: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
     .select("*, payments:purchase_order_payments (*), item_info:item(*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
-  if (orderNumberFilter) query = query.eq("order_number", orderNumberFilter);
+  if (itemFilter) query = query.eq("item", itemFilter);
+  if (debouncedSearchTerm)
+    query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
 
   const { data, error } = await query;
 
@@ -205,20 +208,27 @@ export const getPositions = async (
 };
 
 export const getAllSales = async (
-  pageNumber: number = 1,
-  isAdmin: boolean,
-  warehouse?: string | null,
+  {
+    pageParam,
+    dateFilter,
+    debouncedSearchTerm,
+    itemFilter,
+    warehouseFilter,
+  }: ApiFilterOptions,
   receivables?: boolean
 ): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
     .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
-  // If not an admin, apply the warehouse filter if it's provided
-  if (!isAdmin && warehouse) {
-    query = query.eq("warehouse", warehouse);
+  if (dateFilter) query = query.eq("date", dateFilter);
+  if (itemFilter) query = query.eq("item_purchased", itemFilter);
+  if (debouncedSearchTerm)
+    query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
+  if (warehouseFilter) {
+    query = query.eq("warehouse", warehouseFilter);
   }
 
   if (receivables) {
@@ -392,18 +402,23 @@ export const getVehicleByWaybill = async (
   return data;
 };
 
-export const getAllRequests = async (
-  pageNumber: number = 1,
-  warehouse: string | null = null
-): Promise<RequestWithItems[]> => {
+export const getAllRequests = async ({
+  pageParam,
+  dateFilter,
+  warehouseFilter,
+  shiftFilter,
+}: ApiFilterOptions): Promise<RequestWithItems[]> => {
   let q = supabase
     .from("requests")
     .select("*, request_items (*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
-  if (warehouse) q = q.eq("warehouse", warehouse);
-
+  if (dateFilter) q = q.eq("date_requested", dateFilter);
+  if (shiftFilter) q = q.eq("shift", shiftFilter);
+  if (warehouseFilter) {
+    q = q.eq("warehouse", warehouseFilter);
+  }
   const { data, error } = await q;
 
   if (error) throw error.message;
@@ -411,14 +426,22 @@ export const getAllRequests = async (
   return data;
 };
 
-export const getEmployees = async (
-  pageNumber: number = 1
-): Promise<Employees[]> => {
-  const { data, error } = await supabase
+export const getEmployees = async ({
+  pageParam,
+  debouncedSearchTerm,
+}: ApiFilterOptions): Promise<Employees[]> => {
+  let q = supabase
     .from("employees")
     .select("*")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
+
+  if (debouncedSearchTerm) {
+    q = q.or(
+      `first_name.ilike.%${debouncedSearchTerm}%,last_name.ilike.%${debouncedSearchTerm}%`
+    );
+  }
+  const { data, error } = await q;
 
   if (error) throw error.message;
 
@@ -472,42 +495,76 @@ export const getUncompletedInventoryTransfers = async (): Promise<
   return data;
 };
 
-export const getAllProductSubmissions = async (
-  pageNumber: number = 1
-): Promise<ProductSubmission[]> => {
-  const { data, error } = await supabase
+export const getAllProductSubmissions = async ({
+  pageParam,
+  dateFilter,
+  itemFilter,
+  warehouseFilter,
+  shiftFilter,
+}: ApiFilterOptions): Promise<ProductSubmissionWithDetails[]> => {
+  let q = supabase
     .from("product_submission")
     .select("*, product_info:product(*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
+  if (dateFilter) q = q.eq("date_submitted", dateFilter);
+  if (itemFilter) q = q.eq("product", itemFilter);
+  if (shiftFilter) q = q.eq("shift", shiftFilter);
+  if (warehouseFilter) {
+    q = q.eq("warehouse", warehouseFilter);
+  }
+  const { data, error } = await q;
 
   if (error) throw error.message;
 
   return data;
 };
 
-export const getAllProductions = async (
-  pageNumber: number = 1
-): Promise<ProductionWithItems[]> => {
-  const { data, error } = await supabase
+export const getAllProductions = async ({
+  pageParam,
+  dateFilter,
+  itemFilter,
+  warehouseFilter,
+  shiftFilter,
+}: ApiFilterOptions): Promise<ProductionWithItems[]> => {
+  let q = supabase
     .from("production_runs")
     .select("*, production_raw_materials (*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
+
+  if (dateFilter) q = q.eq("date", dateFilter);
+  if (itemFilter) q = q.eq("product", itemFilter);
+  if (shiftFilter) q = q.eq("shift", shiftFilter);
+  if (warehouseFilter) {
+    q = q.eq("warehouse", warehouseFilter);
+  }
+  const { data, error } = await q;
 
   if (error) throw error.message;
 
   return data;
 };
 
-export const getAllFinishedProducts = async (
-  pageNumber: number = 1
-): Promise<FinishedProductsJoint[]> => {
-  const { data, error } = await supabase
+export const getAllFinishedProducts = async ({
+  pageParam,
+  dateFilter,
+  itemFilter,
+  warehouseFilter,
+  shiftFilter,
+}: ApiFilterOptions): Promise<FinishedProductsJoint[]> => {
+  let q = supabase
     .from("finished_products")
     .select("*, staff:added_by(*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
+  if (dateFilter) q = q.eq("date", dateFilter);
+  if (itemFilter) q = q.eq("product", itemFilter);
+  if (shiftFilter) q = q.eq("shift", shiftFilter);
+  if (warehouseFilter) {
+    q = q.eq("warehouse", warehouseFilter);
+  }
+  const { data, error } = await q;
 
   if (error) throw error.message;
 
@@ -580,14 +637,22 @@ export const getSubItems = async (
   return data;
 };
 
-export const getAllStockIns = async (
-  pageNumber: number = 1
-): Promise<StockInWithDetails[]> => {
-  const { data, error } = await supabase
+export const getAllStockIns = async ({
+  pageParam,
+  dateFilter,
+  warehouseFilter,
+}: ApiFilterOptions): Promise<StockInWithDetails[]> => {
+  let q = supabase
     .from("stock_in")
     .select("*, stocked_by_info:stocked_by(*), item_info:item(*)")
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
+
+  if (dateFilter) q = q.eq("date", dateFilter);
+  if (warehouseFilter) {
+    q = q.eq("warehouse", warehouseFilter);
+  }
+  const { data, error } = await q;
 
   if (error) throw error.message;
 

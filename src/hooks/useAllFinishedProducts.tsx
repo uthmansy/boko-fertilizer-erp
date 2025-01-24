@@ -7,6 +7,7 @@ import { getAllFinishedProducts } from "../helpers/apiFunctions"; // Update to t
 import { FinishedProductsJoint } from "../types/db"; // Update type to reflect production data
 import { App } from "antd";
 import { finishedProductsKeys } from "../constants/QUERY_KEYS"; // Update query keys to finishedProducts
+import useAuthStore from "../store/auth";
 
 interface HookReturn {
   finishedProducts: FinishedProductsJoint[]; // Update type here
@@ -19,11 +20,31 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllFinishedProducts(): HookReturn {
+interface Props {
+  dateFilter: string | null;
+  itemFilter: string | null;
+  warehouseFilter: string | null;
+  shiftFilter: string | null;
+}
+
+function useAllFinishedProducts({
+  dateFilter,
+  itemFilter,
+  warehouseFilter,
+  shiftFilter,
+}: Props): HookReturn {
   const { message } = App.useApp();
+  const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const finishedProducts = await getAllFinishedProducts(pageParam); // Fetch production data
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const finishedProducts = await getAllFinishedProducts({
+      pageParam,
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      itemFilter,
+      dateFilter,
+      shiftFilter,
+    }); // Fetch production data
     return finishedProducts;
   };
 
@@ -34,18 +55,28 @@ function useAllFinishedProducts(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(finishedProductsKeys.getAll, fetchData, {
-    // Use finishedProducts keys
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [
+      finishedProductsKeys.getAll,
+      dateFilter,
+      itemFilter,
+      warehouseFilter,
+      shiftFilter,
+    ],
+    fetchData,
+    {
+      // Use finishedProducts keys
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const finishedProducts = data?.pages.flatMap((page) => page);
 

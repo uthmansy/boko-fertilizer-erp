@@ -7,6 +7,7 @@ import { getAllStockIns } from "../helpers/apiFunctions";
 import { StockInWithDetails } from "../types/db";
 import { App } from "antd";
 import { stockInKeys } from "../constants/QUERY_KEYS";
+import useAuthStore from "../store/auth";
 
 interface HookReturn {
   stockIns: StockInWithDetails[];
@@ -19,11 +20,22 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllStockIns(): HookReturn {
+interface Props {
+  dateFilter: string | null;
+  warehouseFilter: string | null;
+}
+
+function useAllStockIns({ dateFilter, warehouseFilter }: Props): HookReturn {
   const { message } = App.useApp();
+  const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const items = await getAllStockIns(pageParam);
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const items = await getAllStockIns({
+      pageParam,
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      dateFilter,
+    });
     return items;
   };
 
@@ -34,17 +46,21 @@ function useAllStockIns(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(stockInKeys.getAll, fetchData, {
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [stockInKeys.getAll, dateFilter, warehouseFilter],
+    fetchData,
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const stockIns = data?.pages?.flatMap((page) => page);
 

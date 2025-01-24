@@ -20,15 +20,28 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllRequests(): HookReturn {
+interface Props {
+  dateFilter: string | null;
+  warehouseFilter: string | null;
+  shiftFilter: string | null;
+}
+
+function useAllRequests({
+  dateFilter,
+  warehouseFilter,
+  shiftFilter,
+}: Props): HookReturn {
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const requests = await getAllRequests(
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const requests = await getAllRequests({
       pageParam,
-      userProfile?.role === "SUPER ADMIN" ? null : userProfile?.warehouse
-    );
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      dateFilter,
+      shiftFilter,
+    });
     return requests;
   };
 
@@ -39,17 +52,21 @@ function useAllRequests(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(requestsKeys.getAllRequests, fetchData, {
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [requestsKeys.getAllRequests, dateFilter, warehouseFilter, shiftFilter],
+    fetchData,
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const requests = data?.pages.flatMap((page) => page);
 

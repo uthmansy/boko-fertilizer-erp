@@ -1,35 +1,44 @@
-import { Button, DatePicker, Input, Table } from "antd";
+import { Table } from "antd";
 import useAllPurchases from "../../../hooks/useAllPurchases";
 import { purchasesAdminColumns } from "../../../tableColumns/purchases";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 function AllPurchases() {
+  const {
+    debouncedSearchTerm,
+    searchTerm,
+    dateFilter,
+    handleSearchChange,
+    handleDateChange,
+    itemOptions,
+    handleItemChange,
+    resetFilters,
+    itemFilter,
+  } = useFilters();
   const {
     isLoading,
     purchases,
     fetchNextPage,
     isFetchingNextPage,
     isRefetching,
-    handleDateFilter,
-    handleOrderNumberFilter,
-    resetFilters,
-  } = useAllPurchases();
+  } = useAllPurchases({
+    debouncedSearchTerm,
+    dateFilter,
+    itemFilter,
+  });
 
   return (
     <>
-      <div className="mb-5 flex space-x-3">
-        <Button className="uppercase" onClick={resetFilters}>
-          Reset All Filters
-        </Button>
-        <DatePicker
-          className="w-56"
-          onChange={(date) => handleDateFilter(date)}
-        />
-        <Input
-          className="w-56"
-          onPressEnter={handleOrderNumberFilter}
-          placeholder="Order Number"
-        />
-      </div>
+      <Filters
+        onSearchChange={handleSearchChange}
+        searchTerm={searchTerm}
+        onDateChange={handleDateChange}
+        itemFilter={itemFilter}
+        itemOptions={itemOptions}
+        onItemChange={handleItemChange}
+        onReset={resetFilters}
+      />
       <Table
         size="small"
         loading={isLoading || isFetchingNextPage || isRefetching}

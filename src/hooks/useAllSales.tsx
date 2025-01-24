@@ -20,15 +20,32 @@ interface HookReturn {
   isRefetching: boolean;
 }
 
-function useAllSales(): HookReturn {
+interface Props {
+  debouncedSearchTerm: string;
+  dateFilter: string | null;
+  itemFilter: string | null;
+  warehouseFilter: string | null;
+}
+
+function useAllSales({
+  dateFilter,
+  debouncedSearchTerm,
+  itemFilter,
+  warehouseFilter,
+}: Props): HookReturn {
   // Updated hook name
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    let isAdmin: boolean =
-      userProfile?.role === "SUPER ADMIN" || userProfile?.role === "ADMIN";
-    const sales = await getAllSales(pageParam, isAdmin, userProfile?.warehouse); // Update to sales API function
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const sales = await getAllSales({
+      pageParam,
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      itemFilter,
+      debouncedSearchTerm,
+      dateFilter,
+    }); // Update to sales API function
     return sales;
   };
 
@@ -39,18 +56,28 @@ function useAllSales(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery(salesKeys.getAllSales, fetchData, {
-    // Update to sales query keys
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [
+      salesKeys.getAllSales,
+      dateFilter,
+      debouncedSearchTerm,
+      itemFilter,
+      warehouseFilter,
+    ],
+    fetchData,
+    {
+      // Update to sales query keys
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   const sales = data?.pages.flatMap((page) => page);
 

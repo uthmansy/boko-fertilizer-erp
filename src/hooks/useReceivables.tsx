@@ -29,14 +29,11 @@ function useReceivables(): HookReturn {
   const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    let isAdmin: boolean =
-      userProfile?.role === "SUPER ADMIN" || userProfile?.role === "ADMIN";
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
     const receivables = await getAllSales(
-      pageParam,
-      isAdmin || userProfile?.role === "ACCOUNTING",
-      userProfile?.warehouse,
+      { pageParam, warehouseFilter: isAdmin ? null : userProfile?.warehouse },
       true
-    ); // Updated function call
+    );
     return receivables;
   };
 
