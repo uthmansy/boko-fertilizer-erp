@@ -1,8 +1,9 @@
-import { Button, Modal } from "antd";
+import { Button, Form, Modal } from "antd";
 import useAddNewProduction from "../../../hooks/useAddNewProduction";
 import FormBuilder from "../../utils/FormBuilder";
 
 function AddNew() {
+  const [form] = Form.useForm();
   const {
     handleCloseModal,
     handleOpenModal,
@@ -10,7 +11,7 @@ function AddNew() {
     formConfig,
     handleSubmit,
     isLoading,
-  } = useAddNewProduction();
+  } = useAddNewProduction(form);
 
   return (
     <>
@@ -24,6 +25,7 @@ function AddNew() {
         onCancel={handleCloseModal}
       >
         <FormBuilder
+          form={form}
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}

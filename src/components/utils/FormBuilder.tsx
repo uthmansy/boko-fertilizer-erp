@@ -8,6 +8,7 @@ import {
   DatePicker,
   InputNumber,
   Space,
+  FormInstance,
 } from "antd";
 import { FieldConfig } from "../../types/comps";
 import { CloseOutlined } from "@ant-design/icons";
@@ -26,6 +27,7 @@ interface FormBuilderProps {
   styles?: React.CSSProperties;
   showSubmitButton?: boolean;
   fullWidthButton?: boolean;
+  form?: FormInstance;
 }
 
 const FormBuilder: React.FC<FormBuilderProps> = ({
@@ -37,8 +39,10 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
   styles = {},
   showSubmitButton = true,
   fullWidthButton = false,
+  form: externalForm,
 }) => {
-  const [form] = Form.useForm();
+  const [internalForm] = Form.useForm();
+  const form = externalForm || internalForm; // Use provided form or internal
   const [formValues, setFormValues] = useState(form.getFieldsValue());
 
   const onFinish = (values: any) => {

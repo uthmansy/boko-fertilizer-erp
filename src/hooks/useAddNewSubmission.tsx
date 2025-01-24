@@ -5,12 +5,13 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import { inventoryItemsKeys } from "../constants/QUERY_KEYS";
 import {
-  addProductSubmission,
+  addProductSubmissions,
   getInventoryItems,
 } from "../helpers/apiFunctions";
 
 import useAuthStore from "../store/auth";
-import { ProductSubmissionSchema } from "../zodSchemas/submission";
+import { MultiProductSubmissionSchema } from "../zodSchemas/submission";
+import { SHIFTS } from "../constants/ENUMS";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -54,17 +55,32 @@ function useAddNewSubmission(): HookReturn {
       required: true,
     },
     {
-      name: "product",
-      label: "Product",
+      name: "shift",
+      label: "Shift",
       type: "select",
-      options: items,
+      options: SHIFTS.map((shift) => ({ label: shift, value: shift })),
       required: true,
     },
     {
-      name: "quantity",
-      label: "Quantity",
-      type: "number",
+      name: "products",
+      label: "Products",
+      type: "dynamic",
       required: true,
+      subFields: [
+        {
+          name: "product",
+          label: "Product",
+          type: "select",
+          options: items,
+          required: true,
+        },
+        {
+          name: "quantity",
+          label: "Quantity",
+          type: "number",
+          required: true,
+        },
+      ],
     },
   ];
 
@@ -76,8 +92,10 @@ function useAddNewSubmission(): HookReturn {
         values.date_submitted = values.date_submitted.format("YYYY-MM-DD");
         values.submitted_by = userProfile?.username;
         values.warehouse = userProfile?.warehouse;
-        await ProductSubmissionSchema.parseAsync(values);
-        await addProductSubmission(values);
+        // await ProductSubmissionSchema.parseAsync(values); //single product
+        await MultiProductSubmissionSchema.parseAsync(values); // Multi products
+        // await addProductSubmission(values); // for single
+        await addProductSubmissions(values); // for multi products
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);

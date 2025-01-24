@@ -27,6 +27,7 @@ function AllFinishedProducts() {
           target.clientHeight
         ) {
           fetchNextPage();
+          console.log("reached");
         }
       }}
     />

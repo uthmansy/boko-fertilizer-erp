@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { FieldConfig, SelectOption } from "../types/comps";
-import { App } from "antd";
+import { App, FormInstance } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import { inventoryItemsKeys } from "../constants/QUERY_KEYS"; // Update to production keys
-import { addFinishedProduct, getInventoryItems } from "../helpers/apiFunctions"; // Update to production API function
+import {
+  addFinishedProducts,
+  getInventoryItems,
+} from "../helpers/apiFunctions"; // Update to production API function
 
 import useAuthStore from "../store/auth";
 import { SHIFTS } from "../constants/ENUMS";
-import { finishedProductsSchema } from "../zodSchemas/finishedProducts";
+import { finishedProductsMultipleSchema } from "../zodSchemas/finishedProducts";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -19,7 +22,7 @@ interface HookReturn {
   isLoading: boolean;
 }
 
-function useAddNewFinishedProduct(): HookReturn {
+function useAddNewFinishedProduct(form: FormInstance): HookReturn {
   // Update hook name
   const { message } = App.useApp();
   const queryClient = useQueryClient();
@@ -53,13 +56,6 @@ function useAddNewFinishedProduct(): HookReturn {
       required: true,
     },
     {
-      name: "product",
-      label: "Product",
-      type: "select",
-      options: products,
-      required: true,
-    },
-    {
       name: "shift",
       label: "Shift",
       type: "select",
@@ -67,16 +63,31 @@ function useAddNewFinishedProduct(): HookReturn {
       required: true,
     },
     {
-      name: "quantity_produced",
-      label: "Quantity Produced (bales)",
-      type: "number",
+      name: "products",
+      label: "Products",
+      type: "dynamic",
       required: true,
-    },
-    {
-      name: "waste",
-      label: "Reject (pieces)",
-      type: "number",
-      required: true,
+      subFields: [
+        {
+          name: "product",
+          label: "Product",
+          type: "select",
+          options: products,
+          required: true,
+        },
+        {
+          name: "quantity_produced",
+          label: "Quantity (bales)",
+          type: "number",
+          required: true,
+        },
+        {
+          name: "waste",
+          label: "Reject (pieces)",
+          type: "number",
+          required: true,
+        },
+      ],
     },
   ];
 
@@ -88,8 +99,10 @@ function useAddNewFinishedProduct(): HookReturn {
         values.date = values.date.format("YYYY-MM-DD");
         values.added_by = userProfile?.username;
         values.warehouse = userProfile?.warehouse;
-        await finishedProductsSchema.parseAsync(values); // Validate against production schema
-        await addFinishedProduct(values); // Use production creation API function
+        // await finishedProductsSchema.parseAsync(values); // Validate against production schema for single product addition
+        await finishedProductsMultipleSchema.parseAsync(values); // Validate against production schema for multiple products addition
+        // await addFinishedProduct(values); // Use production creation API function for singular product addition
+        await addFinishedProducts(values); // Use production creation API function for multiple products addition
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
@@ -112,6 +125,7 @@ function useAddNewFinishedProduct(): HookReturn {
     },
     onSuccess: () => {
       message.success("Added successfully");
+      form.resetFields();
       handleCloseModal();
       queryClient.invalidateQueries(); // Invalidate production queries
     },

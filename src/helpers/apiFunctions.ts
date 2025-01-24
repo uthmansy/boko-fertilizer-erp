@@ -51,6 +51,9 @@ import {
   vehicleStatus,
 } from "../types/db";
 import {
+  AddFinishedProducts,
+  AddMultiProductsSubmission,
+  AddProductionRunsMultiProduct,
   AddProductionSubmission,
   CreateItemCollection,
   CreateProduction,
@@ -474,7 +477,7 @@ export const getAllProductSubmissions = async (
 ): Promise<ProductSubmission[]> => {
   const { data, error } = await supabase
     .from("product_submission")
-    .select("*")
+    .select("*, product_info:product(*)")
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -1092,6 +1095,13 @@ export const addFinishedProduct = async (
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
+export const addFinishedProducts = async (
+  payload: AddFinishedProducts
+): Promise<void> => {
+  const { error } = await supabase.rpc("add_finished_products", payload);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
 
 export const addSalesPayment = async (
   payload: SalesPayments
@@ -1131,6 +1141,18 @@ export const createProduction = async (
   if (error) throw new Error(error.message);
 };
 
+export const createMultiProduction = async (
+  payload: AddProductionRunsMultiProduct
+): Promise<void> => {
+  const { error } = await supabase.rpc(
+    "add_multi_product_production_records",
+    payload
+  );
+
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+
 export const createItemCollection = async (
   payload: CreateItemCollection
 ): Promise<void> => {
@@ -1146,6 +1168,14 @@ export const addProductSubmission = async (
   payload: AddProductionSubmission
 ): Promise<void> => {
   const { error } = await supabase.from("product_submission").insert([payload]);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+
+export const addProductSubmissions = async (
+  payload: AddMultiProductsSubmission
+): Promise<void> => {
+  const { error } = await supabase.rpc("add_product_submissions", payload);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
@@ -1222,7 +1252,9 @@ export async function getDailyFinishedProducts(
     console.error("Error fetching finished Products: date must be selected");
     throw new Error("Error fetching finished Products: date must be selected");
   }
-  let query = supabase.from("finished_products").select("*, staff:added_by(*)");
+  let query = supabase
+    .from("finished_products")
+    .select("*, staff:added_by(*), product_info:product(*)");
 
   if (date) {
     query = query.eq("date", date);

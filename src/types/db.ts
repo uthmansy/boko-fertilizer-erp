@@ -110,6 +110,9 @@ export interface ExternalStocksAndPurchases extends ExternalStocks {
   purchase_item: { item: InventoryItems };
   sales: Sales[];
 }
+export interface ProductSubmissionWithDetails extends ProductSubmission {
+  product_info: InventoryItems;
+}
 export interface InventoryTransferWithStocks extends InventoryTransfer {
   originStock: Stocks;
   destinationStock: Stocks;
@@ -117,7 +120,15 @@ export interface InventoryTransferWithStocks extends InventoryTransfer {
 }
 export interface FinishedProductsJoint extends FinishedProducts {
   staff: UserProfile;
+  product_info: InventoryItems;
 }
+
+export interface FinishedProductsTableSummary extends FinishedProductsJoint {
+  pieces?: number | null;
+  bales?: number | null;
+  metre?: number | null;
+}
+
 export interface StocksWithSoldBalance extends ExternalStocksAndPurchases {
   totalSoldBalance: number;
 }

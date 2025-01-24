@@ -12,12 +12,14 @@ function ExternalDispatch() {
     currentPage,
     prevPage,
     resetValues,
+    setToCustomer,
     setFromExternalStock,
     newDispatchVehicle,
   } = useDispatchStore();
   useEffect(() => {
     resetValues();
     setFromExternalStock(true);
+    setToCustomer(false);
   }, []);
 
   return (

@@ -12,12 +12,14 @@ function InternalDispatch() {
     prevPage,
     resetValues,
     setFromExternalStock,
+    setToCustomer,
     newDispatchVehicle,
   } = useDispatchStore(); // Updated to use internal stock setting
 
   useEffect(() => {
     resetValues();
     setFromExternalStock(false); // Set to internal stock
+    setToCustomer(true);
   }, []);
 
   return (

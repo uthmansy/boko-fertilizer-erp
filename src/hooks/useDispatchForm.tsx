@@ -109,7 +109,7 @@ function useDispatchForm(): HookReturn {
 
     setSaleOrderOptions(
       filteredOrders?.map((order) => ({
-        label: `${order.customer_name} - ${order.item_purchased} - ${order.balance} remain`,
+        label: `${order.customer_name} - ${order.order_number} - ${order.item_purchased} - ${order.balance} remain`,
         value: order.order_number,
       })) || []
     );

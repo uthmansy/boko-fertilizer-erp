@@ -1,11 +1,14 @@
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "react-query";
+import { App, DescriptionsProps } from "antd";
+import { Headers } from "react-csv/lib/core";
+import dayjs, { Dayjs } from "dayjs";
 import {
   dailyProductionKeys,
   finishedProductsKeys,
   stocksKeys,
   warehousesKeys,
 } from "../constants/QUERY_KEYS";
-import { useEffect, useState } from "react";
 import {
   getDailyFinishedProducts,
   getDailyProductionSummary,
@@ -13,51 +16,45 @@ import {
   getWarehouses,
 } from "../helpers/apiFunctions";
 import useAuthStore from "../store/auth";
-import { App, DescriptionsProps } from "antd";
 import {
   DailyProductionSummary,
   FinishedProductsJoint,
+  FinishedProductsTableSummary,
   StocksWithDetails,
 } from "../types/db";
 import { FieldConfig, SelectOption } from "../types/comps";
 import { formatNumber } from "../helpers/functions";
-import dayjs, { Dayjs } from "dayjs";
-import { Headers } from "react-csv/lib/core";
+
+type ShiftType = "morning" | "night";
 
 interface HookReturn {
   morningShift: DailyProductionSummary[] | undefined;
   nightShift: DailyProductionSummary[] | undefined;
-  allProductsPiecesQuantityMorning: DailyProductionSummary[] | undefined;
-  allProductsPiecesQuantityNight: DailyProductionSummary[] | undefined;
+  allProductsPiecesQuantityMorning: FinishedProductsTableSummary[] | undefined;
+  allProductsPiecesQuantityNight: FinishedProductsTableSummary[] | undefined;
   allProductsPiecesQuantity: DailyProductionSummary[] | undefined;
   isLoading: boolean;
   isLoadingFinishedProducts: boolean;
   isRefetching: boolean;
   isRefetchingFinishedProducts: boolean;
-  date: string | null;
+  date: string;
   formConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
   handleDate: (date: Dayjs) => void;
   handleName: (value: string) => void;
   handleWarehouse: (value: string) => void;
-  totalQuantityProduced: number | undefined;
-  totalQuantityProducedMorning: number | undefined;
-  totalQuantityProducedNight: number | undefined;
-  totalBaleQuantityProduced: number | undefined;
-  totalBaleQuantityProducedMorning: number | undefined;
-  totalBaleQuantityProducedNight: number | undefined;
+  totalQuantityProduced: number;
+  totalQuantityProducedMorning: number;
+  totalQuantityProducedNight: number;
+  totalBaleQuantityProduced: number;
+  totalBaleQuantityProducedMorning: number;
+  totalBaleQuantityProducedNight: number;
   isLoadingSummary: boolean;
   isRefetchingSummary: boolean;
   summaryTableItems: DescriptionsProps["items"];
   names: SelectOption[];
   csvHeaders: Headers;
-  csvData:
-    | {
-        product: string;
-        quantity: number;
-        shift: "morning" | "night";
-      }[]
-    | undefined;
+  csvData: Array<{ product: string; quantity: number; shift: ShiftType }>;
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   isModalOpen: boolean;
@@ -65,87 +62,42 @@ interface HookReturn {
   warehouses: SelectOption[];
   finishedProducts: FinishedProductsJoint[] | undefined;
 }
-function useDailyProduction(): HookReturn {
+
+export default function useDailyProduction(): HookReturn {
   const { message } = App.useApp();
-  const [date, setDate] = useState<string | null>(dayjs().format("YYYY-MM-DD"));
+  const { userProfile } = useAuthStore();
+
+  // State management
+  const [date, setDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [name, setName] = useState<string | null>(null);
   const [warehouseFilter, setWarehouseFilter] = useState<string | null>(null);
-  const [morningShift, setMorningShift] = useState<
-    DailyProductionSummary[] | undefined
-  >();
-  const [nightShift, setNightShift] = useState<
-    DailyProductionSummary[] | undefined
-  >();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { userProfile } = useAuthStore();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  // Memoized warehouse value
+  const warehouse = useMemo(() => {
+    if (warehouseFilter && warehouseFilter !== "all") return warehouseFilter;
+    if (["ADMIN", "SUPER ADMIN"].includes(userProfile?.role ?? "")) return null;
+    return userProfile?.warehouse ?? null;
+  }, [warehouseFilter, userProfile]);
 
-  const formConfig: FieldConfig[] = [
-    {
-      name: "date",
-      label: "Date",
-      type: "date",
-      required: true,
-    },
-  ];
-  const warehouse =
-    warehouseFilter && warehouseFilter !== "all"
-      ? warehouseFilter
-      : userProfile?.role === "ADMIN" || userProfile?.role === "SUPER ADMIN"
-      ? null
-      : userProfile?.warehouse;
-
-  const handleSubmit = (values: any) => {
-    setDate(values.date.format("YYYY-MM-DD"));
-  };
-  const handleDate = (date: Dayjs) => {
-    setDate(date.format("YYYY-MM-DD"));
-  };
-  const handleName = (value: string) => {
-    setName(value);
-  };
-  const handleWarehouse = (value: string) => {
-    setWarehouseFilter(value);
-  };
-
-  const { data, isLoading, isRefetching } = useQuery(
-    [dailyProductionKeys.getDay, date, warehouseFilter],
-    {
-      queryFn: async () => {
-        const reports = await getDailyProductionSummary(date, warehouse);
-        return reports;
-      },
-      onError: () => {
-        message.error("Error Generating Report");
-      },
-    }
-  );
+  // API Queries
+  const { data, isLoading, isRefetching } = useQuery({
+    queryKey: [dailyProductionKeys.getDay, date, warehouse],
+    queryFn: () => getDailyProductionSummary(date, warehouse),
+    onError: () => message.error("Error Generating Report"),
+    select: useCallback((data: DailyProductionSummary[]) => data ?? [], []),
+  });
 
   const {
     data: finishedProducts,
     isLoading: isLoadingFinishedProducts,
     isRefetching: isRefetchingFinishedProducts,
-  } = useQuery(
-    [finishedProductsKeys.getDailyProduction, date, warehouseFilter],
-    {
-      queryFn: async () => {
-        const finishedProducts = await getDailyFinishedProducts(
-          date,
-          warehouse
-        );
-        return finishedProducts;
-      },
-      onError: () => {
-        message.error("Error Getting Finished Products Report");
-      },
-    }
-  );
+  } = useQuery({
+    queryKey: [finishedProductsKeys.getDailyProduction, date, warehouse],
+    queryFn: () => getDailyFinishedProducts(date, warehouse),
+    onError: () => message.error("Error Getting Finished Products Report"),
+    select: useCallback((data: FinishedProductsJoint[]) => data ?? [], []),
+  });
 
   const { data: warehouses } = useQuery({
     queryKey: warehousesKeys.getWarehouseOptions,
@@ -153,15 +105,10 @@ function useDailyProduction(): HookReturn {
       const warehouses = await getWarehouses();
       return [
         { label: "All", value: "all" },
-        ...((warehouses.map((warehouse) => ({
-          label: warehouse.name,
-          value: warehouse.name,
-        })) || []) as SelectOption[]),
+        ...(warehouses?.map((w) => ({ label: w.name, value: w.name })) ?? []),
       ];
     },
-    onError: () => {
-      message.error("Failed to Load Inventory warehouses");
-    },
+    onError: () => message.error("Failed to Load Inventory warehouses"),
   });
 
   const {
@@ -170,143 +117,240 @@ function useDailyProduction(): HookReturn {
     isRefetching: isRefetchingSummary,
   } = useQuery({
     queryKey: [stocksKeys.getStockRecords, warehouse],
-    queryFn: async (): Promise<StocksWithDetails[]> => {
-      const record = await getStockRecord(warehouse);
-      return record;
-    },
-    onError: () => {
-      message.error("Failed to generate summary");
-    },
+    queryFn: () => getStockRecord(warehouse),
+    onError: () => message.error("Failed to generate summary"),
   });
 
-  const summaryTableItems: DescriptionsProps["items"] = stockRecord
-    ?.filter((record) => record.item_info.type === "product")
-    .map((record, index) => ({
-      key: index + 1,
-      label: <span className="font-bold uppercase">{record.item}</span>,
-      children: (
-        <div className="flex">
-          <span className="w-1/2">
-            {formatNumber(record?.balance || 0)} {record?.item_info.unit}
-          </span>
-          <span className="w-1/2 uppercase">{record.warehouse}</span>
-        </div>
-      ),
-    }));
+  // Memoized shifts data
+  const [morningShift, nightShift] = useMemo(() => {
+    const filteredData =
+      name && name !== "all"
+        ? data?.filter((d) => d.product_info?.name === name)
+        : data;
 
-  useEffect(() => {
-    const morningShift = data?.filter((data) => data.shift === "morning");
-    const nightShift = data?.filter((data) => data.shift === "night");
-    setMorningShift(morningShift);
-    setNightShift(nightShift);
-    if (name && name !== "all") {
-      setMorningShift(
-        morningShift?.filter((data) => data.product_info.name === name)
-      );
-      setNightShift(
-        nightShift?.filter((data) => data.product_info.name === name)
-      );
-    }
+    return [
+      filteredData?.filter((d) => d.shift === "morning"),
+      filteredData?.filter((d) => d.shift === "night"),
+    ];
   }, [data, name]);
 
-  const names: SelectOption[] = [
-    { label: "All", value: "all" },
-    ...((data
-      ?.map((data) => ({
-        label: data.product_info.name,
-        value: data.product_info.name,
-      }))
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.value === item.value)
-      ) || []) as SelectOption[]),
-  ];
+  // Memoized product names
+  const names = useMemo<SelectOption[]>(
+    () => [
+      { label: "All", value: "all" },
+      ...Array.from(
+        new Map(
+          data?.map((d) => [
+            d.product_info?.name,
+            { label: d.product_info?.name, value: d.product_info?.name },
+          ]) ?? []
+        ).values()
+      ),
+    ],
+    [data]
+  );
 
-  const allProductsPiecesQuantity = data?.map((product) => ({
-    ...product,
-    pieces:
-      product.total_quantity_produced /
-      ((product.product_info.length || 98) / 100),
-  }));
-  const allProductsPiecesQuantityMorning = data
-    ?.filter((pr) => pr.shift === "morning")
-    .map((product) => ({
-      ...product,
-      pieces:
-        product.total_quantity_produced /
-        ((product.product_info.length || 98) / 100),
-      bales: finishedProducts
-        ?.filter(
-          (fp) =>
-            fp.product === product.product_info.name && fp.shift === "morning"
-        )
-        .reduce((sum, fp) => sum + fp.quantity_produced, 0),
-    }));
-  const allProductsPiecesQuantityNight = data
-    ?.filter((pr) => pr.shift === "night")
-    .map((product) => ({
-      ...product,
-      pieces:
-        product.total_quantity_produced /
-        ((product.product_info.length || 98) / 100),
-      bales: finishedProducts
-        ?.filter(
-          (fp) =>
-            fp.product === product.product_info.name && fp.shift === "night"
-        )
-        .reduce((sum, fp) => sum + fp.quantity_produced, 0),
-    }));
+  // Calculation utilities
+  const calculatePieces = useCallback(
+    (product: FinishedProductsJoint, shift: ShiftType) => {
+      const production = data?.find(
+        (pr) =>
+          pr.product_info?.name === product.product_info?.name &&
+          pr.shift === shift
+      );
+      return (
+        (production?.total_quantity_produced ?? 0) /
+        ((product.product_info?.length || 98) / 100)
+      );
+    },
+    [data]
+  );
 
-  const totalQuantityProduced =
-    data?.reduce(
-      (sum, production) => sum + production.total_quantity_produced,
-      0
-    ) || 0;
-  const totalQuantityProducedMorning =
-    data
-      ?.filter((production) => production.shift === "morning")
-      .reduce(
-        (sum, production) => sum + production.total_quantity_produced,
-        0
-      ) || 0;
-  const totalQuantityProducedNight =
-    data
-      ?.filter((production) => production.shift === "night")
-      .reduce(
-        (sum, production) => sum + production.total_quantity_produced,
-        0
-      ) || 0;
-  const totalBaleQuantityProduced =
-    finishedProducts?.reduce(
-      (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
-      0
-    ) || 0;
-  const totalBaleQuantityProducedMorning =
-    finishedProducts
-      ?.filter((fp) => fp.shift === "morning")
-      .reduce(
-        (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
-        0
-      ) || 0;
-  const totalBaleQuantityProducedNight =
-    finishedProducts
-      ?.filter((fp) => fp.shift === "night")
-      .reduce(
-        (sum, finishedProduct) => sum + finishedProduct.quantity_produced,
-        0
-      ) || 0;
+  const calculateTotal = useCallback(
+    (
+      items: any[] | undefined,
+      key: keyof DailyProductionSummary | keyof FinishedProductsJoint
+    ) => items?.reduce((sum, item) => sum + (Number(item[key]) || 0), 0) ?? 0,
+    []
+  );
 
-  const csvHeaders: Headers = [
-    { label: "Product", key: "product" },
-    { label: "Quantity", key: "quantity" },
-    { label: "Shift", key: "shift" },
-  ];
+  // Memoized transformed data
+  const allProductsPiecesQuantity = useMemo(
+    () =>
+      data?.map((p) => ({
+        ...p,
+        pieces:
+          (p.total_quantity_produced ?? 0) /
+          ((p.product_info?.length || 98) / 100),
+      })),
+    [data]
+  );
 
-  const csvData = data?.map((data) => ({
-    product: data.product_info.name,
-    quantity: data.total_quantity_produced,
-    shift: data.shift,
-  }));
+  const allProductsPiecesQuantityMorning = useMemo(
+    () =>
+      finishedProducts
+        ?.filter((pr) => pr.shift === "morning")
+        .map((product) => ({
+          ...product,
+          pieces: calculatePieces(product, "morning"),
+          metre: data?.find(
+            (pr) =>
+              pr.product_info?.name === product.product_info?.name &&
+              pr.shift === "morning"
+          )?.total_quantity_produced,
+          bales: finishedProducts
+            ?.filter(
+              (fp) =>
+                fp.product === product.product_info?.name &&
+                fp.shift === "morning"
+            )
+            .reduce((sum, fp) => sum + (fp.quantity_produced ?? 0), 0),
+        })),
+    [finishedProducts, data, calculatePieces]
+  );
+
+  const allProductsPiecesQuantityNight = useMemo(
+    () =>
+      finishedProducts
+        ?.filter((pr) => pr.shift === "night")
+        .map((product) => ({
+          ...product,
+          pieces: calculatePieces(product, "night"),
+          metre: data?.find(
+            (pr) =>
+              pr.product_info?.name === product.product_info?.name &&
+              pr.shift === "night"
+          )?.total_quantity_produced,
+          bales: finishedProducts
+            ?.filter(
+              (fp) =>
+                fp.product === product.product_info?.name &&
+                fp.shift === "night"
+            )
+            .reduce((sum, fp) => sum + (fp.quantity_produced ?? 0), 0),
+        })),
+    [finishedProducts, data, calculatePieces]
+  );
+
+  // Memoized totals
+  const totalQuantityProduced = useMemo(
+    () => calculateTotal(data, "total_quantity_produced"),
+    [data, calculateTotal]
+  );
+
+  const totalQuantityProducedMorning = useMemo(
+    () =>
+      calculateTotal(
+        data?.filter((p) => p.shift === "morning"),
+        "total_quantity_produced"
+      ),
+    [data, calculateTotal]
+  );
+
+  const totalQuantityProducedNight = useMemo(
+    () =>
+      calculateTotal(
+        data?.filter((p) => p.shift === "night"),
+        "total_quantity_produced"
+      ),
+    [data, calculateTotal]
+  );
+
+  const totalBaleQuantityProduced = useMemo(
+    () => calculateTotal(finishedProducts, "quantity_produced"),
+    [finishedProducts, calculateTotal]
+  );
+
+  const totalBaleQuantityProducedMorning = useMemo(
+    () =>
+      calculateTotal(
+        finishedProducts?.filter((fp) => fp.shift === "morning"),
+        "quantity_produced"
+      ),
+    [finishedProducts, calculateTotal]
+  );
+
+  const totalBaleQuantityProducedNight = useMemo(
+    () =>
+      calculateTotal(
+        finishedProducts?.filter((fp) => fp.shift === "night"),
+        "quantity_produced"
+      ),
+    [finishedProducts, calculateTotal]
+  );
+
+  // Memoized CSV data
+  const csvHeaders: Headers = useMemo(
+    () => [
+      { label: "Product", key: "product" },
+      { label: "Quantity", key: "quantity" },
+      { label: "Shift", key: "shift" },
+    ],
+    []
+  );
+
+  const csvData = useMemo(
+    () =>
+      data?.map((d) => ({
+        product: d.product_info?.name ?? "Unknown",
+        quantity: d.total_quantity_produced ?? 0,
+        shift: d.shift,
+      })) ?? [],
+    [data]
+  );
+
+  // Memoized summary table
+  const summaryTableItems: DescriptionsProps["items"] = useMemo(
+    () =>
+      stockRecord
+        ?.filter((record) => record.item_info?.type === "product")
+        .map((record, index) => ({
+          key: index + 1,
+          label: <span className="font-bold uppercase">{record.item}</span>,
+          children: (
+            <div className="flex">
+              <span className="w-1/2">
+                {formatNumber(record?.balance ?? 0)} {record?.item_info?.unit}
+              </span>
+              <span className="w-1/2 uppercase">{record.warehouse}</span>
+            </div>
+          ),
+        })) ?? [],
+    [stockRecord]
+  );
+
+  // Form configuration
+  const formConfig: FieldConfig[] = useMemo(
+    () => [
+      {
+        name: "date",
+        label: "Date",
+        type: "date",
+        required: true,
+      },
+    ],
+    []
+  );
+
+  // Event handlers
+  const handleDate = useCallback(
+    (date: Dayjs) => setDate(date.format("YYYY-MM-DD")),
+    []
+  );
+
+  const handleSubmit = useCallback(
+    (values: any) => handleDate(values.date),
+    [handleDate]
+  );
+
+  const handleName = useCallback((value: string) => setName(value), []);
+  const handleWarehouse = useCallback(
+    (value: string) => setWarehouseFilter(value),
+    []
+  );
+
+  const handleOpenModal = useCallback(() => setIsModalOpen(true), []);
+  const handleCloseModal = useCallback(() => setIsModalOpen(false), []);
 
   return {
     morningShift,
@@ -329,7 +373,7 @@ function useDailyProduction(): HookReturn {
     handleOpenModal,
     isModalOpen,
     stockRecord,
-    warehouses: warehouses || [],
+    warehouses: warehouses ?? [],
     handleWarehouse,
     totalBaleQuantityProduced,
     totalBaleQuantityProducedMorning,
@@ -344,5 +388,3 @@ function useDailyProduction(): HookReturn {
     finishedProducts,
   };
 }
-
-export default useDailyProduction;
