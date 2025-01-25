@@ -3,6 +3,7 @@ import { SalesPayments } from "../types/db"; // Use the appropriate type for sal
 import { formatNumber } from "../helpers/functions";
 import { Image } from "antd";
 import { PLACEHOLDER } from "../assets/images";
+import SalesPaymentActions from "../components/pages/sales/SalesPaymentActions";
 
 export const salesPaymentsAdminColumns: ColumnsType<SalesPayments> = [
   {
@@ -70,5 +71,10 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPayments> = [
         fallback={PLACEHOLDER}
       />
     ),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (_, record) => <SalesPaymentActions payment={record} />,
   },
 ];

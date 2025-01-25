@@ -96,6 +96,7 @@ export const inventoryTransfersKeys = {
 };
 export const employeesKeys = {
   getAllEmployees: "getAllEmployees",
+  getCsv: "getEmployeeCsv",
 };
 export const userKeys = {
   getUsers: "getUsers",

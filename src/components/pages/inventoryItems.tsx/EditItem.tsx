@@ -33,7 +33,7 @@ function EditItem({ item }: Props) {
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
-          columns={1}
+          columns={2}
         />
       </Modal>
     </>

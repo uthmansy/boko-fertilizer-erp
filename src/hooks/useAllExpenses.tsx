@@ -7,8 +7,8 @@ import { getExpenses } from "../helpers/apiFunctions"; // Updated import for exp
 import { Expenses } from "../types/db"; // Updated type import
 import { App } from "antd";
 import { expensesKeys } from "../constants/QUERY_KEYS"; // Updated query keys import
-import { useEffect, useState } from "react";
-import { FieldConfig } from "../types/comps";
+import { useEffect } from "react";
+import useAuthStore from "../store/auth";
 
 interface HookReturn {
   expenses: Expenses[]; // Updated type
@@ -19,32 +19,37 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
-  filterFormConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
 }
 
-function useAllExpenses(): HookReturn {
+interface Props {
+  debouncedSearchTerm: string;
+  dateFilter: string | null;
+  warehouseFilter: string | null;
+  expenseCategoryFilter: string | null;
+}
+
+function useAllExpenses({
+  dateFilter,
+  debouncedSearchTerm,
+  warehouseFilter,
+  expenseCategoryFilter,
+}: Props): HookReturn {
   // Updated hook name
   const { message } = App.useApp();
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const expenses = await getExpenses(pageParam, searchTerm); // Updated function call
+    let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
+    const expenses = await getExpenses({
+      pageParam,
+      warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
+      debouncedSearchTerm,
+      expenseCategoryFilter,
+      dateFilter,
+    }); // Updated function call
     return expenses;
   };
-
-  const filterFormConfig: FieldConfig[] = [
-    {
-      name: "search",
-      label: "Search By Truck Number",
-      type: "search",
-      noLabel: true,
-      required: false,
-      onSearch: (value) => {
-        setSearchTerm(value);
-      },
-    },
-  ];
 
   const handleSubmit = () => {
     // setSearchTerm(values.search);
@@ -57,18 +62,28 @@ function useAllExpenses(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery([expensesKeys.getExpenses, searchTerm], fetchData, {
-    // Updated query key
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 50) {
-        return allPages.length + 1; // Increment page number
-      }
-      return undefined; // No more pages to fetch
-    },
-    onError: (error) => {
-      message.error(error as string);
-    },
-  });
+  } = useInfiniteQuery(
+    [
+      expensesKeys.getExpenses,
+      dateFilter,
+      debouncedSearchTerm,
+      expenseCategoryFilter,
+      warehouseFilter,
+    ],
+    fetchData,
+    {
+      // Updated query key
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length === 50) {
+          return allPages.length + 1; // Increment page number
+        }
+        return undefined; // No more pages to fetch
+      },
+      onError: (error) => {
+        message.error(error as string);
+      },
+    }
+  );
 
   useEffect(() => {
     console.log(data);
@@ -83,7 +98,6 @@ function useAllExpenses(): HookReturn {
     hasNextPage,
     fetchNextPage,
     isRefetching,
-    filterFormConfig,
     handleSubmit,
   };
 }

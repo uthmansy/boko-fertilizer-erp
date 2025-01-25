@@ -58,6 +58,9 @@ import {
   CreateItemCollection,
   CreateProduction,
   CreateRequest,
+  UpdateExpenseInput,
+  UpdatePurchaseInput,
+  UpdateSaleInput,
 } from "../types/forms";
 
 export const getAllWarehouses = async (
@@ -126,19 +129,27 @@ export const getEnrollments = async (
   return data;
 };
 
-export const getExpenses = async (
-  pageNumber: number = 1,
-  search: string
-): Promise<Expenses[]> => {
+export const getExpenses = async ({
+  pageParam,
+  dateFilter,
+  debouncedSearchTerm,
+  expenseCategoryFilter,
+  warehouseFilter,
+}: ApiFilterOptions): Promise<Expenses[]> => {
   let query = supabase.from("expenses").select("*");
 
-  if (search) {
-    query = query.textSearch(`description`, search);
+  if (dateFilter) query = query.eq("date", dateFilter);
+  if (expenseCategoryFilter)
+    query = query.eq("category", expenseCategoryFilter);
+  if (debouncedSearchTerm)
+    query = query.ilike("description", `%${debouncedSearchTerm}%`);
+  if (warehouseFilter) {
+    query = query.eq("warehouse", warehouseFilter);
   }
 
   // Apply ordering and pagination after filtering
   query = query
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   const { data, error } = await query;
@@ -248,6 +259,20 @@ export const getAllSales = async (
 export const getSalesCsvData = async (): Promise<Sales[]> => {
   let query = supabase
     .from("sales")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getAllEmployeesData = async (): Promise<Employees[]> => {
+  let query = supabase
+    .from("employees")
     .select("*")
     .order("created_at", { ascending: false });
 
@@ -971,6 +996,35 @@ export const updateEmployee = async (
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
+
+export const updatePurchase = async (
+  payload: UpdatePurchaseInput
+): Promise<void> => {
+  const { error } = await supabase
+    .from("stock_purchases")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateSale = async (payload: UpdateSaleInput): Promise<void> => {
+  const { error } = await supabase
+    .from("sales")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateExpense = async (
+  payload: UpdateExpenseInput
+): Promise<void> => {
+  const { error } = await supabase
+    .from("expenses")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
 export const updateUser = async (payload: UpdateUserProfile): Promise<void> => {
   const { error } = await supabase
     .from("profiles")
@@ -1105,6 +1159,30 @@ export const deleteSale = async (saleId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Sale:", error);
+    throw new Error(error.message);
+  }
+};
+export const deleteSalePayment = async (paymentId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("sales_payments")
+    .delete()
+    .eq("id", paymentId);
+
+  if (error) {
+    console.error("Failed to delete Sale Payment:", error);
+    throw new Error(error.message);
+  }
+};
+export const deletePurchasePayment = async (
+  paymentId: string
+): Promise<void> => {
+  const { error } = await supabase
+    .from("purchase_order_payments")
+    .delete()
+    .eq("id", paymentId);
+
+  if (error) {
+    console.error("Failed to delete Purchase Payment:", error);
     throw new Error(error.message);
   }
 };

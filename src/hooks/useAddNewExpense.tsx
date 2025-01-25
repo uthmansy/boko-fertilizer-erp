@@ -88,6 +88,7 @@ function useAddNewExpense(): HookReturn {
     mutationFn: async (values: any) => {
       try {
         values.created_by = userProfile?.username;
+        values.warehouse = userProfile?.warehouse;
         values.date = values.date.format("YYYY-MM-DD");
         await ExpenseSchema.parseAsync(values); // Updated schema
         await addExpense(values); // Updated function

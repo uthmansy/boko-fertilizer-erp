@@ -27,6 +27,7 @@ function AddNewExpense() {
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
+          columns={2}
         />
       </Modal>
     </>

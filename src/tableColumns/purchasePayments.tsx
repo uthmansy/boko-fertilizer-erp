@@ -1,6 +1,7 @@
 import { ColumnsType } from "antd/es/table";
 import { PurchasePayments } from "../types/db";
 import { formatNumber } from "../helpers/functions";
+import PurchcasePaymentActions from "../components/pages/purchases/PurchasePaymentActions";
 
 export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePayments> = [
   {
@@ -55,5 +56,10 @@ export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePayments> = [
     dataIndex: "order_number",
     key: "order_number",
     render: (text) => <span className="capitalize font-semibold">{text}</span>,
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (_, record) => <PurchcasePaymentActions payment={record} />,
   },
 ];

@@ -14,6 +14,12 @@ export const expensesAdminColumns: ColumnsType<Expenses> = [
     align: "center",
   },
   {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    render: (date) => <span>{dayjs(date).format("DD/MM/YYYY")}</span>, // Format date
+  },
+  {
     title: "Description",
     dataIndex: "description",
     key: "description",
@@ -30,12 +36,6 @@ export const expensesAdminColumns: ColumnsType<Expenses> = [
     dataIndex: "amount",
     key: "amount",
     render: (amount) => <span>{`₦${formatNumber(amount)}`}</span>, // Format amount as currency
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-    render: (date) => <span>{dayjs(date).format("DD/MM/YYYY")}</span>, // Format date
   },
   {
     title: "Status",

@@ -1,8 +1,15 @@
+// EditPurchase.tsx
 import { Button, Modal } from "antd";
-import useAddNewInventoryItem from "../../../hooks/useAddNewInventoryItem";
+import useEditPurchase from "../../../hooks/useEditPurchase";
 import FormBuilder from "../../utils/FormBuilder";
+import { PurchasesAndPayments } from "../../../types/db";
+import { MdModeEdit } from "react-icons/md";
 
-function AddNew() {
+interface Props {
+  purchase: PurchasesAndPayments;
+}
+
+function EditPurchase({ purchase }: Props) {
   const {
     handleCloseModal,
     handleOpenModal,
@@ -10,29 +17,29 @@ function AddNew() {
     formConfig,
     handleSubmit,
     isLoading,
-  } = useAddNewInventoryItem();
+  } = useEditPurchase({ purchase });
 
   return (
     <>
-      <Button className="uppercase" onClick={handleOpenModal} type="default">
-        + Add New
+      <Button onClick={handleOpenModal} type="default">
+        <MdModeEdit />
       </Button>
       <Modal
         footer={null}
-        title="Add New Item"
+        title="Edit Purchase"
         open={isModalOpen}
         onCancel={handleCloseModal}
-        width={700}
+        width={800}
       >
         <FormBuilder
-          columns={2}
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
+          columns={2}
         />
       </Modal>
     </>
   );
 }
 
-export default AddNew;
+export default EditPurchase;
