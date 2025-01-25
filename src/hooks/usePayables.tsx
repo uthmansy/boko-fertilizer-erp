@@ -30,7 +30,7 @@ function usePayables(): HookReturn {
   const { message } = App.useApp();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const payables = await getAllStockPurchases(pageParam); // Updated function call
+    const payables = await getAllStockPurchases({ pageParam }); // Updated function call
     return payables;
   };
 
