@@ -15,7 +15,12 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
     dataIndex: "date_requested",
     key: "date_requested",
     render: (text) => <span className="capitalize">{text}</span>,
-    width: 120,
+  },
+  {
+    title: "Warehouse",
+    dataIndex: "warehouse",
+    key: "warehouse",
+    render: (text) => <span className="capitalize">{text}</span>,
   },
   {
     title: "Shift",
@@ -40,28 +45,24 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
         {text}
       </Tag>
     ),
-    width: 120,
   },
   {
     title: "Requested By",
     dataIndex: "requested_by",
     key: "requested_by",
     render: (text) => <span className="capitalize">{text}</span>,
-    width: 150,
   },
   {
     title: "Accepted By",
     dataIndex: "accepted_by",
     key: "accepted_by",
     render: (text) => <span className="capitalize">{text}</span>,
-    width: 150,
   },
   {
     title: "Rejected By",
     dataIndex: "rejected_by",
     key: "rejected_by",
     render: (text) => <span className="capitalize">{text}</span>,
-    width: 150,
   },
   {
     title: "Items",
@@ -76,7 +77,6 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
         ))}
       </div>
     ),
-    width: 170,
   },
   {
     title: "Action",

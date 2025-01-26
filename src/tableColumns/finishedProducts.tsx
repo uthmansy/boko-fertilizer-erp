@@ -16,6 +16,12 @@ export const finishedProductsColumns: ColumnsType<FinishedProductsJoint> = [
     render: (text) => <span className="capitalize">{text}</span>,
   },
   {
+    title: "Warehouse",
+    dataIndex: "warehouse",
+    key: "warehouse",
+    render: (text) => <span className="capitalize">{text}</span>,
+  },
+  {
     title: "Shift",
     dataIndex: "shift",
     key: "shift",

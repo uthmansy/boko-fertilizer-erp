@@ -5,6 +5,7 @@ import { ZodError } from "zod";
 import { App } from "antd";
 import { getVehicleByWaybill } from "../helpers/apiFunctions";
 import { VehiclesAndDestination } from "../types/db";
+import useAuthStore from "../store/auth";
 
 type UseScanWaybillReturn = {
   qrData: string;
@@ -66,6 +67,9 @@ const useScanWaybill = (): UseScanWaybillReturn => {
     };
   }, [qrData]);
 
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
+
   const {
     data: vehicle,
     mutate: handleSubmit,
@@ -83,6 +87,14 @@ const useScanWaybill = (): UseScanWaybillReturn => {
           message.loading("Loading Vehicle...");
           const vehicle = await getVehicleByWaybill(scannedData);
           if (!vehicle) throw new Error("Error Loading Vehicle");
+          if (!(vehicle?.status === "dispatched"))
+            throw new Error("Vehicle Already Received");
+          if (
+            !isAdmin &&
+            userProfile?.warehouse !== vehicle.destination_stock.warehouse
+          ) {
+            throw new Error("You are not authorized to receive this");
+          }
           return vehicle;
         }
       } catch (error) {

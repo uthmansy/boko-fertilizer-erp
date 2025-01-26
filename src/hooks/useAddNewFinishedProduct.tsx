@@ -3,12 +3,12 @@ import { FieldConfig, SelectOption } from "../types/comps";
 import { App, FormInstance } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { inventoryItemsKeys } from "../constants/QUERY_KEYS"; // Update to production keys
+import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS";
 import {
   addFinishedProducts,
   getInventoryItems,
-} from "../helpers/apiFunctions"; // Update to production API function
-
+  getWarehouses,
+} from "../helpers/apiFunctions";
 import useAuthStore from "../store/auth";
 import { SHIFTS } from "../constants/ENUMS";
 import { finishedProductsMultipleSchema } from "../zodSchemas/finishedProducts";
@@ -23,29 +23,38 @@ interface HookReturn {
 }
 
 function useAddNewFinishedProduct(form: FormInstance): HookReturn {
-  // Update hook name
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Warehouse query for admins
+  const { data: warehouses } = useQuery({
+    queryKey: warehousesKeys.getAllWarehouses,
+    queryFn: async () => {
+      const warehouses = await getWarehouses();
+      return warehouses.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.name,
+      }));
+    },
+    enabled: isAdmin,
+    onError: () => message.error("Failed to load warehouses"),
+  });
 
   const { data: products } = useQuery({
     queryKey: inventoryItemsKeys.getRawAndProduct,
     queryFn: async (): Promise<SelectOption[]> => {
       const items = await getInventoryItems();
       return items
-        .filter((item) => item.type === "product") // Filter finished products
+        .filter((item) => item.type === "product")
         .map((item) => ({ label: item.name, value: item.name }));
     },
-    onError: () => {
-      message.error("Failed to Load Products List");
-    },
+    onError: () => message.error("Failed to Load Products List"),
   });
 
   const formConfig: FieldConfig[] = [
@@ -55,6 +64,18 @@ function useAddNewFinishedProduct(form: FormInstance): HookReturn {
       type: "date",
       required: true,
     },
+    // Conditionally show warehouse field for admins
+    ...((isAdmin
+      ? [
+          {
+            name: "warehouse",
+            label: "Warehouse",
+            type: "select",
+            options: warehouses || [],
+            required: true,
+          },
+        ]
+      : []) as FieldConfig[]),
     {
       name: "shift",
       label: "Shift",
@@ -91,43 +112,41 @@ function useAddNewFinishedProduct(form: FormInstance): HookReturn {
     },
   ];
 
-  const { userProfile } = useAuthStore();
-
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
         values.date = values.date.format("YYYY-MM-DD");
         values.added_by = userProfile?.username;
-        values.warehouse = userProfile?.warehouse;
-        // await finishedProductsSchema.parseAsync(values); // Validate against production schema for single product addition
-        await finishedProductsMultipleSchema.parseAsync(values); // Validate against production schema for multiple products addition
-        // await addFinishedProduct(values); // Use production creation API function for singular product addition
-        await addFinishedProducts(values); // Use production creation API function for multiple products addition
+
+        // Set warehouse from profile for non-admins
+        if (!isAdmin) {
+          values.warehouse = userProfile?.warehouse;
+        }
+
+        await finishedProductsMultipleSchema.parseAsync(values);
+        await addFinishedProducts(values);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
           throw error;
-        } else if (error instanceof Error) {
-          console.error("An unexpected error occurred:", error.message);
-          throw new Error(error.message);
-        } else {
-          console.error("An unexpected error occurred:", error);
-          throw new Error("An unexpected error occurred");
         }
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
     },
     onError: (error) => {
-      if (error instanceof Error) {
-        message.error(error.message);
-      } else {
-        message.error("An unexpected error occurred");
-      }
+      message.error(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     },
     onSuccess: () => {
       message.success("Added successfully");
       form.resetFields();
       handleCloseModal();
-      queryClient.invalidateQueries(); // Invalidate production queries
+      queryClient.invalidateQueries();
     },
   });
 

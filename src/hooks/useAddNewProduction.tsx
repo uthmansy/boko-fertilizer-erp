@@ -3,13 +3,13 @@ import { FieldConfig, SelectOption } from "../types/comps";
 import { App, FormInstance } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { inventoryItemsKeys } from "../constants/QUERY_KEYS"; // Update to production keys
-import { ProductionMultipleProductsSchema } from "../zodSchemas/production"; // Update to production schema
+import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS";
+import { ProductionMultipleProductsSchema } from "../zodSchemas/production";
 import {
   createMultiProduction,
   getInventoryItems,
-} from "../helpers/apiFunctions"; // Update to production API function
-
+  getWarehouses,
+} from "../helpers/apiFunctions";
 import useAuthStore from "../store/auth";
 import { SHIFTS } from "../constants/ENUMS";
 
@@ -23,17 +23,28 @@ interface HookReturn {
 }
 
 function useAddNewProduction(form: FormInstance): HookReturn {
-  // Update hook name
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Warehouse query for admins
+  const { data: warehouses } = useQuery({
+    queryKey: warehousesKeys.getAllWarehouses,
+    queryFn: async () => {
+      const warehouses = await getWarehouses();
+      return warehouses.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.name,
+      }));
+    },
+    enabled: isAdmin,
+    onError: () => message.error("Failed to load warehouses"),
+  });
 
   const { data: items } = useQuery({
     queryKey: inventoryItemsKeys.getProductionRunProducts,
@@ -41,16 +52,14 @@ function useAddNewProduction(form: FormInstance): HookReturn {
       const items = await getInventoryItems();
       return {
         raw: items
-          .filter((item) => item.type === "raw") // Filter raw materials
+          .filter((item) => item.type === "raw")
           .map((item) => ({ label: item.name, value: item.name })),
         products: items
-          .filter((item) => item.type === "product") // Filter finished products
+          .filter((item) => item.type === "product")
           .map((item) => ({ label: item.name, value: item.name })),
       };
     },
-    onError: () => {
-      message.error("Failed to Load Inventory Items");
-    },
+    onError: () => message.error("Failed to Load Inventory Items"),
   });
 
   const formConfig: FieldConfig[] = [
@@ -60,6 +69,18 @@ function useAddNewProduction(form: FormInstance): HookReturn {
       type: "date",
       required: true,
     },
+    // Conditionally show warehouse field for admins
+    ...((isAdmin
+      ? [
+          {
+            name: "warehouse",
+            label: "Warehouse",
+            type: "select",
+            options: warehouses || [],
+            required: true,
+          },
+        ]
+      : []) as FieldConfig[]),
     {
       name: "shift",
       label: "Shift",
@@ -88,68 +109,43 @@ function useAddNewProduction(form: FormInstance): HookReturn {
         },
       ],
     },
-
-    // {
-    //   name: "items",
-    //   label: "Raw Materials Used",
-    //   type: "dynamic",
-    //   required: true,
-    //   subFields: [
-    //     {
-    //       name: "item",
-    //       label: "Item",
-    //       type: "select",
-    //       options: items?.raw,
-    //       required: true,
-    //     },
-    //     {
-    //       name: "quantity",
-    //       label: "Quantity Used",
-    //       type: "number",
-    //       required: true,
-    //     },
-    //   ],
-    // },
   ];
-
-  const { userProfile } = useAuthStore();
 
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
         values.date = values.date.format("YYYY-MM-DD");
-        // values.items = [];
         values.produced_by = userProfile?.username;
-        values.warehouse = userProfile?.warehouse;
-        // await ProductionSchema.parseAsync(values); // Validate against production schema for single product
-        await ProductionMultipleProductsSchema.parseAsync(values); // Validate against production schema for multi products
-        // await createProduction(values); // Use production creation API function for single product
-        await createMultiProduction(values); // Use production creation API function for multi products
+
+        // Set warehouse from profile for non-admins
+        if (!isAdmin) {
+          values.warehouse = userProfile?.warehouse;
+        }
+
+        await ProductionMultipleProductsSchema.parseAsync(values);
+        await createMultiProduction(values);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
           throw error;
-        } else if (error instanceof Error) {
-          console.error("An unexpected error occurred:", error.message);
-          throw new Error(error.message);
-        } else {
-          console.error("An unexpected error occurred:", error);
-          throw new Error("An unexpected error occurred");
         }
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
     },
     onError: (error) => {
-      if (error instanceof Error) {
-        message.error(error.message);
-      } else {
-        message.error("An unexpected error occurred");
-      }
+      message.error(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     },
     onSuccess: () => {
       message.success("Production added successfully");
       form.resetFields();
       handleCloseModal();
-      queryClient.invalidateQueries(); // Invalidate production queries
+      queryClient.invalidateQueries();
     },
   });
 

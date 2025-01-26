@@ -20,6 +20,12 @@ export const expensesAdminColumns: ColumnsType<Expenses> = [
     render: (date) => <span>{dayjs(date).format("DD/MM/YYYY")}</span>, // Format date
   },
   {
+    title: "Warehouse",
+    dataIndex: "warehouse",
+    key: "warehouse",
+    render: (value) => <span>{value}</span>, // Format date
+  },
+  {
     title: "Description",
     dataIndex: "description",
     key: "description",

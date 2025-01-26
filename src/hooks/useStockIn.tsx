@@ -3,8 +3,12 @@ import { FieldConfig, SelectOption } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { getInventoryItems, stockIn } from "../helpers/apiFunctions";
-import { inventoryItemsKeys } from "../constants/QUERY_KEYS";
+import {
+  getInventoryItems,
+  getWarehouses,
+  stockIn,
+} from "../helpers/apiFunctions";
+import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS";
 import useAuthStore from "../store/auth";
 import { stockInSchema } from "../zodSchemas/stockIn";
 
@@ -20,14 +24,26 @@ interface HookReturn {
 function useStockIn(): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Fetch warehouses only for admin users
+  const { data: warehousesOptions } = useQuery({
+    queryKey: warehousesKeys.getAllWarehouses,
+    queryFn: async (): Promise<SelectOption[]> => {
+      const warehouses = await getWarehouses();
+      return warehouses.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.name,
+      }));
+    },
+    enabled: isAdmin,
+    onError: () => message.error("Failed to Load Warehouses"),
+  });
 
   const { data: items } = useQuery({
     queryKey: inventoryItemsKeys.getAllItems,
@@ -35,9 +51,7 @@ function useStockIn(): HookReturn {
       const items = await getInventoryItems();
       return items.map((item) => ({ label: item.name, value: item.name }));
     },
-    onError: () => {
-      message.error("Failed to Load Inventory Items");
-    },
+    onError: () => message.error("Failed to Load Inventory Items"),
   });
 
   const formConfig: FieldConfig[] = [
@@ -47,13 +61,18 @@ function useStockIn(): HookReturn {
       type: "date",
       required: true,
     },
-    // {
-    //   name: "item",
-    //   label: "Item",
-    //   type: "select",
-    //   options: items || [],
-    //   required: true,
-    // },
+    // Conditionally show warehouse field for admins
+    ...((isAdmin
+      ? [
+          {
+            name: "warehouse",
+            label: "Warehouse",
+            type: "select",
+            options: warehousesOptions || [],
+            required: true,
+          },
+        ]
+      : []) as FieldConfig[]),
     {
       name: "quantity",
       label: "Quantity",
@@ -68,39 +87,37 @@ function useStockIn(): HookReturn {
     },
   ];
 
-  const { userProfile } = useAuthStore();
-
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
         values.item = items?.find((item) => item.value === "waste")?.value;
         values.date = values.date.format("YYYY-MM-DD");
         values.stocked_by = userProfile?.username;
-        values.warehouse = userProfile?.warehouse;
+
+        // Set warehouse from profile for non-admins
+        if (!isAdmin) {
+          values.warehouse = userProfile?.warehouse;
+        }
+
         const payload = await stockInSchema.parseAsync(values);
         //@ts-ignore
         await stockIn(payload);
       } catch (error) {
         if (error instanceof ZodError) {
-          // Handle ZodError separately to extract and display validation errors
           console.error("Zod Validation failed:", error.errors);
-          throw error; // Re-throw the ZodError to be caught by the onError handler
-        } else if (error instanceof Error) {
-          // Handle other types of errors
-          console.error("An unexpected error occurred:", error.message);
-          throw new Error(error.message);
-        } else {
-          console.error("An unexpected error occurred:", error);
-          throw new Error("An unexpected error occurred");
+          throw error;
         }
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
     },
     onError: (error) => {
-      if (error instanceof Error) {
-        message.error(error.message);
-      } else {
-        message.error("An unexpected error occurred");
-      }
+      message.error(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     },
     onSuccess: () => {
       message.success("Stocked In successfully");

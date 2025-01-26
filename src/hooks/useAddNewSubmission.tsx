@@ -3,12 +3,12 @@ import { FieldConfig, SelectOption } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { inventoryItemsKeys } from "../constants/QUERY_KEYS";
+import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS";
 import {
   addProductSubmissions,
   getInventoryItems,
+  getWarehouses,
 } from "../helpers/apiFunctions";
-
 import useAuthStore from "../store/auth";
 import { MultiProductSubmissionSchema } from "../zodSchemas/submission";
 import { SHIFTS } from "../constants/ENUMS";
@@ -25,14 +25,26 @@ interface HookReturn {
 function useAddNewSubmission(): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  // Warehouse query for admins
+  const { data: warehouses } = useQuery({
+    queryKey: warehousesKeys.getAllWarehouses,
+    queryFn: async () => {
+      const warehouses = await getWarehouses();
+      return warehouses.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.name,
+      }));
+    },
+    enabled: isAdmin,
+    onError: () => message.error("Failed to load warehouses"),
+  });
 
   const { data: items } = useQuery({
     queryKey: inventoryItemsKeys.getAllItems,
@@ -42,9 +54,7 @@ function useAddNewSubmission(): HookReturn {
         .filter((item) => item.type === "product")
         .map((item) => ({ label: item.name, value: item.name }));
     },
-    onError: () => {
-      message.error("Failed to Load Inventory Items");
-    },
+    onError: () => message.error("Failed to Load Inventory Items"),
   });
 
   const formConfig: FieldConfig[] = [
@@ -54,6 +64,18 @@ function useAddNewSubmission(): HookReturn {
       type: "date",
       required: true,
     },
+    // Conditionally show warehouse field for admins
+    ...((isAdmin
+      ? [
+          {
+            name: "warehouse",
+            label: "Warehouse",
+            type: "select",
+            options: warehouses || [],
+            required: true,
+          },
+        ]
+      : []) as FieldConfig[]),
     {
       name: "shift",
       label: "Shift",
@@ -84,37 +106,35 @@ function useAddNewSubmission(): HookReturn {
     },
   ];
 
-  const { userProfile } = useAuthStore();
-
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
         values.date_submitted = values.date_submitted.format("YYYY-MM-DD");
         values.submitted_by = userProfile?.username;
-        values.warehouse = userProfile?.warehouse;
-        // await ProductSubmissionSchema.parseAsync(values); //single product
-        await MultiProductSubmissionSchema.parseAsync(values); // Multi products
-        // await addProductSubmission(values); // for single
-        await addProductSubmissions(values); // for multi products
+
+        // Set warehouse from profile for non-admins
+        if (!isAdmin) {
+          values.warehouse = userProfile?.warehouse;
+        }
+
+        await MultiProductSubmissionSchema.parseAsync(values);
+        await addProductSubmissions(values);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
           throw error;
-        } else if (error instanceof Error) {
-          console.error("An unexpected error occurred:", error.message);
-          throw new Error(error.message);
-        } else {
-          console.error("An unexpected error occurred:", error);
-          throw new Error("An unexpected error occurred");
         }
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+        );
       }
     },
     onError: (error) => {
-      if (error instanceof Error) {
-        message.error(error.message);
-      } else {
-        message.error("An unexpected error occurred");
-      }
+      message.error(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     },
     onSuccess: () => {
       message.success("Submission added successfully");

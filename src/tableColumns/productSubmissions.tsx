@@ -18,6 +18,12 @@ export const productSubmissionsAdminColumns: ColumnsType<ProductSubmissionWithDe
       render: (text) => <span className="capitalize">{text}</span>,
     },
     {
+      title: "Warehouse",
+      dataIndex: "warehouse",
+      key: "warehouse",
+      render: (text) => <span className="capitalize">{text}</span>,
+    },
+    {
       title: "Shift",
       dataIndex: "shift",
       key: "shift",
@@ -56,28 +62,24 @@ export const productSubmissionsAdminColumns: ColumnsType<ProductSubmissionWithDe
           {text}
         </Tag>
       ),
-      width: 120,
     },
     {
       title: "Submitted By",
       dataIndex: "submitted_by",
       key: "submitted_by",
       render: (text) => <span className="capitalize">{text}</span>,
-      width: 150,
     },
     {
       title: "Accepted By",
       dataIndex: "accepted_by",
       key: "accepted_by",
       render: (text) => <span className="capitalize">{text}</span>,
-      width: 150,
     },
     {
       title: "Rejected By",
       dataIndex: "rejected_by",
       key: "rejected_by",
       render: (text) => <span className="capitalize">{text}</span>,
-      width: 150,
     },
     {
       title: "Action",

@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { FieldConfig } from "../types/comps";
+import { FieldConfig, SelectOption } from "../types/comps";
 import { App } from "antd";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import ExpenseSchema from "../zodSchemas/expenses"; // Updated schema
 import { ZodError } from "zod";
-import { addExpense } from "../helpers/apiFunctions"; // Updated function
+import { addExpense, getWarehouses } from "../helpers/apiFunctions"; // Updated function
 import { EXPENSE_CATEGORY, PAYMENT_MODE } from "../constants/ENUMS";
 import useAuthStore from "../store/auth";
+import { warehousesKeys } from "../constants/QUERY_KEYS";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -20,6 +21,8 @@ interface HookReturn {
 function useAddNewExpense(): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const handleOpenModal = () => {
@@ -29,6 +32,21 @@ function useAddNewExpense(): HookReturn {
     setIsModalOpen(false);
   };
 
+  const { data: warehousesOptions } = useQuery({
+    queryKey: warehousesKeys.getAllWarehouses,
+    queryFn: async (): Promise<SelectOption[]> => {
+      const warehouses = await getWarehouses();
+      return warehouses.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.name,
+      }));
+    },
+    enabled: isAdmin, // Only fetch warehouses if user is admin
+    onError: () => {
+      message.error("Failed to Load Inventory warehouses");
+    },
+  });
+
   const formConfig: FieldConfig[] = [
     {
       name: "category",
@@ -37,6 +55,17 @@ function useAddNewExpense(): HookReturn {
       options: EXPENSE_CATEGORY.map((cat) => ({ label: cat, value: cat })),
       required: true,
     },
+    ...((isAdmin
+      ? [
+          {
+            name: "warehouse",
+            label: "Warehouse",
+            type: "select",
+            required: true,
+            options: warehousesOptions || [],
+          },
+        ]
+      : []) as FieldConfig[]),
     {
       name: "amount",
       label: "Amount", // Updated label
@@ -71,7 +100,7 @@ function useAddNewExpense(): HookReturn {
     {
       name: "description",
       label: "Description", // Added new field
-      type: "textarea",
+      type: "text",
       required: true,
     },
     {
@@ -82,13 +111,13 @@ function useAddNewExpense(): HookReturn {
     },
   ];
 
-  const { userProfile } = useAuthStore();
-
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
         values.created_by = userProfile?.username;
-        values.warehouse = userProfile?.warehouse;
+        if (!isAdmin) {
+          values.warehouse = userProfile?.warehouse;
+        }
         values.date = values.date.format("YYYY-MM-DD");
         await ExpenseSchema.parseAsync(values); // Updated schema
         await addExpense(values); // Updated function

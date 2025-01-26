@@ -79,6 +79,7 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
   ];
 
   const { userProfile } = useAuthStore();
+  const isAdmin = userProfile?.role === "SUPER ADMIN";
 
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
@@ -89,6 +90,12 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
         values.status = status;
         values.id = vehicle.id;
         await ReceiveSchema.parseAsync(values);
+        if (
+          !isAdmin &&
+          userProfile?.warehouse !== vehicle.destination_stock.warehouse
+        ) {
+          throw new Error("You are not authorized to receive this");
+        }
         await receiveVehicle(values);
       } catch (error) {
         if (error instanceof ZodError) {

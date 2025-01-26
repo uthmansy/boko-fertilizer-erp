@@ -16,6 +16,12 @@ export const stockInColumns: ColumnsType<StockInWithDetails> = [
     render: (text) => <span className="font-semibold capitalize">{text}</span>,
   },
   {
+    title: "Warehouse",
+    dataIndex: "warehouse",
+    key: "warehouse",
+    render: (text) => <span className="font-semibold capitalize">{text}</span>,
+  },
+  {
     title: "Item",
     dataIndex: "item",
     key: "item",
