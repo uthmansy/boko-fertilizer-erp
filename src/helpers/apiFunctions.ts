@@ -40,6 +40,7 @@ import {
   UpdateExpenses,
   UpdateInventoryItems,
   UpdatePayrolls,
+  UpdateProfile,
   UpdateRequests,
   UpdateSubmission,
   UpdateUserProfile,
@@ -991,6 +992,14 @@ export const updateEmployee = async (
 ): Promise<void> => {
   const { error } = await supabase
     .from("employees")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateProfile = async (payload: UpdateProfile): Promise<void> => {
+  const { error } = await supabase
+    .from("profiles")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);

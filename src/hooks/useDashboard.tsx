@@ -3,6 +3,8 @@ import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { App, MenuProps } from "antd";
 import { useMediaQuery } from "react-responsive";
+import useDialogStore from "../store/sideDialogs";
+import Settings from "../components/settings";
 
 interface HookReturn {
   collapsed: boolean;
@@ -40,10 +42,18 @@ function useDashboard(): HookReturn {
     setCollapsed(!collapsed);
   };
 
+  const { showDialog } = useDialogStore();
+
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: userProfile?.full_name || "",
+      onClick: () => {
+        showDialog(<Settings />, {
+          title: "User Settings",
+          fullScreenMobile: false,
+        });
+      },
     },
     {
       key: "2",

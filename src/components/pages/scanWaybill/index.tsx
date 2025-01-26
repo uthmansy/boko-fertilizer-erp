@@ -9,7 +9,7 @@ const ScanWaybill: React.FC = () => {
   const { handleSubmit, inputRef, isLoading, vehicle } = useScanWaybill(); // Destructure hook's values
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen -mt-14 bg-gray-100">
+    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       {isLoading ? (
         <Spin tip="Loading" size="large" />
       ) : (

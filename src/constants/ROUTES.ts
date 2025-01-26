@@ -29,6 +29,12 @@ const ROUTES = {
   transportFees: "/transportFees",
   userManagement: "/user-management",
   dailyProduction: "/daily-production",
+  production: "/production",
+  inventory: "/inventory",
+  users: "/users",
+  logistics: "/logistics",
+  company: "/company",
+  hr: "/hr",
 };
 
 export default ROUTES;

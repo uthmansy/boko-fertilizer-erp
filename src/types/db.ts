@@ -43,6 +43,7 @@ export interface PayrollsAndEmployees extends Payrolls {
 export type InsertPayrolls = Database["public"]["Tables"]["payrolls"]["Insert"];
 export type UpdateEmployees =
   Database["public"]["Tables"]["employees"]["Update"];
+export type UpdateProfile = Database["public"]["Tables"]["profiles"]["Update"];
 export type InsertEmployees =
   Database["public"]["Tables"]["employees"]["Insert"];
 export type InventoryTransfer =

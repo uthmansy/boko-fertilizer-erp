@@ -3,7 +3,7 @@ import useDashboard from "../../hooks/useDashboard";
 import useDarkMode from "../../store/theme";
 import { MdSunny } from "react-icons/md";
 import { LogoutOutlined } from "@ant-design/icons";
-import { UserOutlined, BellOutlined, SettingOutlined } from "@ant-design/icons";
+import { BellOutlined, SettingOutlined } from "@ant-design/icons";
 import useWindow from "../../store/window";
 import { SelectOption } from "../../types/comps";
 import useAdminMenu from "../../store/adminMenu";
@@ -11,6 +11,8 @@ import { UserRole } from "../../types/db";
 import { USER_ROLE } from "../../constants/ENUMS";
 import useAuthStore from "../../store/auth";
 import { useNavigate } from "react-router-dom";
+import useDialogStore from "../../store/sideDialogs";
+import Settings from "../../components/settings";
 
 const { Header } = Layout;
 
@@ -29,6 +31,15 @@ function SiteHeader() {
     label: role,
     value: role,
   }));
+
+  const { showDialog } = useDialogStore();
+
+  const openProfileDialog = () => {
+    showDialog(<Settings />, {
+      title: "User Settings",
+      fullScreenMobile: false,
+    });
+  };
 
   return (
     <Header
@@ -86,13 +97,24 @@ function SiteHeader() {
             size="large"
           />
           <Badge>
-            <Avatar size="large" shape="circle" icon={<SettingOutlined />} />
+            <Avatar
+              onClick={openProfileDialog}
+              size="large"
+              shape="circle"
+              icon={<SettingOutlined />}
+            />
           </Badge>
           <Badge dot>
             <Avatar size="large" shape="circle" icon={<BellOutlined />} />
           </Badge>
           <Dropdown menu={{ items }} placement="bottomRight">
-            <Avatar size="large" icon={<UserOutlined />} />
+            <Avatar
+              src={userProfile?.avatar_url}
+              size="large"
+              className="bg-gray-200 border cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              {userProfile?.full_name?.[0]?.toUpperCase()}
+            </Avatar>
           </Dropdown>
         </Space>
       </div>
