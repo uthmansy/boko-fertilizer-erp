@@ -43,6 +43,7 @@ export const inventoryItemsKeys = {
   getItemRecord: "getItemRecord",
   getProductionRunProducts: "getProductionRunProducts",
   getAllItemsAsOptions: "getAllItemsAsOptions",
+  getCsv: "getInventoryItemsCsv",
 };
 export const stocksKeys = {
   getItemRecord: "getItemRecord",
@@ -86,6 +87,7 @@ export const requestsKeys = {
 };
 export const productionsKeys = {
   getAllProductions: "getAllProductions",
+  getRunsCsv: "getProductionRunsCsv",
 };
 export const productSubmissionsKeys = {
   getAllSubmissions: "getAllSubmissions",
@@ -93,6 +95,7 @@ export const productSubmissionsKeys = {
 export const inventoryTransfersKeys = {
   getInventoryTransfersPaginated: "getInventoryTransfersPaginated",
   getAllInventoryTransfers: "getAllInventoryTransfers",
+  getCsv: "getInventoryTransferCsv",
 };
 export const employeesKeys = {
   getAllEmployees: "getAllEmployees",
@@ -112,6 +115,7 @@ export const financialReportsKeys = {
 };
 export const stockInKeys = {
   getAll: "getStockAll",
+  getCsv: "getStockInCsv",
 };
 export const dailyProductionKeys = {
   getDay: "getDailyProductionDay",

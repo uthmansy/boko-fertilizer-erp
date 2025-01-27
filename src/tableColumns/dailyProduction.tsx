@@ -22,7 +22,7 @@ export const dailyProductionColumns: ColumnsType<FinishedProductsTableSummary> =
       key: "total_quantity_produced",
       render: (_, record) => (
         <span>
-          {record.pieces ? formatNumber(record.pieces) : "NA"} {"metre"}
+          {record.metre ? formatNumber(record.metre) : "NA"} {"metre"}
         </span>
       ),
       width: 100,

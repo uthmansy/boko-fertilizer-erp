@@ -33,6 +33,7 @@ function Sider() {
       collapsible
       collapsed={collapsed}
       style={{ zIndex: 100, position: isMobile ? "absolute" : "relative" }}
+      className="h-screen"
       width={250}
     >
       <Button

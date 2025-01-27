@@ -2,6 +2,7 @@ import { Tabs, TabsProps } from "antd";
 import ProductionRuns from "../productionRuns";
 import Requests from "../requests";
 import ProductSubmissions from "../productSubmissions";
+import FinishedProducts from "../finishedProducts";
 
 function Production() {
   const tabs: TabsProps["items"] = [
@@ -19,6 +20,11 @@ function Production() {
       key: "3",
       label: "Product Submissions",
       children: <ProductSubmissions />,
+    },
+    {
+      key: "4",
+      label: "Finished Products",
+      children: <FinishedProducts />,
     },
   ];
   return <Tabs size="large" defaultActiveKey="1" items={tabs} />;

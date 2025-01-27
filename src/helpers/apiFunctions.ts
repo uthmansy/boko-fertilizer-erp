@@ -16,6 +16,7 @@ import {
   InsertPaymentAccounts,
   InsertPayrolls,
   InventoryItems,
+  InventoryTransfer,
   InventoryTransferInsert,
   InventoryTransferWithStocks,
   PaymentAccounts,
@@ -284,6 +285,51 @@ export const getAllEmployeesData = async (): Promise<Employees[]> => {
     throw error.message;
   }
   return data;
+};
+export const getInventoryItemsData = async (): Promise<InventoryItems[]> => {
+  let query = supabase
+    .from("inventory_items")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getInventoryTransfersData = async (): Promise<
+  InventoryTransfer[]
+> => {
+  let query = supabase
+    .from("inventory_transfers")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getTable = async <T>(tableName: string): Promise<T[]> => {
+  let query = supabase
+    .from(tableName)
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+
+  return data as T[];
 };
 
 export const getTotalSalesReceivables = async (): Promise<number> => {
