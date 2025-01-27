@@ -10,6 +10,7 @@ export type FinancialReport = {
   total_expenses: number;
   total_item_cost: number;
   total_payroll: number;
+  total_vehicle_fees: number;
 };
 
 export interface ApiFilterOptions {

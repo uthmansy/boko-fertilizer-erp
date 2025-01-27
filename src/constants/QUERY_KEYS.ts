@@ -20,6 +20,7 @@ export const enrollmentKeys = {
 export const expensesKeys = {
   getExpenses: "getExpenses",
   getAllExpenses: "getAllExpenses",
+  getCsv: "getExpensesCsv",
 };
 export const payablesKeys = {
   getAll: "getPayables",
@@ -58,6 +59,7 @@ export const externalStocksKeys = {
 export const purchasesKeys = {
   getAllPurchases: "getAllPurchases",
   getPurchasePayments: "getPurchasePayments",
+  getCsv: "getPurchasesCsv",
 };
 export const purchasePaymentsKeys = {
   getAll: "getAllPurchasesPayments",
@@ -80,10 +82,14 @@ export const vehiclesKeys = {
   getTransitVehicles: "getTransitVehicles",
   getReceivedVehicles: "getReceivedVehicles",
   getDispatchedVehicles: "getDispatchedVehicles",
+  getTransitCsv: "getTransitCsv",
+  getReceivedCsv: "getReceivedCsv",
+  getDeliveredCsv: "getDeliveredCsv",
 };
 
 export const requestsKeys = {
   getAllRequests: "getAllRequests",
+  getCsv: "getRequestsCsv",
 };
 export const productionsKeys = {
   getAllProductions: "getAllProductions",
@@ -91,6 +97,7 @@ export const productionsKeys = {
 };
 export const productSubmissionsKeys = {
   getAllSubmissions: "getAllSubmissions",
+  getCsv: "getSubmissionsCsv",
 };
 export const inventoryTransfersKeys = {
   getInventoryTransfersPaginated: "getInventoryTransfersPaginated",
@@ -122,5 +129,6 @@ export const dailyProductionKeys = {
 };
 export const finishedProductsKeys = {
   getAll: "getAllFinishedProducts",
+  getCsv: "getFinishedProductsCsv",
   getDailyProduction: "getAllFinishedProductsDailyProduction",
 };

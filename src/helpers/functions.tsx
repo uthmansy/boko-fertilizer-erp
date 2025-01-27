@@ -155,3 +155,27 @@ export const svgToDataUri = async (svgString: string) => {
     return "";
   }
 };
+
+export const flattenObject = (
+  obj: Record<string, any>,
+  parentKey = ""
+): Record<string, any> => {
+  return Object.entries(obj).reduce(
+    (acc: Record<string, any>, [key, value]) => {
+      const newKey = parentKey ? `${parentKey}_${key}` : key;
+
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        Object.assign(acc, flattenObject(value, newKey));
+      } else {
+        acc[newKey] = value;
+      }
+
+      return acc;
+    },
+    {}
+  );
+};

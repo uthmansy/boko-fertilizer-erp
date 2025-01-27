@@ -316,10 +316,13 @@ export const getInventoryTransfersData = async (): Promise<
   }
   return data;
 };
-export const getTable = async <T>(tableName: string): Promise<T[]> => {
+export const getTable = async <T>(
+  tableName: string,
+  selection?: string
+): Promise<T[]> => {
   let query = supabase
     .from(tableName)
-    .select("*")
+    .select(selection || "*")
     .order("created_at", { ascending: false });
 
   const { data, error } = await query;
@@ -407,7 +410,8 @@ export const getVehicles = async (
   item: string = "all",
   destination: string | null = "all",
   search: string = "",
-  origin: string = "all"
+  origin: string = "all",
+  paginated: boolean = true
 ): Promise<VehiclesAndDestination[]> => {
   let query = supabase
     .from("vehicles")
@@ -446,10 +450,12 @@ export const getVehicles = async (
     query = query.textSearch(`vehicle_number`, search);
   }
 
+  if (paginated) {
+    query = query.range((pageNumber - 1) * 15, pageNumber * 15 - 1);
+  }
+
   // Apply ordering and pagination after filtering
-  query = query
-    .order("created_at", { ascending: false })
-    .range((pageNumber - 1) * 15, pageNumber * 15 - 1);
+  query = query.order("created_at", { ascending: false });
 
   const { data, error } = await query;
 

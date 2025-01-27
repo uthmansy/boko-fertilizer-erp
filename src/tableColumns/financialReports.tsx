@@ -44,6 +44,14 @@ export const financialReportsColumns: ColumnsType<FinancialReport> = [
     ),
   },
   {
+    title: "Transport",
+    dataIndex: "total_vehicle_fees",
+    key: "total_vehicle_fees",
+    render: (text) => (
+      <span className="capitalize">{`₦${formatNumber(text)}`}</span>
+    ),
+  },
+  {
     title: "Total Profit",
     dataIndex: "profit",
     key: "profit",
