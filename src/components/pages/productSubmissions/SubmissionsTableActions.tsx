@@ -22,11 +22,11 @@ function SubmissionsTableActions({ submission }: Props) {
               <RejectSubmission submission={submission} />
             </>
           )}
-          {(userProfile?.role === "SUPER ADMIN" ||
-            userProfile?.role === "PRODUCTION") && (
-            <DeleteSubmission submission={submission} />
-          )}
         </>
+      )}
+      {(userProfile?.role === "SUPER ADMIN" ||
+        userProfile?.role === "PRODUCTION") && (
+        <DeleteSubmission submission={submission} />
       )}
     </Space>
   );
