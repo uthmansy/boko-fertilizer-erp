@@ -17,6 +17,13 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
     width: 100,
   },
   {
+    title: "Order Number",
+    dataIndex: "order_number",
+    key: "order_number",
+    render: (text) => <span className="capitalize">{text}</span>,
+    width: 130,
+  },
+  {
     title: "Customer",
     dataIndex: "customer_name",
     key: "customer_name",

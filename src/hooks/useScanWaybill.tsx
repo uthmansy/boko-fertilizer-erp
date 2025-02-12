@@ -82,6 +82,7 @@ const useScanWaybill = (): UseScanWaybillReturn => {
       try {
         if (inputRef.current) {
           const scannedData = inputRef.current.value; // Get value from the input
+          console.log(scannedData);
           setQrData(scannedData); // Update the state with QR data
           await WaybillNumberSchema.parseAsync(scannedData);
           message.loading("Loading Vehicle...");
