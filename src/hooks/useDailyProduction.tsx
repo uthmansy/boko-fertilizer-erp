@@ -185,6 +185,7 @@ export default function useDailyProduction(): HookReturn {
       })),
     [data]
   );
+  ``;
 
   const allProductsPiecesQuantityMorning = useMemo(
     () =>

@@ -16,6 +16,7 @@ import TabLabel from "../../TabLabel";
 import { VscEmptyWindow, VscFileSymlinkFile, VscFiles } from "react-icons/vsc";
 import Receivables from "./Receivables";
 import { HomeOutlined } from "@ant-design/icons";
+import Invoices from "../invoices";
 
 function FinancialReports() {
   const { isLoading, isRefetching, reports, csvHeaders } =
@@ -63,6 +64,11 @@ function FinancialReports() {
       key: "7",
       label: <TabLabel Icon={VscFiles} label="Payrolls" />,
       children: <Payrolls />,
+    },
+    {
+      key: "8",
+      label: <TabLabel Icon={TfiWallet} label="Invoice Accounts" />,
+      children: <Invoices />,
     },
   ];
 

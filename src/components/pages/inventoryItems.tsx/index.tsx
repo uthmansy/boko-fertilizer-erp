@@ -53,7 +53,8 @@ function InventoryItems() {
         <RefreshButton queryKey={inventoryItemsKeys.getAllItems} />
         {(userProfile?.role === "SUPER ADMIN" ||
           userProfile?.role === "ADMIN" ||
-          userProfile?.role === "MANAGER") && <AddNew />}
+          userProfile?.role === "MANAGER" ||
+          userProfile?.role === "INVENTORY") && <AddNew />}
         {data && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink

@@ -451,7 +451,7 @@ export const getVehicles = async (
   }
 
   if (paginated) {
-    query = query.range((pageNumber - 1) * 15, pageNumber * 15 - 1);
+    query = query.range((pageNumber - 1) * 50, pageNumber * 50 - 1);
   }
 
   // Apply ordering and pagination after filtering
