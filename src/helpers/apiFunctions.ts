@@ -1223,6 +1223,17 @@ export const deleteSale = async (saleId: string): Promise<void> => {
     throw new Error(error.message);
   }
 };
+export const deleteItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("inventory_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("Failed to delete Item:", error);
+    throw new Error(error.message);
+  }
+};
 export const deleteSalePayment = async (paymentId: string): Promise<void> => {
   const { error } = await supabase
     .from("sales_payments")
