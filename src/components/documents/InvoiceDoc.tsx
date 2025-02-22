@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: "auto",
-    height: 100,
+    height: 80,
     marginBottom: 7,
     alignSelf: "center", // Center the logo horizontally
   },

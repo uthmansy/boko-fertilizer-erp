@@ -239,7 +239,7 @@ const PurchaseRecord: React.FC<PurchaseRecordProps> = ({
               textTransform: "uppercase", // Uppercase for consistency
             }}
           >
-            {COMPANY.address}
+            {COMPANY.address}, {COMPANY.phone}
           </Text>
         </View>
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>

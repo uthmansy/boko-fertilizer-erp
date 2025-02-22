@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: "auto",
-    height: 100,
+    height: 80,
     marginBottom: 7,
     alignSelf: "center", // Center the logo horizontally
   },
@@ -225,7 +225,7 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               textTransform: "uppercase", // Uppercase for consistency
             }}
           >
-            {COMPANY.address}
+            {COMPANY.address}, {COMPANY.phone}
           </Text>
         </View>
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>
