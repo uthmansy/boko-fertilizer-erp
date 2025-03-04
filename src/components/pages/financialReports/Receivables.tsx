@@ -1,8 +1,15 @@
-import { Card, Statistic, Table } from "antd";
+import { Button, Card, Statistic, Table } from "antd";
 import useReceivables from "../../../hooks/useReceivables";
 import { receivablesColumns } from "../../../tableColumns/receivables";
 import { formatNumber } from "../../../helpers/functions";
 import useDarkMode from "../../../store/theme";
+import useCsv from "../../../hooks/useCsv";
+import { Sales } from "../../../types/db";
+import { getCsvReceivables } from "../../../helpers/apiFunctions";
+import { salesKeys } from "../../../constants/QUERY_KEYS";
+import { BorderInnerOutlined } from "@ant-design/icons";
+import { CSVLink } from "react-csv";
+import { Headers } from "react-csv/lib/core";
 
 function Receivables() {
   const {
@@ -14,6 +21,19 @@ function Receivables() {
     salesPaymentsBalanceSum,
   } = useReceivables();
   const { darkMode } = useDarkMode();
+
+  const headers: Headers = [
+    { label: "Date", key: "date" },
+    { label: "Customer", key: "customer_name" },
+    { label: "Order Number", key: "order_number" },
+    { label: "Customer Phone", key: "customer_phone" },
+    { label: "To be received", key: "payment_balance" },
+  ];
+
+  const { data } = useCsv<Sales[]>({
+    queryFn: getCsvReceivables,
+    queryKey: salesKeys.getCsvData,
+  });
 
   return (
     <div className="py-10 grid grid-cols-1 md:grid-cols-6 gap-10">
@@ -42,6 +62,13 @@ function Receivables() {
       </div>
       <div className="md:col-span-4">
         {/* <h2 className="text-3xl mb-5">Sales</h2> */}
+        {data && (
+          <Button className="mb-5" icon={<BorderInnerOutlined />}>
+            <CSVLink filename={"Receivables.csv"} data={data} headers={headers}>
+              Export to CSV
+            </CSVLink>
+          </Button>
+        )}
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}

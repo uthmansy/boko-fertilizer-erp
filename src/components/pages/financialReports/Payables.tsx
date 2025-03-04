@@ -1,8 +1,15 @@
-import { Card, Statistic, Table } from "antd";
+import { Button, Card, Statistic, Table } from "antd";
 import usePayables from "../../../hooks/usePayables";
 import { payablesColumns } from "../../../tableColumns/payables";
 import { formatNumber } from "../../../helpers/functions";
 import useDarkMode from "../../../store/theme";
+import useCsv from "../../../hooks/useCsv";
+import { Purchases as PurchasesType } from "../../../types/db";
+import { getCsvPayables } from "../../../helpers/apiFunctions";
+import { purchasesKeys } from "../../../constants/QUERY_KEYS";
+import { Headers } from "react-csv/lib/core";
+import { CSVLink } from "react-csv";
+import { BorderInnerOutlined } from "@ant-design/icons";
 
 function Payables() {
   const {
@@ -14,6 +21,18 @@ function Payables() {
     purchasePaymentsBalanceSum,
   } = usePayables();
   const { darkMode } = useDarkMode();
+
+  const { data } = useCsv<PurchasesType[]>({
+    queryFn: getCsvPayables,
+    queryKey: purchasesKeys.getCsv,
+  });
+
+  const headers: Headers = [
+    { label: "Date", key: "date" },
+    { label: "Order Number", key: "order_number" },
+    { label: "Seller", key: "seller" },
+    { label: "Price Balance", key: "balance" },
+  ];
 
   return (
     <div className="py-10 grid grid-cols-1 md:grid-cols-6 gap-10">
@@ -42,6 +61,13 @@ function Payables() {
       </div>
       <div className="md:col-span-4">
         <h2 className="text-3xl mb-5">Purchases</h2>
+        {data && (
+          <Button className="mb-5" icon={<BorderInnerOutlined />}>
+            <CSVLink filename={"payables.csv"} data={data} headers={headers}>
+              Export to CSV
+            </CSVLink>
+          </Button>
+        )}
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}

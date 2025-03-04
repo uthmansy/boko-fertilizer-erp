@@ -5,7 +5,7 @@ import {
   useQuery,
 } from "react-query";
 import {
-  getAllStockPurchases,
+  getPayables,
   getTotalPurchasesPayables,
 } from "../helpers/apiFunctions"; // Updated import for expenses
 import { Purchases } from "../types/db"; // Updated type import
@@ -30,7 +30,7 @@ function usePayables(): HookReturn {
   const { message } = App.useApp();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const payables = await getAllStockPurchases({ pageParam }); // Updated function call
+    const payables = await getPayables({ pageParam }); // Updated function call
     return payables;
   };
 

@@ -102,6 +102,35 @@ export const getAllStockPurchases = async ({
 
   return data;
 };
+export const getPayables = async ({
+  pageParam,
+}: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
+  let query = supabase
+    .from("stock_purchases")
+    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .neq("balance", 0)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getCsvPayables = async (): Promise<PurchasesAndPayments[]> => {
+  let query = supabase
+    .from("stock_purchases")
+    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .neq("balance", 0)
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+
+  return data;
+};
 
 export const getDepartments = async (
   pageNumber: number = 1
@@ -247,6 +276,22 @@ export const getAllSales = async (
   if (receivables) {
     query = query.neq("payment_balance", 0);
   }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+
+  return data;
+};
+export const getCsvReceivables = async (): Promise<SalesAndPayments[]> => {
+  let query = supabase
+    .from("sales")
+    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
+    .neq("payment_balance", 0)
+    .order("created_at", { ascending: false });
 
   const { data, error } = await query;
 
