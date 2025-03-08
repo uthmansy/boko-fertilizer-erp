@@ -17,20 +17,32 @@ type TransformedRequest = Omit<RequestWithItems, "request_items"> & {
 function Requests() {
   const { data } = useCsv<RequestWithItems[]>({
     queryFn: () =>
-      getTable<RequestWithItems>("requests", "*, request_items (*)"),
+      getTable<RequestWithItems>(
+        "requests",
+        "*, request_items (*, item_info:item(*))"
+      ),
     queryKey: requestsKeys.getCsv,
   });
   const transformedData: TransformedRequest[] | undefined = data?.map(
     (request) => ({
       ...request,
       request_items: request.request_items
-        .map((item) => `${item.item} (${item.quantity})`)
+        .map(
+          (item) =>
+            `${item.item} (${item.quantity} ${item.item_info.unit}, ${item.item_info.purchase_cost} per ${item.item_info.unit})`
+        )
         .join(", "),
+      total_cost: request.request_items.reduce(
+        (sum, item) =>
+          sum + item.quantity * (item.item_info.purchase_cost || 0),
+        0
+      ),
     })
   );
   const headers: Headers = [
     { label: "Accepted By", key: "accepted_by" },
     { label: "Requests Items", key: "request_items" },
+    { label: "Total Cost for items", key: "total_cost" },
     { label: "Date Requested", key: "date_requested" },
     { label: "Date Accepted", key: "date_accepted" },
     { label: "Date Rejected", key: "date_rejected" },

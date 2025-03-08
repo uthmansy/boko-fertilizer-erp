@@ -37,6 +37,9 @@ export type UpdateEmployeePayroll =
 export interface EmployeePayrollAndEmployee extends EmployeePayroll {
   employee: Employees;
 }
+export interface RequestItemJoined extends RequestItem {
+  item_info: InventoryItems;
+}
 export interface PayrollsAndEmployees extends Payrolls {
   employeePayrolls: EmployeePayrollAndEmployee[];
 }
@@ -82,7 +85,7 @@ export interface VehiclesAndDestination extends Vehicles {
   item_info: InventoryItems;
 }
 export interface RequestWithItems extends Requests {
-  request_items: RequestItem[];
+  request_items: RequestItemJoined[];
 }
 export interface ProductionWithItems extends Productions {
   production_raw_materials: ProductionRawMaterials[];
