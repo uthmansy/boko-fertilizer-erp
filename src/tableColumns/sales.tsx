@@ -1,6 +1,5 @@
 import { ColumnsType } from "antd/es/table";
 import { SalesAndPayments } from "../types/db"; // Ensure this matches the updated Sales type
-import { formatNumber } from "../helpers/functions";
 import TableActions from "../components/pages/sales/TableActions";
 
 export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
@@ -30,35 +29,13 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
     render: (text) => <span className="capitalize">{text}</span>,
     width: 130,
   },
-  {
-    title: "Item",
-    dataIndex: "item_purchased",
-    key: "item_purchased",
-    render: (text) => <span className="capitalize">{text}</span>,
-    width: 120,
-  },
-  {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
-    render: (_, record) => (
-      <span className="italic">{`${formatNumber(record.quantity)} ${
-        record.item_info.unit
-      }`}</span>
-    ),
-    width: 120,
-  },
-  {
-    title: "Balance",
-    dataIndex: "balance",
-    key: "balance",
-    render: (_, record) => (
-      <span className="italic text-red-700">
-        {`${formatNumber(record.balance)}`} {record.item_info.unit}
-      </span>
-    ),
-    width: 120,
-  },
+  // {
+  //   title: "Item",
+  //   dataIndex: "item_purchased",
+  //   key: "item_purchased",
+  //   render: (_, record) => <span className="capitalize">{text}</span>,
+  //   width: 120,
+  // },
   {
     title: "Warehouse",
     dataIndex: "warehouse",

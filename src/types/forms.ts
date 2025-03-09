@@ -18,6 +18,7 @@ import { userSignUpSchema } from "../zodSchemas/auth";
 import { finishedProductsMultipleSchema } from "../zodSchemas/finishedProducts";
 import { UpdateSaleSchema } from "../zodSchemas/sales";
 import { UpdateExpenseSchema } from "../zodSchemas/expenses";
+import { UpdateSaleItemSchema } from "../zodSchemas/saleItem";
 
 export type NewWarehouse = z.TypeOf<typeof WarehouseSchema>;
 export type NewInventoryItem = z.TypeOf<typeof InventoryItemSchema>;
@@ -41,4 +42,5 @@ export type AddMultiProductsSubmission = z.infer<
 >;
 export type UpdatePurchaseInput = z.infer<typeof UpdatePurchaseSchema>;
 export type UpdateSaleInput = z.infer<typeof UpdateSaleSchema>;
+export type UpdateSaleItem = z.infer<typeof UpdateSaleItemSchema>;
 export type UpdateExpenseInput = z.infer<typeof UpdateExpenseSchema>;

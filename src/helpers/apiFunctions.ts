@@ -30,6 +30,7 @@ import {
   RequestWithItems,
   Sales,
   SalesAndPayments,
+  SalesItemsJoined,
   SalesPayments,
   StockIn,
   StockInWithDetails,
@@ -63,7 +64,9 @@ import {
   UpdateExpenseInput,
   UpdatePurchaseInput,
   UpdateSaleInput,
+  UpdateSaleItem,
 } from "../types/forms";
+import { CreateSaleType } from "../zodSchemas/sales";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -261,7 +264,7 @@ export const getAllSales = async (
 ): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
+    .select("*, payments:sales_payments (*), items:sales_items(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -725,6 +728,21 @@ export const getAllSalesPayments = async (
 
   return data;
 };
+export const getAllSaleItems = async (
+  pageNumber: number = 1,
+  saleId: string // Assuming orderNumber is of type string
+): Promise<SalesItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("sales_items")
+    .select("*")
+    .eq("sale_id", saleId) // Filter by order_number
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
 
 export const getAllInventoryItems = async (
   pageNumber: number = 1,
@@ -951,7 +969,7 @@ export const getExternalStocks = async (): Promise<
 > => {
   const { data, error } = await supabase
     .from("external_stocks")
-    .select("*, stock_purchases!inner(*), sales(*)")
+    .select("*, stock_purchases!inner(*)")
     .gt("balance", 0);
 
   if (error) throw error.message;
@@ -964,7 +982,7 @@ export const getAllExternalStocks = async (): Promise<
 > => {
   const { data, error } = await supabase
     .from("external_stocks")
-    .select("*, stock_purchases!inner(*), sales(*)");
+    .select("*, stock_purchases!inner(*)");
 
   if (error) throw error.message;
 
@@ -1067,8 +1085,8 @@ export const addPurchase = async (payload: Purchases): Promise<void> => {
   if (error) throw new Error(error.message);
 };
 
-export const addSale = async (payload: Sales): Promise<void> => {
-  const { error } = await supabase.from("sales").insert([payload]);
+export const addSale = async (payload: CreateSaleType): Promise<void> => {
+  const { error } = await supabase.rpc("create_sale", payload);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
@@ -1116,6 +1134,16 @@ export const updatePurchase = async (
 export const updateSale = async (payload: UpdateSaleInput): Promise<void> => {
   const { error } = await supabase
     .from("sales")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateSaleItem = async (
+  payload: UpdateSaleItem
+): Promise<void> => {
+  const { error } = await supabase
+    .from("sales_items")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);
@@ -1287,6 +1315,17 @@ export const deleteSalePayment = async (paymentId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Sale Payment:", error);
+    throw new Error(error.message);
+  }
+};
+export const deleteSaleItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("sales_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("Failed to delete Sale Item:", error);
     throw new Error(error.message);
   }
 };

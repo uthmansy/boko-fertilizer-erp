@@ -1,13 +1,14 @@
-import { Button, Modal } from "antd";
+import useEditSaleItem from "../../../hooks/useEditSaleItem";
 import FormBuilder from "../../utils/FormBuilder";
-import useAddSalesPayment from "../../../hooks/useAddSalesPayment"; // Updated hook
+import { SalesItemsJoined } from "../../../types/db";
+import { MdModeEdit } from "react-icons/md";
+import { Button, Modal } from "antd";
 
 interface Props {
-  orderNumber: string;
+  item: SalesItemsJoined;
 }
 
-function AddSalesPayment({ orderNumber }: Props) {
-  // Updated component name
+function EditSaleItem({ item }: Props) {
   const {
     handleCloseModal,
     handleOpenModal,
@@ -15,28 +16,29 @@ function AddSalesPayment({ orderNumber }: Props) {
     formConfig,
     handleSubmit,
     isLoading,
-  } = useAddSalesPayment({ orderNumber }); // Updated hook usage
+  } = useEditSaleItem({ item });
 
   return (
     <>
       <Button onClick={handleOpenModal} type="default">
-        + Add Payment
+        <MdModeEdit />
       </Button>
       <Modal
         footer={null}
-        title="Add Payment"
+        title="Edit Sale"
         open={isModalOpen}
         onCancel={handleCloseModal}
+        width={800}
       >
         <FormBuilder
-          columns={2}
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
+          columns={2}
         />
       </Modal>
     </>
   );
 }
 
-export default AddSalesPayment; // Updated export name
+export default EditSaleItem;

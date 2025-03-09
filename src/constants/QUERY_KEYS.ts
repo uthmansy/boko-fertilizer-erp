@@ -72,6 +72,7 @@ export const salesKeys = {
   getUncompletedSales: "getUncompletedSales",
   getSalePayments: "getSalePayments",
   getCsvData: "getCsvData",
+  getSaleItems: "getSaleItems",
 };
 export const accountsKeys = {
   getAll: "getAllAccounts",

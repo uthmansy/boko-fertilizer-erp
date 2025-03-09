@@ -1,22 +1,15 @@
-import { ExternalStockItems, FieldConfig, SelectOption } from "../types/comps";
+import { FieldConfig, SelectOption } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import {
   addSale,
-  getExternalStocks,
   getInventoryItems,
   getWarehouses,
 } from "../helpers/apiFunctions"; // Update to use addSale function
-import {
-  externalStocksKeys,
-  inventoryItemsKeys,
-  warehousesKeys,
-} from "../constants/QUERY_KEYS"; // Update to use salesKeys
-import { SalesSchema } from "../zodSchemas/sales"; // Update to SalesSchema
+import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS"; // Update to use salesKeys
+import { CreateSaleRPCSchema } from "../zodSchemas/sales"; // Update to SalesSchema
 import useSalesStore from "../store/sales";
-import { useEffect, useState } from "react";
-import { StocksWithSoldBalance } from "../types/db";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -30,12 +23,6 @@ interface HookReturn {
 function useAddNewSale(): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
-  const [externalStocksItems, setExternalStocksItems] = useState<
-    ExternalStockItems[]
-  >([]);
-  const [externalStocksOptions, setExternalStocksOptions] = useState<
-    SelectOption[]
-  >([]);
 
   const { data: items } = useQuery({
     queryKey: inventoryItemsKeys.getAllItems,
@@ -62,48 +49,6 @@ function useAddNewSale(): HookReturn {
     },
   });
 
-  const { data: externalStocks } = useQuery({
-    queryKey: externalStocksKeys.getItemExternalRecord,
-    queryFn: async (): Promise<StocksWithSoldBalance[]> => {
-      const stocks = await getExternalStocks();
-      const stocksWithSoldBalance: StocksWithSoldBalance[] = stocks
-        .map((stock) => {
-          const totalSoldBalance = stock.sales.reduce(
-            (sum, sale) => sum + sale.balance,
-            0
-          );
-          return {
-            ...stock,
-            totalSoldBalance,
-          };
-        })
-        .filter((stock) => stock.balance > stock.totalSoldBalance);
-      return stocksWithSoldBalance;
-    },
-    onError: () => {
-      message.error("Failed to Load Inventory Stocks");
-    },
-  });
-
-  useEffect(() => {
-    externalStocks &&
-      setExternalStocksItems(
-        externalStocks.map((stock) => ({
-          stockId: stock.id,
-          item: stock.stock_purchases.item,
-        }))
-      );
-    externalStocks &&
-      setExternalStocksOptions(
-        externalStocks.map((stock) => ({
-          label: `${stock.stock_purchases.item} / ${
-            stock.stock_purchases.seller
-          } - (${stock.balance - stock.totalSoldBalance}  Available)`,
-          value: stock.id,
-        }))
-      );
-  }, [externalStocks]);
-
   const { type, isModalOpen, handleCloseModal, handleOpenModal, resetState } =
     useSalesStore();
 
@@ -113,49 +58,6 @@ function useAddNewSale(): HookReturn {
       label: "Date",
       type: "date",
       required: true,
-    },
-    ...((type === "internal"
-      ? [
-          {
-            name: "item_purchased",
-            label: "Item Purchased",
-            type: "select",
-            options: items || [],
-            required: true,
-          },
-        ]
-      : []) as FieldConfig[]),
-    {
-      name: "price",
-      label: "Price",
-      type: "money",
-      required: true,
-    },
-    {
-      name: "vat",
-      label: "VAT (%)",
-      type: "number",
-      required: true,
-      suffix: "%",
-      // defaultValue: 7.5,
-    },
-    {
-      name: "quantity",
-      label: "Quantity",
-      type: "number",
-      // suffix: "",
-      required: true,
-      dependencies: ["external_stock"],
-      getMaxFromDependency: (values) => {
-        if (type === "external") {
-          const externalStock = externalStocks?.find(
-            (stock) => stock.id === values?.external_stock
-          );
-          const balance = externalStock && externalStock.balance;
-
-          return balance;
-        }
-      },
     },
     {
       name: "customer_name",
@@ -186,17 +88,41 @@ function useAddNewSale(): HookReturn {
           },
         ]
       : []) as FieldConfig[]),
-    ...((type === "external"
-      ? [
-          {
-            name: "external_stock",
-            label: "External Stock",
-            type: "select",
-            options: externalStocksOptions,
-            required: true,
-          },
-        ]
-      : []) as FieldConfig[]),
+    {
+      name: "items",
+      label: "Items",
+      type: "dynamic",
+      required: true,
+      subFields: [
+        {
+          name: "item_purchased",
+          label: "Item Purchased",
+          type: "select",
+          options: items || [],
+          required: true,
+        },
+        {
+          name: "quantity",
+          label: "Quantity",
+          type: "number",
+          // suffix: "",
+          required: true,
+        },
+        {
+          name: "price",
+          label: "Price",
+          type: "money",
+          required: true,
+        },
+        {
+          name: "vat",
+          label: "VAT (%)",
+          type: "number",
+          required: true,
+          suffix: "%",
+        },
+      ],
+    },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
@@ -204,26 +130,8 @@ function useAddNewSale(): HookReturn {
       try {
         values.date = values.date.format("YYYY-MM-DD");
         values.type = type;
-        values.balance = values.quantity;
-        values.payment_balance = values.price;
-        if (type === "external") {
-          const externalStock = externalStocks?.find(
-            (stock) => stock.id === values?.external_stock
-          );
-          if (
-            externalStock &&
-            externalStock.balance -
-              (externalStock.totalSoldBalance + values.quantity) <
-              0
-          )
-            throw new Error("Not Enough Inventory");
-          values.item_purchased = externalStocksItems?.find(
-            (item) => item.stockId === values.external_stock
-          )?.item;
-        }
-
-        await SalesSchema.parseAsync(values);
-        await addSale(values); // Use addSale function for sales
+        const payload = await CreateSaleRPCSchema.parseAsync(values);
+        await addSale(payload); // Use addSale function for sales
       } catch (error) {
         if (error instanceof ZodError) {
           // Handle ZodError separately to extract and display validation errors

@@ -3,11 +3,9 @@ import { FieldConfig } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { UpdateSaleSchema } from "../zodSchemas/sales";
-import { updateSale } from "../helpers/apiFunctions";
-import { SalesAndPayments } from "../types/db";
-import dayjs from "dayjs";
-import { valueType } from "antd/es/statistic/utils";
+import { updateSaleItem } from "../helpers/apiFunctions";
+import { SalesItemsJoined } from "../types/db";
+import { UpdateSaleItemSchema } from "../zodSchemas/saleItem";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -19,10 +17,10 @@ interface HookReturn {
 }
 
 interface Prop {
-  sale: SalesAndPayments;
+  item: SalesItemsJoined;
 }
 
-function useEditSale({ sale }: Prop): HookReturn {
+function useEditSaleItem({ item }: Prop): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
 
@@ -32,40 +30,33 @@ function useEditSale({ sale }: Prop): HookReturn {
 
   const formConfig: FieldConfig[] = [
     {
-      name: "date",
-      label: "Sale Date",
-      type: "date",
+      name: "price",
+      label: "Price",
+      type: "money",
       required: false,
-      defaultValue: (dayjs(sale.date, "YYYY-MM-DD") ||
-        undefined) as unknown as valueType,
+      defaultValue: item.price,
     },
     {
-      name: "customer_name",
-      label: "Customer Name",
-      type: "text",
+      name: "quantity",
+      label: "Quantity",
+      type: "number",
       required: false,
-      defaultValue: sale.customer_name,
+      defaultValue: item.quantity,
       rules: [
-        { min: 3, message: "Customer name must be at least 3 characters" },
-        { max: 50, message: "Customer name cannot exceed 50 characters" },
+        {
+          pattern: /^[1-9]\d*$/,
+          message: "Quantity must be a positive integer",
+        },
       ],
-    },
-    {
-      name: "customer_phone",
-      label: "Customer Phone",
-      type: "text",
-      required: false,
-      defaultValue: sale.customer_phone || undefined,
     },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
-        if (values.date) values.date = values.date.format("YYYY-MM-DD");
-        values.id = sale.id;
-        const payload = await UpdateSaleSchema.parseAsync(values);
-        await updateSale(payload);
+        values.id = item.id;
+        const payload = await UpdateSaleItemSchema.parseAsync(values);
+        await updateSaleItem(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Validation failed:", error.errors);
@@ -77,10 +68,10 @@ function useEditSale({ sale }: Prop): HookReturn {
       }
     },
     onError: (error: Error) => {
-      message.error(error.message || "Failed to update sale");
+      message.error(error.message || "Failed to update");
     },
     onSuccess: () => {
-      message.success("Sale updated successfully");
+      message.success("updated successfully");
       handleCloseModal();
       queryClient.invalidateQueries();
     },
@@ -96,4 +87,4 @@ function useEditSale({ sale }: Prop): HookReturn {
   };
 }
 
-export default useEditSale;
+export default useEditSaleItem;

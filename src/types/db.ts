@@ -112,7 +112,6 @@ export type ExternalStocks =
 export interface ExternalStocksAndPurchases extends ExternalStocks {
   stock_purchases: Purchases;
   purchase_item: { item: InventoryItems };
-  sales: Sales[];
 }
 export interface ProductSubmissionWithDetails extends ProductSubmission {
   product_info: InventoryItems;
@@ -142,9 +141,14 @@ export interface PurchasesAndPayments extends Purchases {
   item_info: InventoryItems;
 }
 
+export type SalesItems = Database["public"]["Tables"]["sales_items"]["Row"];
+
+export interface SalesItemsJoined extends SalesItems {
+  item_info: InventoryItems;
+}
 export interface SalesAndPayments extends Sales {
   payments: SalesPayments[];
-  item_info: InventoryItems;
+  items: SalesItems[];
 }
 
 export interface StocksWithDetails extends Stocks {
