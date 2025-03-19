@@ -15,8 +15,6 @@ function ReceiveVehicle({ vehicle }: Props) {
     formConfig,
     handleSubmit,
     isLoading,
-    shortage,
-    onValuesChange,
   } = useReceiveVehicle({ vehicle });
 
   return (
@@ -34,8 +32,6 @@ function ReceiveVehicle({ vehicle }: Props) {
           formConfig={formConfig}
           handleSubmit={handleSubmit}
           isLoading={isLoading}
-          onValuesChange={onValuesChange}
-          shortage={shortage}
           vehicle={vehicle}
         />
       </Modal>

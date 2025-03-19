@@ -1,25 +1,24 @@
 import { Alert, Button, Space } from "antd";
 import useDispatchStore from "../../../store/dispatch";
 import { useEffect } from "react";
-import SelectToCustomer from "../externalDispatch/SelectToCustomer";
 import DispatchForm from "../externalDispatch/DispatchForm";
-import TransitWaybillViewer from "../transit/TransitWaybillViewer";
+import SelectType from "./SelectType";
+import ShowDispatchWaybill from "../externalDispatch/ShowDispatchWaybill";
 
 function InternalDispatch() {
-  // Changed the component name
   const {
     currentPage,
     prevPage,
     resetValues,
-    setFromExternalStock,
-    setToCustomer,
+    setOriginType,
+    setDispatchType,
     newDispatchVehicle,
   } = useDispatchStore(); // Updated to use internal stock setting
 
   useEffect(() => {
     resetValues();
-    setFromExternalStock(false); // Set to internal stock
-    setToCustomer(true);
+    setOriginType("internal"); // Set to internal stock
+    setDispatchType("sale");
   }, []);
 
   return (
@@ -35,7 +34,7 @@ function InternalDispatch() {
             type="primary"
             onClick={() => {
               resetValues();
-              setFromExternalStock(false);
+              setOriginType("internal");
             }}
           >
             Reset
@@ -47,11 +46,11 @@ function InternalDispatch() {
           </Button>
         )} */}
       </Space>
-      {currentPage === 1 && <SelectToCustomer />}
+      {currentPage === 1 && <SelectType />}
       {currentPage === 2 && <DispatchForm />}
       {currentPage === 3 &&
         (newDispatchVehicle ? (
-          <TransitWaybillViewer vehicle={newDispatchVehicle} />
+          <ShowDispatchWaybill type="customer" vehicleId={newDispatchVehicle} />
         ) : (
           <Alert
             message="Error"

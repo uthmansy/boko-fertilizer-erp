@@ -102,7 +102,7 @@ function useTransit(): HookReturn {
       label: "Item",
       type: "select",
       onSelect: (value) => {
-        setFilterItem(value);
+        setFilterItem(value as string);
       },
       noLabel: true,
       options: [{ label: "All", value: "all" }, ...(items || [])],
@@ -113,7 +113,7 @@ function useTransit(): HookReturn {
       label: "Destination",
       type: "select",
       onSelect: (value) => {
-        setFilterDestination(value);
+        setFilterDestination(value as string);
       },
       noLabel: true,
       options: [{ label: "All", value: "all" }, ...(destinations || [])],
@@ -124,7 +124,7 @@ function useTransit(): HookReturn {
       label: "Origin",
       type: "select",
       onSelect: (value) => {
-        setFilterOrigin(value);
+        setFilterOrigin(value as string);
       },
       noLabel: true,
       options: [

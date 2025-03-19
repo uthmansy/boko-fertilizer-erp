@@ -1,25 +1,42 @@
 import { z } from "zod";
 
-export const CreateSaleRPCSchema = z.object({
-  customer_name: z.string(),
-  warehouse: z.string().optional(),
-  type: z.enum(["external", "internal"]),
-  customer_phone: z.string().optional(),
-  paid: z.number().default(0),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-    message: "Date must be in the format YYYY-MM-DD",
-  }),
-  items: z
-    .array(
-      z.object({
-        item_purchased: z.string(),
-        price: z.number(),
-        vat: z.number().default(7.5),
-        quantity: z.number(),
-      })
-    )
-    .min(1, "At least one item is required"),
-});
+export const CreateSaleRPCSchema = z
+  .object({
+    customer_name: z.string(),
+    warehouse: z.string().optional(),
+    type: z.enum(["external", "internal"]),
+    customer_phone: z.string().optional(),
+    paid: z.number().default(0),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: "Date must be in the format YYYY-MM-DD",
+    }),
+    items: z
+      .array(
+        z.object({
+          item_purchased: z.string().min(1),
+          // Make purchase_item optional at first; we'll enforce required condition via refinement.
+          purchase_item: z.string().optional(),
+          price: z.number(),
+          vat: z.number().default(7.5),
+          quantity: z.number(),
+        })
+      )
+      .min(1, "At least one item is required"),
+  })
+  .superRefine((data, ctx) => {
+    // Only enforce purchase_item presence if type is external.
+    if (data.type === "external") {
+      data.items.forEach((item, index) => {
+        if (!item.purchase_item) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "purchase_item is required for external type",
+            path: ["items", index, "purchase_item"],
+          });
+        }
+      });
+    }
+  });
 
 export type CreateSaleType = z.infer<typeof CreateSaleRPCSchema>;
 

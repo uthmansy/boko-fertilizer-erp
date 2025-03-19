@@ -3,7 +3,6 @@ import { FieldConfig } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-
 import ReceiveSchema from "../zodSchemas/receive";
 import useAuthStore from "../store/auth";
 import { VehiclesAndDestination, vehicleStatus } from "../types/db";
@@ -20,19 +19,11 @@ interface HookReturn {
   formConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
   isLoading: boolean;
-  shortage: number;
-  onValuesChange: (values: any) => void;
 }
 
 function useReceiveVehicle({ vehicle }: Props): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
-  const [shortage, setShortage] = useState<number>(0);
-
-  const onValuesChange = (values: any) => {
-    if (values.qty_received)
-      setShortage(vehicle.qty_carried - values.qty_received);
-  };
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const handleOpenModal = () => {
@@ -56,26 +47,25 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
       required: true,
     },
     {
-      name: "qty_received",
-      label: "Quantity Received",
-      type: "number",
-      required: true,
-      suffix: vehicle.item_info.unit,
+      type: "group",
+      nestAsArray: true,
+      name: "items",
+      groupLabel: "Items Received",
+      groupStyle: { backgroundColor: "#f5f5f5" },
+      groupClassName: "custom-group",
+      groupFields: [
+        ...(vehicle.items.map((item) => ({
+          label: `${item.item}, (${
+            item.qty_carried + " " + item.item_info.unit
+          } dispatched)`,
+          name: item.id,
+          type: "number",
+          required: true,
+          velue: item.qty_carried,
+          max: item.qty_carried,
+        })) as FieldConfig[]),
+      ],
     },
-    // {
-    //   name: "shortage",
-    //   label: "Shortage",
-    //   type: "number",
-    //   required: true,
-    //   dependencies: ["qty_received"],
-    //   getValueFromDependency: (values) => {
-    //     const stock = origins?.find(
-    //       (origin) => origin.id === values?.external_origin_id
-    //     )?.stock_purchases.item;
-
-    //     return stock;
-    //   },
-    // },
   ];
 
   const { userProfile } = useAuthStore();
@@ -89,14 +79,27 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
         const status: vehicleStatus = "received";
         values.status = status;
         values.id = vehicle.id;
-        await ReceiveSchema.parseAsync(values);
+        values.items = vehicle.items.map((vehicleItem) => {
+          // Find the corresponding quantity in values.items
+          const foundItem = values.items.find(
+            (valueItem: {
+              [key: string]: number; // Define key-value structure
+            }) => valueItem[vehicleItem.id] !== undefined
+          );
+
+          return {
+            ...vehicleItem,
+            qty_received: foundItem ? foundItem[vehicleItem.id] : 0, // Default to 0 if not found
+          };
+        });
+        const payload = await ReceiveSchema.parseAsync(values);
         if (
           !isAdmin &&
-          userProfile?.warehouse !== vehicle.destination_stock.warehouse
+          userProfile?.warehouse !== vehicle.destination_info?.name
         ) {
           throw new Error("You are not authorized to receive this");
         }
-        await receiveVehicle(values);
+        await receiveVehicle(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           // Handle ZodError separately to extract and display validation errors
@@ -133,8 +136,6 @@ function useReceiveVehicle({ vehicle }: Props): HookReturn {
     formConfig,
     handleSubmit,
     isLoading,
-    shortage,
-    onValuesChange,
   };
 }
 

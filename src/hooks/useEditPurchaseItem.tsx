@@ -1,14 +1,11 @@
-// useEditPurchase.ts
 import { useState } from "react";
 import { FieldConfig } from "../types/comps";
 import { App } from "antd";
 import { useMutation, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import { UpdatePurchaseSchema } from "../zodSchemas/purchases";
-import { updatePurchase } from "../helpers/apiFunctions";
-import { Purchases } from "../types/db";
-import dayjs from "dayjs";
-import { valueType } from "antd/es/statistic/utils";
+import { updatePurchaseItem } from "../helpers/apiFunctions";
+import { PurchaseItemsJoined } from "../types/db";
+import { UpdatePurchaseItemSchema } from "../zodSchemas/purchaseItem";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -20,10 +17,10 @@ interface HookReturn {
 }
 
 interface Prop {
-  purchase: Purchases;
+  item: PurchaseItemsJoined;
 }
 
-function useEditPurchase({ purchase }: Prop): HookReturn {
+function useEditPurchaseItem({ item }: Prop): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
 
@@ -33,22 +30,23 @@ function useEditPurchase({ purchase }: Prop): HookReturn {
 
   const formConfig: FieldConfig[] = [
     {
-      name: "date",
-      label: "Purchase Date",
-      type: "date",
+      name: "price",
+      label: "Price",
+      type: "money",
       required: false,
-      defaultValue: (dayjs(purchase.date, "YYYY-MM-DD") ||
-        undefined) as unknown as valueType,
+      defaultValue: item.price,
     },
     {
-      name: "seller",
-      label: "Seller",
-      type: "text",
+      name: "quantity",
+      label: "Quantity",
+      type: "number",
       required: false,
-      defaultValue: purchase.seller,
+      defaultValue: item.quantity,
       rules: [
-        { min: 3, message: "Seller name must be at least 3 characters" },
-        { max: 50, message: "Seller name cannot exceed 50 characters" },
+        {
+          pattern: /^[1-9]\d*$/,
+          message: "Quantity must be a positive integer",
+        },
       ],
     },
   ];
@@ -56,11 +54,9 @@ function useEditPurchase({ purchase }: Prop): HookReturn {
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
-        // Format date and convert numeric values
-        if (values.date) values.date = values.date.format("YYYY-MM-DD");
-        values.id = purchase.id;
-        const payload = await UpdatePurchaseSchema.parseAsync(values);
-        await updatePurchase(payload);
+        values.id = item.id;
+        const payload = await UpdatePurchaseItemSchema.parseAsync(values);
+        await updatePurchaseItem(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Validation failed:", error.errors);
@@ -72,10 +68,10 @@ function useEditPurchase({ purchase }: Prop): HookReturn {
       }
     },
     onError: (error: Error) => {
-      message.error(error.message || "Failed to update purchase");
+      message.error(error.message || "Failed to update");
     },
     onSuccess: () => {
-      message.success("Purchase updated successfully");
+      message.success("updated successfully");
       handleCloseModal();
       queryClient.invalidateQueries();
     },
@@ -91,4 +87,4 @@ function useEditPurchase({ purchase }: Prop): HookReturn {
   };
 }
 
-export default useEditPurchase;
+export default useEditPurchaseItem;

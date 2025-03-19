@@ -60,6 +60,8 @@ export const purchasesKeys = {
   getAllPurchases: "getAllPurchases",
   getPurchasePayments: "getPurchasePayments",
   getCsv: "getPurchasesCsv",
+  getPurchaseItems: "getPurchaseItems",
+  getAllPurchaseItems: "getAllPurchaseItems",
 };
 export const purchasePaymentsKeys = {
   getAll: "getAllPurchasesPayments",
@@ -86,6 +88,7 @@ export const vehiclesKeys = {
   getTransitCsv: "getTransitCsv",
   getReceivedCsv: "getReceivedCsv",
   getDeliveredCsv: "getDeliveredCsv",
+  getVehicleById: "getVehicleById",
 };
 
 export const requestsKeys = {

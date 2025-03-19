@@ -5,11 +5,17 @@ import { ZodError } from "zod";
 import {
   addSale,
   getInventoryItems,
+  getPurchaseItems,
   getWarehouses,
 } from "../helpers/apiFunctions"; // Update to use addSale function
-import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS"; // Update to use salesKeys
+import {
+  inventoryItemsKeys,
+  purchasesKeys,
+  warehousesKeys,
+} from "../constants/QUERY_KEYS"; // Update to use salesKeys
 import { CreateSaleRPCSchema } from "../zodSchemas/sales"; // Update to SalesSchema
 import useSalesStore from "../store/sales";
+import { PurchaseItemsJoined } from "../types/db";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -46,6 +52,17 @@ function useAddNewSale(): HookReturn {
     },
     onError: () => {
       message.error("Failed to Load warehouses");
+    },
+  });
+
+  const { data: purchaseItems } = useQuery({
+    queryKey: purchasesKeys.getAllPurchaseItems,
+    queryFn: async (): Promise<PurchaseItemsJoined[]> => {
+      const items = await getPurchaseItems();
+      return items;
+    },
+    onError: () => {
+      message.error("Failed to Load purchased items");
     },
   });
 
@@ -94,13 +111,32 @@ function useAddNewSale(): HookReturn {
       type: "dynamic",
       required: true,
       subFields: [
-        {
-          name: "item_purchased",
-          label: "Item Purchased",
-          type: "select",
-          options: items || [],
-          required: true,
-        },
+        ...((type === "internal"
+          ? [
+              {
+                name: "item_purchased",
+                label: "Item Purchased",
+                type: "select",
+                options: items || [],
+                required: true,
+              },
+            ]
+          : []) as FieldConfig[]),
+        ...((type === "external"
+          ? [
+              {
+                name: "purchase_item",
+                label: "Item",
+                type: "select",
+                options:
+                  purchaseItems?.map((item) => ({
+                    label: `${item.item} from ${item.purchase_info.seller} - ${item.purchase_info.order_number} - ${item.balance}${item.item_info.unit} remains`,
+                    value: item.id,
+                  })) || [],
+                required: true,
+              },
+            ]
+          : []) as FieldConfig[]),
         {
           name: "quantity",
           label: "Quantity",
@@ -130,6 +166,29 @@ function useAddNewSale(): HookReturn {
       try {
         values.date = values.date.format("YYYY-MM-DD");
         values.type = type;
+        // Get fresh data from cache to ensure accuracy
+        const purchaseItems = await queryClient.fetchQuery(
+          purchasesKeys.getAllPurchaseItems,
+          getPurchaseItems
+        );
+
+        if (type === "external") {
+          // Add item_purchased based on purchase_item selection
+          values.items = values.items.map((item: any) => {
+            const foundItem = purchaseItems.find(
+              (pi) => pi.id === item.purchase_item
+            );
+            if (!foundItem) {
+              throw new Error(
+                `Selected purchase item ${item.purchase_item} not found`
+              );
+            }
+            return {
+              ...item,
+              item_purchased: foundItem.item, // Set from purchase item data
+            };
+          });
+        }
         const payload = await CreateSaleRPCSchema.parseAsync(values);
         await addSale(payload); // Use addSale function for sales
       } catch (error) {
@@ -148,7 +207,9 @@ function useAddNewSale(): HookReturn {
       }
     },
     onError: (error) => {
-      if (error instanceof Error) {
+      if (error instanceof ZodError) {
+        message.error(error.errors[0].message);
+      } else if (error instanceof Error) {
         message.error(error.message);
       } else {
         message.error("An unexpected error occurred");

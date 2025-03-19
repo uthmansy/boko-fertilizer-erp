@@ -1,4 +1,5 @@
 import {
+  DispatchTypes,
   EmploymentStatus,
   ExpenseCategories,
   InventoryItemType,
@@ -84,3 +85,4 @@ export const USER_ROLE: UserRole[] = [
 ];
 
 export const SHIFTS: Shifts[] = ["morning", "night"];
+export const DISPATCH_TYPES: DispatchTypes[] = ["purchase", "sale", "transfer"];

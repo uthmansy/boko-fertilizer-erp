@@ -1,25 +1,23 @@
 import { Alert, Button, Space } from "antd";
-import useExternalDispatch from "../../../hooks/useExternalDispatch";
 import useDispatchStore from "../../../store/dispatch";
 import SelectToCustomer from "./SelectToCustomer";
 import DispatchForm from "./DispatchForm";
 import { useEffect } from "react";
-import TransitWaybill from "../transit/TransitWaybillViewer";
+import ShowDispatchWaybill from "./ShowDispatchWaybill";
 
 function ExternalDispatch() {
-  const {} = useExternalDispatch();
   const {
     currentPage,
     prevPage,
     resetValues,
-    setToCustomer,
-    setFromExternalStock,
+    setOriginType,
+    setDispatchType,
     newDispatchVehicle,
   } = useDispatchStore();
   useEffect(() => {
     resetValues();
-    setFromExternalStock(true);
-    setToCustomer(false);
+    setOriginType("external"); // Set to internal stock
+    setDispatchType("purchase");
   }, []);
 
   return (
@@ -35,7 +33,7 @@ function ExternalDispatch() {
             type="primary"
             onClick={() => {
               resetValues();
-              setFromExternalStock(true);
+              setOriginType("external");
             }}
           >
             Reset
@@ -51,7 +49,10 @@ function ExternalDispatch() {
       {currentPage === 2 && <DispatchForm />}
       {currentPage === 3 &&
         (newDispatchVehicle ? (
-          <TransitWaybill vehicle={newDispatchVehicle} />
+          <ShowDispatchWaybill
+            type="warehouse"
+            vehicleId={newDispatchVehicle}
+          />
         ) : (
           <Alert
             message="Error"

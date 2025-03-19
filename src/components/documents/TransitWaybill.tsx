@@ -228,13 +228,13 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Destination:</Text>
                 <Text style={styles.value}>
-                  {data.destination_stock?.warehouse || ""}
+                  {data.destination_info?.name || ""}
                 </Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Address:</Text>
                 <Text style={styles.value}>
-                  {data.destination_stock?.warehouse_info.address || ""}
+                  {data.destination_info?.address || ""}
                 </Text>
               </View>
               <View style={styles.verticalRow}>
@@ -244,8 +244,7 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Receiver Phone:</Text>
                 <Text style={styles.value}>
-                  {data.destination_stock?.warehouse_info
-                    .stock_receiver_phone || ""}
+                  {data.destination_info?.stock_receiver_phone || ""}
                 </Text>
               </View>
             </View>
@@ -264,7 +263,7 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Item Carried:</Text>
-                <Text style={styles.value}>{data.item}</Text>
+                <Text style={styles.value}>item_carried</Text>
               </View>
             </View>
           </View>
@@ -275,14 +274,6 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Vehicle Number:</Text>
                 <Text style={styles.value}>{data.vehicle_number}</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Origin:</Text>
-                <Text style={styles.value}>
-                  {data.from_external_stock
-                    ? data.external_origin_stock?.stock_purchases.seller || ""
-                    : data.origin_stock?.warehouse || ""}
-                </Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Origin State:</Text>
@@ -329,29 +320,19 @@ const TransitWaybill: React.FC<TransitWaybillProps> = ({
           </View>
           <View style={styles.verticalTable}>
             <View style={styles.verticalRow}>
+              <Text style={styles.label}>ITEM:</Text>
               <Text style={styles.label}>UNIT:</Text>
-              <Text style={styles.value}>QUANTITY DISPATCHED</Text>
-              <Text style={styles.value}>QUANTITY RECEIVED</Text>
+              <Text style={styles.label}>QUANTITY DISPATCHED</Text>
             </View>
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>{data.item_info.unit}:</Text>
-              <Text style={styles.value}>
-                {data.qty_carried} {data.item_info.unit}
-              </Text>
-              <Text style={styles.value}></Text>
-            </View>
-            {/* <View style={styles.verticalRow}>
-              <Text style={styles.label}>MTS:</Text>
-              <Text style={styles.value}>
-                {bagsToTons(data.qty_carried)} MTS
-              </Text>
-              <Text style={styles.value}></Text>
-            </View> */}
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>SHORTAGE:</Text>
-              <Text style={styles.value}></Text>
-              <Text style={styles.value}></Text>
-            </View>
+            {data.items.map((item) => (
+              <View key={item.id} style={styles.verticalRow}>
+                <Text style={styles.value}>{item.item}</Text>
+                <Text style={styles.value}>{item.item_info.unit}</Text>
+                <Text style={styles.value}>
+                  {item.qty_carried} {item.item_info.unit}
+                </Text>
+              </View>
+            ))}
           </View>
           {/* Signature and Stamp Section */}
           <View style={styles.signatureStampContainer}>

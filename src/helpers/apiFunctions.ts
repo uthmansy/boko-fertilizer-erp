@@ -24,6 +24,7 @@ import {
   Positions,
   ProductSubmissionWithDetails,
   ProductionWithItems,
+  PurchaseItemsJoined,
   PurchasePayments,
   Purchases,
   PurchasesAndPayments,
@@ -46,7 +47,6 @@ import {
   UpdateRequests,
   UpdateSubmission,
   UpdateUserProfile,
-  UpdateVehicles,
   UserProfile,
   Vehicles,
   VehiclesAndDestination,
@@ -63,9 +63,13 @@ import {
   CreateRequest,
   UpdateExpenseInput,
   UpdatePurchaseInput,
+  UpdatePurchaseItem,
   UpdateSaleInput,
   UpdateSaleItem,
 } from "../types/forms";
+import { CreateDispatch } from "../zodSchemas/dispatch";
+import { CreatePurchase } from "../zodSchemas/purchases";
+import { ReceiveVehicles } from "../zodSchemas/receive";
 import { CreateSaleType } from "../zodSchemas/sales";
 
 export const getAllWarehouses = async (
@@ -90,7 +94,9 @@ export const getAllStockPurchases = async ({
 }: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items(*, item_info:item(*))"
+    )
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -429,11 +435,13 @@ export const getUncompletedSales = async (
   return data;
 };
 
-export const getAllUncompletedSales = async (): Promise<Sales[]> => {
+export const getAllUncompletedSales = async (): Promise<SalesAndPayments[]> => {
   const { data, error } = await supabase
     .from("sales")
-    .select("*")
-    .gt("balance", 0)
+    .select(
+      "*, payments:sales_payments (*), items:sales_items(*, purchase_item_info:purchase_item(*, purchase_info:purchase_id(*)))"
+    )
+    .eq("is_completed", false)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -464,18 +472,13 @@ export const getVehicles = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .eq("status", status);
 
   // Check the value of status and adjust the join type accordingly
   if (status === "delivered") {
-    query = supabase
-      .from("vehicles")
-      .select(
-        "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!left(*, warehouse_info:warehouse (*)), sale:sale_order_number (*), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
-      )
-      .eq("status", status);
+    query = query.eq("status", status);
   }
 
   // Apply item filter if it's not 'all'
@@ -485,7 +488,7 @@ export const getVehicles = async (
 
   // Apply destination filter using inner join if it's not 'all'
   if (destination !== "all") {
-    query = query.eq("destination_stock.warehouse", destination);
+    query = query.eq("destination_info.name", destination);
   }
 
   // Apply origin filter using inner join if it's not 'all'
@@ -506,6 +509,7 @@ export const getVehicles = async (
   query = query.order("created_at", { ascending: false });
 
   const { data, error } = await query;
+  console.log(data);
 
   if (error) throw error.message;
   return data;
@@ -517,7 +521,7 @@ export const getVehicleByWaybill = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .eq("waybill_number", waybillNumber)
     .single();
@@ -525,6 +529,23 @@ export const getVehicleByWaybill = async (
   const { data, error } = await query;
 
   if (error) throw error.message;
+  return data;
+};
+export const getVehicleById = async (
+  vehicleId: string
+): Promise<VehiclesAndDestination> => {
+  let query = supabase
+    .from("vehicles")
+    .select(
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
+    )
+    .eq("id", vehicleId)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+  console.log(data);
   return data;
 };
 
@@ -743,6 +764,21 @@ export const getAllSaleItems = async (
 
   return data;
 };
+export const getAllPurchaseItems = async (
+  pageNumber: number = 1,
+  purchaseId: string // Assuming orderNumber is of type string
+): Promise<PurchaseItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("purchase_items")
+    .select("*, item_info:item(*), purchase_info:purchase_id(*)")
+    .eq("purchase_id", purchaseId) // Filter by order_number
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
 
 export const getAllInventoryItems = async (
   pageNumber: number = 1,
@@ -815,6 +851,17 @@ export const getWarehouses = async (): Promise<Warehouses[]> => {
   const { data, error } = await supabase
     .from("warehouses")
     .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getPurchaseItems = async (): Promise<PurchaseItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("purchase_items")
+    .select("*, item_info:item(*), purchase_info:purchase_id(*)")
+    .gt("balance", 0)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -1050,7 +1097,7 @@ export const addNewVehicle = async (
     .from("vehicles")
     .insert([payload])
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination (*,  warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .single();
 
@@ -1079,10 +1126,18 @@ export const stockIn = async (payload: StockIn): Promise<void> => {
   if (error) throw new Error(error.message);
 };
 
-export const addPurchase = async (payload: Purchases): Promise<void> => {
-  const { error } = await supabase.from("stock_purchases").insert([payload]);
+export const addPurchase = async (payload: CreatePurchase): Promise<void> => {
+  const { error } = await supabase.rpc("create_purchase", payload);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
+};
+export const createDispatch = async (
+  payload: CreateDispatch
+): Promise<string> => {
+  const { error, data } = await supabase.rpc("create_dispatch", payload);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 export const addSale = async (payload: CreateSaleType): Promise<void> => {
@@ -1092,12 +1147,15 @@ export const addSale = async (payload: CreateSaleType): Promise<void> => {
 };
 
 export const receiveVehicle = async (
-  payload: UpdateVehicles
+  payload: ReceiveVehicles
 ): Promise<void> => {
-  const { error } = await supabase
-    .from("vehicles")
-    .update(payload)
-    .eq("id", payload.id);
+  const { error } = await supabase.rpc("receive_vehicle", {
+    vehicle_id: payload.id,
+    received_by_text: payload.received_by,
+    paid_on_receive_num: payload.paid_on_receive,
+    date_received_date: payload.date_received,
+    items_json: payload.items,
+  });
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
@@ -1144,6 +1202,16 @@ export const updateSaleItem = async (
 ): Promise<void> => {
   const { error } = await supabase
     .from("sales_items")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updatePurchaseItem = async (
+  payload: UpdatePurchaseItem
+): Promise<void> => {
+  const { error } = await supabase
+    .from("purchase_items")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);
@@ -1326,6 +1394,17 @@ export const deleteSaleItem = async (itemId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Sale Item:", error);
+    throw new Error(error.message);
+  }
+};
+export const deletePurchaseItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("purchase_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("Failed to delete Purchase Item:", error);
     throw new Error(error.message);
   }
 };

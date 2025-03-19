@@ -1,15 +1,15 @@
 import { Button, Space } from "antd";
 import useDispatchStore from "../../../store/dispatch";
 
-function SelectToCustomer() {
+function SelectType() {
   const { nextPage, setDispatchType } = useDispatchStore();
 
   const handleSale = () => {
     setDispatchType("sale");
     nextPage();
   };
-  const handleToWarehouse = () => {
-    setDispatchType("purchase");
+  const handleTransfer = () => {
+    setDispatchType("transfer");
     nextPage();
   };
 
@@ -20,12 +20,12 @@ function SelectToCustomer() {
           Sale
         </Button>{" "}
         /{" "}
-        <Button size="large" onClick={handleToWarehouse}>
-          To Warehouse
+        <Button size="large" onClick={handleTransfer}>
+          Transfer
         </Button>
       </Space>
     </div>
   );
 }
 
-export default SelectToCustomer;
+export default SelectType;

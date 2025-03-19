@@ -1,16 +1,15 @@
-import { Button, Modal, Table } from "antd";
-import useViewPurchasePayments from "../../../hooks/useViewPurchasePayments";
-import { purchasesPaymentsAdminColumns } from "../../../tableColumns/purchasePayments";
-import AddPayment from "./AddPayment";
-import { PurchasesAndPayments } from "../../../types/db";
+// ViewPurchaseItems.tsx
+import { Button, Modal, Table, Tag } from "antd";
+import useViewPurchaseItems from "../../../hooks/useViewPurchaseItems";
+import { puchaseItemsAdminColumns } from "../../../tableColumns/purchaseItems";
 
 interface Props {
-  purchase: PurchasesAndPayments;
+  purchaseId: string;
 }
 
-function ViewPayments({ purchase }: Props) {
+function ViewPurchaseItems({ purchaseId }: Props) {
   const {
-    payments,
+    items,
     isLoading,
     isFetchingNextPage,
     fetchNextPage,
@@ -18,31 +17,29 @@ function ViewPayments({ purchase }: Props) {
     handleCloseModal,
     handleOpenModal,
     isModalOpen,
-  } = useViewPurchasePayments({ orderNumber: purchase.order_number });
+  } = useViewPurchaseItems({ purchaseId });
 
   return (
     <>
       <Button onClick={handleOpenModal} type="primary">
-        View Payment
+        View Items
       </Button>
       <Modal
         footer={null}
-        title="Add Payment"
+        title="View Items"
         open={isModalOpen}
         onCancel={handleCloseModal}
-        width={720}
+        width={960}
       >
-        <div className="mb-5">
-          <AddPayment orderNumber={purchase.order_number} />
-        </div>
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}
-          columns={purchasesPaymentsAdminColumns}
-          dataSource={payments}
-          pagination={false} // Disable pagination
+          columns={puchaseItemsAdminColumns}
+          dataSource={items}
+          pagination={false}
           scroll={{ y: 450, x: "max-content" }}
           bordered
+          rowKey="id"
           onScroll={(e) => {
             const target = e.target as HTMLDivElement;
             if (
@@ -58,4 +55,4 @@ function ViewPayments({ purchase }: Props) {
   );
 }
 
-export default ViewPayments;
+export default ViewPurchaseItems;

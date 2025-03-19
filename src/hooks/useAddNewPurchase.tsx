@@ -47,30 +47,37 @@ function useAddNewPurchase(): HookReturn {
       required: true,
     },
     {
-      name: "item",
-      label: "Item",
-      type: "select",
-      options: items || [],
-      required: false,
-    },
-    {
-      name: "price",
-      label: "Price",
-      type: "money",
-      required: true,
-    },
-    {
-      name: "quantity",
-      label: "Quantity",
-      type: "number",
-      // suffix: "BAGS",
-      required: true,
-    },
-    {
       name: "seller",
       label: "Seller",
       type: "text",
       required: true,
+    },
+    {
+      name: "items",
+      label: "Items",
+      type: "dynamic",
+      subFields: [
+        {
+          name: "item",
+          label: "Item",
+          type: "select",
+          options: items || [],
+          required: false,
+        },
+        {
+          name: "price",
+          label: "Price",
+          type: "money",
+          required: true,
+        },
+        {
+          name: "quantity",
+          label: "Quantity",
+          type: "number",
+          // suffix: "BAGS",
+          required: true,
+        },
+      ],
     },
   ];
 
@@ -78,8 +85,8 @@ function useAddNewPurchase(): HookReturn {
     mutationFn: async (values: any) => {
       try {
         values.date = values.date.format("YYYY-MM-DD");
-        await PurchasesSchema.parseAsync(values);
-        await addPurchase(values);
+        const payload = await PurchasesSchema.parseAsync(values);
+        await addPurchase(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           // Handle ZodError separately to extract and display validation errors
