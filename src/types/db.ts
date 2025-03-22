@@ -90,6 +90,9 @@ export interface RequestWithItems extends Requests {
 export interface ProductionWithItems extends Productions {
   production_raw_materials: ProductionRawMaterials[];
 }
+export interface EmployeePayrollJoined extends EmployeePayroll {
+  employee: Employees;
+}
 export type Purchases = Database["public"]["Tables"]["stock_purchases"]["Row"];
 export type FinishedProducts =
   Database["public"]["Tables"]["finished_products"]["Row"];

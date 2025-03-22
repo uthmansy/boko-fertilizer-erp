@@ -3,6 +3,7 @@ import { ApiFilterOptions, FinancialReport } from "../types/api";
 import {
   DailyProductionSummary,
   Departments,
+  EmployeePayrollJoined,
   Employees,
   Enrollment,
   Expenses,
@@ -230,6 +231,23 @@ export const getPayrolls = async (
     .select("*, employeePayrolls:employee_payroll(*, employee:employee_id(*))")
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+  return data;
+};
+export const getPayrollEmployees = async ({
+  payrollId,
+  pageNumber = 1,
+}: {
+  payrollId: string;
+  pageNumber: number;
+}): Promise<EmployeePayrollJoined[]> => {
+  const { data, error } = await supabase
+    .from("employee_payroll")
+    .select("*, employee:employee_id(*)")
+    .eq("payroll_id", payrollId)
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("id", { ascending: false });
 
   if (error) throw error.message;
   return data;

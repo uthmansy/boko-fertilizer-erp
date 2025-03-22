@@ -12,6 +12,7 @@ export const departmentsKeys = {
 export const payrollKeys = {
   getPayrolls: "getPayrolls",
   getAllPayrolls: "getAllPayrolls",
+  getPayrollEmployeesPaginated: "getPayrollEmployeesPaginated",
 };
 export const enrollmentKeys = {
   getEnrollments: "getEnrollments",
