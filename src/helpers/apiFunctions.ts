@@ -65,6 +65,7 @@ import {
   UpdatePurchaseInput,
   UpdateSaleInput,
 } from "../types/forms";
+import { CreateDeduction } from "../zodSchemas/payrollDeductions";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -1021,6 +1022,13 @@ export const addEnrollment = async (
 
 export const addExpense = async (payload: InsertExpenses): Promise<void> => {
   const { error } = await supabase.from("expenses").insert([payload]);
+
+  if (error) throw new Error(error.message);
+};
+export const addPayrollDeduction = async (
+  payload: CreateDeduction
+): Promise<void> => {
+  const { error } = await supabase.from("payroll_deductions").insert([payload]);
 
   if (error) throw new Error(error.message);
 };

@@ -34,7 +34,7 @@ export const employeePayrollAdminColumns: ColumnProps<EmployeePayrollAndEmployee
       title: "Amount to be Paid",
       dataIndex: "to_be_paid",
       key: "to_be_paid",
-      render: (_, record) => `₦${formatNumber(record.to_be_paid)}`,
+      render: (_, record) => `₦${formatNumber(record.after_deductions)}`,
     },
     {
       title: "Bank Name",
@@ -51,7 +51,7 @@ export const employeePayrollAdminColumns: ColumnProps<EmployeePayrollAndEmployee
     {
       title: "note",
       dataIndex: "note",
-      key: "to_be_paid",
+      key: "note",
       render: (_, record) => record.note,
     },
     {
