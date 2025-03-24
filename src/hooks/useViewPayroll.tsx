@@ -25,9 +25,10 @@ interface HookReturn {
 
 interface Props {
   payrollId: string;
+  debouncedSearchTerm: string;
 }
 
-function useViewPayroll({ payrollId }: Props): HookReturn {
+function useViewPayroll({ payrollId, debouncedSearchTerm }: Props): HookReturn {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -42,6 +43,7 @@ function useViewPayroll({ payrollId }: Props): HookReturn {
     const payrolls = await getPayrollEmployees({
       pageNumber: pageParam,
       payrollId,
+      debouncedSearchTerm,
     }); // Updated function call
     return payrolls;
   };
@@ -54,7 +56,7 @@ function useViewPayroll({ payrollId }: Props): HookReturn {
     isFetchingNextPage,
     isRefetching,
   } = useInfiniteQuery(
-    [payrollKeys.getPayrollEmployeesPaginated, payrollId],
+    [payrollKeys.getPayrollEmployeesPaginated, payrollId, debouncedSearchTerm],
     fetchData,
     {
       // Updated query key

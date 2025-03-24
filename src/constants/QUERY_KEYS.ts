@@ -74,6 +74,9 @@ export const salesKeys = {
   getSalePayments: "getSalePayments",
   getCsvData: "getCsvData",
 };
+export const payrollDeductionKeys = {
+  getEmployeeDeductions: "getEmployeeDeductions",
+};
 export const accountsKeys = {
   getAll: "getAllAccounts",
 };

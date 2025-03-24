@@ -1,5 +1,6 @@
 import useAuthStore from "../../../store/auth";
 import AddDeduction from "./AddDeduction";
+import AllDeductions from "./AllDeductions";
 
 interface Props {
   payrollId: string;
@@ -16,6 +17,7 @@ function Deductions({ payrollId }: Props) {
           <AddDeduction payrollId={payrollId} />
         )}
       </div>
+      <AllDeductions payrollId={payrollId} />
     </>
   );
 }

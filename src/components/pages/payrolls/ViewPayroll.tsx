@@ -6,12 +6,17 @@ import { employeePayrollAdminColumns } from "../../../tableColumns/employeePayro
 import PayPayroll from "./PayPayroll";
 import PrintPayroll from "./PrintPayroll";
 import useAuthStore from "../../../store/auth";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 interface Props {
   payroll: PayrollsAndEmployees;
 }
 
 function ViewPayroll({ payroll }: Props) {
+  const { debouncedSearchTerm, searchTerm, handleSearchChange, resetFilters } =
+    useFilters();
+
   const {
     handleCloseModal,
     handleOpenModal,
@@ -21,7 +26,10 @@ function ViewPayroll({ payroll }: Props) {
     isLoading,
     isRefetching,
     payroll: employeePayrolls,
-  } = useViewPayroll({ payrollId: payroll.id }); // Use the payroll hook
+  } = useViewPayroll({
+    payrollId: payroll.id,
+    debouncedSearchTerm,
+  }); // Use the payroll hook
 
   const { userProfile } = useAuthStore();
 
@@ -63,6 +71,11 @@ function ViewPayroll({ payroll }: Props) {
               )}
             {payroll.status === "paid" && <PrintPayroll payroll={payroll} />}
           </Space>
+          <Filters
+            onSearchChange={handleSearchChange}
+            searchTerm={searchTerm}
+            onReset={resetFilters}
+          />
         </div>
         <Table
           size="small"
