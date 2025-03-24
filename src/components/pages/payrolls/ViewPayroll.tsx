@@ -2,20 +2,35 @@ import { Button, Modal, Space, Table, Tag } from "antd";
 import useViewPayroll from "../../../hooks/useViewPayroll"; // Use the appropriate hook for payroll
 import { PayrollsAndEmployees } from "../../../types/db";
 import { formatNumber, getMonthName } from "../../../helpers/functions";
-import useAllPayrolls from "../../../hooks/useAllPayrolls";
 import { employeePayrollAdminColumns } from "../../../tableColumns/employeePayrolls";
 import PayPayroll from "./PayPayroll";
 import PrintPayroll from "./PrintPayroll";
 import useAuthStore from "../../../store/auth";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 interface Props {
   payroll: PayrollsAndEmployees;
 }
 
 function ViewPayroll({ payroll }: Props) {
-  const { handleCloseModal, handleOpenModal, isModalOpen } = useViewPayroll(); // Use the payroll hook
-  const { isLoading, isFetchingNextPage, fetchNextPage, isRefetching } =
-    useAllPayrolls(); // Use the payroll hook
+  const { debouncedSearchTerm, searchTerm, handleSearchChange, resetFilters } =
+    useFilters();
+
+  const {
+    handleCloseModal,
+    handleOpenModal,
+    isModalOpen,
+    fetchNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isRefetching,
+    payroll: employeePayrolls,
+  } = useViewPayroll({
+    payrollId: payroll.id,
+    debouncedSearchTerm,
+  }); // Use the payroll hook
+
   const { userProfile } = useAuthStore();
 
   return (
@@ -32,8 +47,16 @@ function ViewPayroll({ payroll }: Props) {
       >
         <div className="mb-5">
           <Space>
-            <Tag>Total Paid: ₦{formatNumber(payroll.total_paid)}</Tag>
-            <Tag>Status: {payroll.status}</Tag>
+            <Tag color="geekblue-inverse">
+              Total Due: ₦{formatNumber(payroll.total_paid)}
+            </Tag>
+            <Tag
+              color={
+                payroll.status === "paid" ? "green-inverse" : "red-inverse"
+              }
+            >
+              Status: {payroll.status}
+            </Tag>
             <Tag>Month: {getMonthName(payroll.month)}</Tag>
             <Tag>Year: {payroll.year}</Tag>
           </Space>
@@ -48,12 +71,17 @@ function ViewPayroll({ payroll }: Props) {
               )}
             {payroll.status === "paid" && <PrintPayroll payroll={payroll} />}
           </Space>
+          <Filters
+            onSearchChange={handleSearchChange}
+            searchTerm={searchTerm}
+            onReset={resetFilters}
+          />
         </div>
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}
           columns={employeePayrollAdminColumns} // Use payroll columns
-          dataSource={payroll.employeePayrolls}
+          dataSource={employeePayrolls}
           pagination={false} // Disable pagination
           scroll={{ y: 450, x: "max-content" }}
           bordered

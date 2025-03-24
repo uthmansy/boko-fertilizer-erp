@@ -25,13 +25,13 @@ function Edit({ employeePayroll }: Props) {
         title="Edit Payroll"
         open={isModalOpen}
         onCancel={handleCloseModal}
-        width={800}
+        width={400}
       >
         <FormBuilder
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
-          columns={2}
+          columns={1}
         />
       </Modal>
     </>

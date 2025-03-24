@@ -12,6 +12,7 @@ export const departmentsKeys = {
 export const payrollKeys = {
   getPayrolls: "getPayrolls",
   getAllPayrolls: "getAllPayrolls",
+  getPayrollEmployeesPaginated: "getPayrollEmployeesPaginated",
 };
 export const enrollmentKeys = {
   getEnrollments: "getEnrollments",
@@ -77,6 +78,9 @@ export const salesKeys = {
   getCsvData: "getCsvData",
   getSaleItems: "getSaleItems",
   getSaleByOrderNumber: "getSaleByOrderNumber",
+};
+export const payrollDeductionKeys = {
+  getEmployeeDeductions: "getEmployeeDeductions",
 };
 export const accountsKeys = {
   getAll: "getAllAccounts",

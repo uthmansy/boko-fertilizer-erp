@@ -3,6 +3,7 @@ import { ApiFilterOptions, FinancialReport } from "../types/api";
 import {
   DailyProductionSummary,
   Departments,
+  EmployeePayrollJoined,
   Employees,
   Enrollment,
   Expenses,
@@ -71,6 +72,7 @@ import { CreateDispatch } from "../zodSchemas/dispatch";
 import { CreatePurchase } from "../zodSchemas/purchases";
 import { ReceiveVehicles } from "../zodSchemas/receive";
 import { CreateSaleType } from "../zodSchemas/sales";
+import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -243,6 +245,43 @@ export const getPayrolls = async (
     .select("*, employeePayrolls:employee_payroll(*, employee:employee_id(*))")
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+  return data;
+};
+export const getPayrollEmployees = async ({
+  payrollId,
+  pageNumber = 1,
+  debouncedSearchTerm,
+}: {
+  payrollId: string;
+  pageNumber: number;
+  debouncedSearchTerm: string;
+}): Promise<EmployeePayrollJoined[]> => {
+  let query = supabase
+    .from("employee_payroll")
+    .select("*, employee:employee_id!inner(*)")
+    .eq("payroll_id", payrollId)
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("id", { ascending: false });
+
+  if (debouncedSearchTerm) {
+    // Split search term into individual words (e.g. "musa isa" → ["musa", "isa"])
+    const searchTerms = debouncedSearchTerm.trim().split(/\s+/);
+
+    // Create OR conditions for each term in both first/last names
+    const orConditions = searchTerms.flatMap((term) => [
+      `first_name.ilike.%${term}%`,
+      `last_name.ilike.%${term}%`,
+    ]);
+
+    query = query.or(orConditions.join(","), {
+      foreignTable: "employee", // Apply to joined employee table
+    });
+  }
+  // query = query.ilike("employee.first_name", `%${debouncedSearchTerm}%`);
+
+  const { data, error } = await query;
 
   if (error) throw error.message;
   return data;
@@ -604,6 +643,27 @@ export const getAllRequests = async ({
   if (warehouseFilter) {
     q = q.eq("warehouse", warehouseFilter);
   }
+  const { data, error } = await q;
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getEmployeeDeductions = async ({
+  pageParam = 1,
+  payrollId,
+}: {
+  pageParam: number;
+  payrollId: string;
+}): Promise<Deduction[]> => {
+  console.log(payrollId);
+  let q = supabase
+    .from("payroll_deductions")
+    .select("*")
+    .eq("employee_payroll_id", payrollId)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("created_at", { ascending: false });
+
   const { data, error } = await q;
 
   if (error) throw error.message;
@@ -1109,6 +1169,13 @@ export const addExpense = async (payload: InsertExpenses): Promise<void> => {
 
   if (error) throw new Error(error.message);
 };
+export const addPayrollDeduction = async (
+  payload: CreateDeduction
+): Promise<void> => {
+  const { error } = await supabase.from("payroll_deductions").insert([payload]);
+
+  if (error) throw new Error(error.message);
+};
 
 export const addPayroll = async (payload: InsertPayrolls): Promise<void> => {
   const { error } = await supabase.from("payrolls").insert([payload]);
@@ -1443,6 +1510,17 @@ export const deletePurchaseItem = async (itemId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Purchase Item:", error);
+    throw new Error(error.message);
+  }
+};
+export const deleteDeduction = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from("payroll_deductions")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Failed to delete Deduction Payment:", error);
     throw new Error(error.message);
   }
 };
