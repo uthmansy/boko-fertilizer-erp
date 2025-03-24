@@ -2,6 +2,7 @@ import { ColumnsType } from "antd/es/table";
 import { PurchasesAndPayments } from "../types/db";
 import TableActions from "../components/pages/purchases/TableActions";
 import { formatNumber } from "../helpers/functions";
+import ViewPurchase from "../components/pages/purchases/ViewPurchase";
 
 export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
   {
@@ -56,6 +57,16 @@ export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
       <span className="">{`₦${
         record.balance ? formatNumber(record.balance) : "NA"
       }`}</span>
+    ),
+  },
+  {
+    title: "View",
+    key: "view",
+    render: (_, record) => (
+      <ViewPurchase
+        orderNumber={record.order_number}
+        buttonTitle="View Purchase"
+      />
     ),
   },
   {

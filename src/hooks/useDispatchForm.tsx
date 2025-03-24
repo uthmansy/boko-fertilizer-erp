@@ -260,8 +260,7 @@ function useDispatchForm(): HookReturn {
               },
             ]
           : []) as FieldConfig[]),
-        ...(((dispatchType === "sale" || dispatchType === "purchase") &&
-        originType === "external"
+        ...((dispatchType === "sale" && originType === "external"
           ? [
               {
                 name: "purchase_item",
@@ -270,6 +269,22 @@ function useDispatchForm(): HookReturn {
                 required: true,
                 options: salesItems
                   .map((item) => item.purchase_item_info)
+                  ?.filter((item) => item?.balance && item?.balance > 0)
+                  ?.map((item) => ({
+                    label: `${item?.item} from ${item?.purchase_info.seller} (remaining ${item?.balance})`,
+                    value: item?.id,
+                  })),
+              },
+            ]
+          : []) as FieldConfig[]),
+        ...((dispatchType === "purchase" && originType === "external"
+          ? [
+              {
+                name: "purchase_item",
+                label: "Origin Stock",
+                type: "select",
+                required: true,
+                options: purchaseItems
                   ?.filter((item) => item?.balance && item?.balance > 0)
                   ?.map((item) => ({
                     label: `${item?.item} from ${item?.purchase_info.seller} (remaining ${item?.balance})`,
@@ -308,9 +323,10 @@ function useDispatchForm(): HookReturn {
           values.v_date_dispatched.format("YYYY-MM-DD");
         values.v_dispatched_by = userProfile?.username;
         values.v_status = dispatchType === "sale" ? "delivered" : "dispatched";
+        if (originType === "internal")
+          values.v_origin_warehouse = userProfile?.warehouse;
         const payload = await DispatchSchema.parseAsync(values);
         const vehicle = await createDispatch(payload);
-        console.log(vehicle);
         setNewDispatchVehicle(vehicle);
         nextPage();
       } catch (error) {

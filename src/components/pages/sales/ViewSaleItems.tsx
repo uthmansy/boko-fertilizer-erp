@@ -1,5 +1,5 @@
 // ViewSaleItems.tsx
-import { Button, Modal, Space, Table, Tag } from "antd";
+import { Button, Modal, Table } from "antd";
 import useViewSaleItems from "../../../hooks/useViewSaleItems";
 import { salesItemsAdminColumns } from "../../../tableColumns/salesItems";
 

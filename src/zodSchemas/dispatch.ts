@@ -30,6 +30,7 @@ export const DispatchSchema = z.object({
   }),
   v_vehicle_number: z.string(),
   v_sale_order_number: z.string().optional().nullable(),
+  v_origin_warehouse: z.string().optional().nullable(),
   v_status: z.string(),
   v_dispatched_by: z.string(),
   v_destination: z.string().uuid().optional(),

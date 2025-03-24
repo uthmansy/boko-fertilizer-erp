@@ -281,7 +281,7 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Origin:</Text>
-                <Text style={styles.value}>{data.origin_state}</Text>
+                <Text style={styles.value}>{data.origin_warehouse}</Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Origin State:</Text>

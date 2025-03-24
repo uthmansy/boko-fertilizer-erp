@@ -25,10 +25,11 @@ interface HookReturn {
 }
 
 interface Props {
-  saleId: string;
+  saleId: string | undefined;
+  execQuery?: boolean;
 }
 
-function useViewSaleItems({ saleId }: Props): HookReturn {
+function useViewSaleItems({ saleId, execQuery = false }: Props): HookReturn {
   const { message } = App.useApp();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -36,8 +37,11 @@ function useViewSaleItems({ saleId }: Props): HookReturn {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const salesItems = await getAllSaleItems(pageParam, saleId);
-    return salesItems;
+    if (saleId) {
+      const salesItems = await getAllSaleItems(pageParam, saleId);
+      return salesItems;
+    }
+    return [];
   };
 
   const {
@@ -53,7 +57,7 @@ function useViewSaleItems({ saleId }: Props): HookReturn {
       return undefined;
     },
     onError: (error) => message.error(error as string),
-    enabled: isModalOpen, // Only fetch when modal is open
+    enabled: isModalOpen || execQuery, // Only fetch when modal is open
   });
 
   const items = data?.pages.flatMap((page) => page) || [];

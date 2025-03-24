@@ -25,10 +25,14 @@ interface HookReturn {
 }
 
 interface Props {
-  purchaseId: string;
+  purchaseId: string | undefined;
+  execQuery?: boolean;
 }
 
-function useViewPurchaseItems({ purchaseId }: Props): HookReturn {
+function useViewPurchaseItems({
+  purchaseId,
+  execQuery = false,
+}: Props): HookReturn {
   const { message } = App.useApp();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -36,8 +40,11 @@ function useViewPurchaseItems({ purchaseId }: Props): HookReturn {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const fetchData = async ({ pageParam = 1 }) => {
-    const purchaseItems = await getAllPurchaseItems(pageParam, purchaseId);
-    return purchaseItems;
+    if (purchaseId) {
+      const purchaseItems = await getAllPurchaseItems(pageParam, purchaseId);
+      return purchaseItems;
+    }
+    return [];
   };
 
   const {
@@ -56,7 +63,7 @@ function useViewPurchaseItems({ purchaseId }: Props): HookReturn {
         return undefined;
       },
       onError: (error) => message.error(error as string),
-      enabled: isModalOpen, // Only fetch when modal is open
+      enabled: isModalOpen || execQuery, // Only fetch when modal is open
     }
   );
 

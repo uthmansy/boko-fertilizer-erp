@@ -95,13 +95,13 @@ export const getAllStockPurchases = async ({
   let query = supabase
     .from("stock_purchases")
     .select(
-      "*, payments:purchase_order_payments (*), items:purchase_items(*, item_info:item(*))"
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*, item_info:item(*))"
     )
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
-  if (itemFilter) query = query.eq("item", itemFilter);
+  if (itemFilter) query = query.eq("items.item", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
 
@@ -116,7 +116,9 @@ export const getPayables = async ({
 }: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*)"
+    )
     .neq("balance", 0)
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
@@ -130,7 +132,9 @@ export const getPayables = async ({
 export const getCsvPayables = async (): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*)"
+    )
     .neq("balance", 0)
     .order("created_at", { ascending: false });
 
@@ -270,12 +274,12 @@ export const getAllSales = async (
 ): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), items:sales_items(*)")
+    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
-  if (itemFilter) query = query.eq("item_purchased", itemFilter);
+  if (itemFilter) query = query.eq("items.item_purchased", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
   if (warehouseFilter) {
@@ -298,7 +302,7 @@ export const getAllSales = async (
 export const getCsvReceivables = async (): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
+    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
     .neq("payment_balance", 0)
     .order("created_at", { ascending: false });
 
@@ -317,6 +321,40 @@ export const getSalesCsvData = async (): Promise<Sales[]> => {
     .from("sales")
     .select("*")
     .order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getSaleByOrderNumber = async (
+  orderNumber: string
+): Promise<Sales> => {
+  let query = supabase
+    .from("sales")
+    .select("*")
+    .eq("order_number", orderNumber)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getPurchaseByOrderNumber = async (
+  orderNumber: string
+): Promise<Purchases> => {
+  let query = supabase
+    .from("stock_purchases")
+    .select("*")
+    .eq("order_number", orderNumber)
+    .single();
 
   const { data, error } = await query;
 
@@ -472,7 +510,7 @@ export const getVehicles = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
+      "*, destination_info:destination(*),items:vehicle_items!inner(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .eq("status", status);
 
@@ -483,7 +521,7 @@ export const getVehicles = async (
 
   // Apply item filter if it's not 'all'
   if (item !== "all") {
-    query = query.eq("item", item);
+    query = query.eq("items.item", item);
   }
 
   // Apply destination filter using inner join if it's not 'all'
@@ -498,7 +536,8 @@ export const getVehicles = async (
 
   // Apply search filter to vehicle_number if search term is provided
   if (search) {
-    query = query.textSearch(`vehicle_number`, search);
+    // query = query.textSearch(`vehicle_number`, search);
+    query = query.ilike("vehicle_number", `%${search}%`);
   }
 
   if (paginated) {
@@ -509,7 +548,6 @@ export const getVehicles = async (
   query = query.order("created_at", { ascending: false });
 
   const { data, error } = await query;
-  console.log(data);
 
   if (error) throw error.message;
   return data;

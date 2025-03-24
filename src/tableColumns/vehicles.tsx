@@ -4,6 +4,7 @@ import TransitTableActions from "../components/pages/transit/TransitTableActions
 import useAuthStore from "../store/auth";
 import TableActions from "../components/pages/receivedVehicles/TableActions";
 import DispatchedTableActions from "../components/pages/dispatchedVehicles/DispatchedTableActions";
+import ViewSale from "../components/pages/sales/ViewSale";
 
 export const useVehicleColumns = (): {
   transitColumns: ColumnsType<VehiclesAndDestination>;
@@ -26,6 +27,12 @@ export const useVehicleColumns = (): {
       dataIndex: "date_dispatched",
       key: "date_dispatched",
       render: (text) => <span className="capitalize">{text}</span>,
+    },
+    {
+      title: "Origin Warehouse",
+      dataIndex: "origin_warehouse",
+      key: "origin_warehouse",
+      render: (text) => <span className="capitalize">{text || "NA"}</span>,
     },
     {
       title: "Vehicle Number",
@@ -82,11 +89,11 @@ export const useVehicleColumns = (): {
   // Extend common columns for received vehicles table
   const receivedColumns: ColumnsType<VehiclesAndDestination> = [
     ...commonColumns,
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => <ReceivedTableActions vehicle={record} />,
-    // },
+    {
+      title: "Date Received",
+      key: "date_received",
+      render: (_, record) => record.date_received,
+    },
     {
       title: "Destination",
       dataIndex: "destination",
@@ -105,6 +112,17 @@ export const useVehicleColumns = (): {
   ];
   const dispatchedColumns: ColumnsType<VehiclesAndDestination> = [
     ...commonColumns,
+    {
+      title: "Sale Order Number",
+      key: "sale_order_number",
+      render: (_, record) =>
+        record.sale_order_number && (
+          <ViewSale
+            buttonTitle={record.sale_order_number}
+            orderNumber={record.sale_order_number}
+          />
+        ),
+    },
     {
       title: "Action",
       key: "action",
