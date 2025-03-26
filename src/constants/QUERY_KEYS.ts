@@ -77,6 +77,9 @@ export const salesKeys = {
 export const payrollDeductionKeys = {
   getEmployeeDeductions: "getEmployeeDeductions",
 };
+export const payrollBonusKeys = {
+  getEmployeeBonuses: "getEmployeeBonuses",
+};
 export const accountsKeys = {
   getAll: "getAllAccounts",
 };

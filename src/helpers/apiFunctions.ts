@@ -65,6 +65,7 @@ import {
   UpdatePurchaseInput,
   UpdateSaleInput,
 } from "../types/forms";
+import { CreatePayrollBonus, PayrollBonus } from "../zodSchemas/payrollBonuses";
 import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
 
 export const getAllWarehouses = async (
@@ -608,6 +609,27 @@ export const getEmployeeDeductions = async ({
 
   return data;
 };
+export const getEmployeeBonuses = async ({
+  pageParam = 1,
+  payrollId,
+}: {
+  pageParam: number;
+  payrollId: string;
+}): Promise<PayrollBonus[]> => {
+  console.log(payrollId);
+  let q = supabase
+    .from("payroll_bonuses")
+    .select("*")
+    .eq("employee_payroll_id", payrollId)
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  const { data, error } = await q;
+
+  if (error) throw error.message;
+
+  return data;
+};
 
 export const getEmployees = async ({
   pageParam,
@@ -1074,6 +1096,14 @@ export const addPayrollDeduction = async (
   if (error) throw new Error(error.message);
 };
 
+export const addPayrollBonus = async (
+  payload: CreatePayrollBonus
+): Promise<void> => {
+  const { error } = await supabase.from("payroll_bonuses").insert([payload]);
+
+  if (error) throw new Error(error.message);
+};
+
 export const addPayroll = async (payload: InsertPayrolls): Promise<void> => {
   const { error } = await supabase.from("payrolls").insert([payload]);
 
@@ -1365,6 +1395,17 @@ export const deleteDeduction = async (id: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Deduction Payment:", error);
+    throw new Error(error.message);
+  }
+};
+export const deleteBonus = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from("payroll_bonuses")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Failed to delete Bonus Payment:", error);
     throw new Error(error.message);
   }
 };

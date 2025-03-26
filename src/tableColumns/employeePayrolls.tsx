@@ -31,10 +31,18 @@ export const employeePayrollAdminColumns: ColumnProps<EmployeePayrollAndEmployee
       ),
     },
     {
-      title: "Amount to be Paid",
+      title: "Gross Pay",
       dataIndex: "to_be_paid",
       key: "to_be_paid",
-      render: (_, record) => `₦${formatNumber(record.after_deductions)}`,
+      //@ts-ignore
+      render: (_, record) => `₦${formatNumber(record.to_be_paid)}`,
+    },
+    {
+      title: "Net Pay",
+      dataIndex: "net_pay",
+      key: "net_pay",
+      //@ts-ignore
+      render: (_, record) => `₦${formatNumber(record.net_pay)}`,
     },
     {
       title: "Bank Name",

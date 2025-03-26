@@ -1,14 +1,10 @@
-import { useState } from "react";
 import { FieldConfig } from "../types/comps";
 import { App } from "antd";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { ZodError } from "zod";
-import {
-  updateEmployeePayroll, // Ensure you have this function
-} from "../helpers/apiFunctions";
-
-import { EmployeePayrollAndEmployee } from "../types/db";
-import UpdateEmployeePayrollSchema from "../zodSchemas/employeePayroll";
+import { addPayrollBonus } from "../helpers/apiFunctions";
+import { CreatePayrollBonusSchema } from "../zodSchemas/payrollBonuses";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -19,14 +15,13 @@ interface HookReturn {
   isLoading: boolean;
 }
 
-interface Prop {
-  employeePayroll: EmployeePayrollAndEmployee; // Update to Payroll type
+interface Props {
+  payrollId: string;
 }
 
-function useEditEmployeePayroll({ employeePayroll }: Prop): HookReturn {
+function useAddBonus({ payrollId }: Props): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
-
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -36,35 +31,24 @@ function useEditEmployeePayroll({ employeePayroll }: Prop): HookReturn {
   };
 
   const formConfig: FieldConfig[] = [
-    {
-      name: "to_be_paid",
-      label: "Gross Pay",
-      type: "money",
-      required: false,
-      defaultValue: employeePayroll.to_be_paid,
-    },
-    {
-      name: "note",
-      label: "Note",
-      type: "text",
-      required: false,
-      defaultValue: employeePayroll.note || undefined,
-    },
+    { label: "Amount", name: "amount", type: "money", required: true },
+    { label: "Note", name: "note", type: "text", required: true },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
     mutationFn: async (values: any) => {
       try {
-        values.id = employeePayroll.id;
-        const parsedValues = await UpdateEmployeePayrollSchema.parseAsync(
-          values
-        );
-        await updateEmployeePayroll(parsedValues); // Ensure this function exists and takes the payroll id
+        values.employee_payroll_id = payrollId;
+        values.bonus_type = "other";
+        const payload = await CreatePayrollBonusSchema.parseAsync(values);
+        await addPayrollBonus(payload);
       } catch (error) {
         if (error instanceof ZodError) {
+          // Handle ZodError separately to extract and display validation errors
           console.error("Zod Validation failed:", error.errors);
-          throw error;
+          throw error; // Re-throw the ZodError to be caught by the onError handler
         } else if (error instanceof Error) {
+          // Handle other types of errors
           console.error("An unexpected error occurred:", error.message);
           throw new Error(error.message);
         } else {
@@ -81,9 +65,9 @@ function useEditEmployeePayroll({ employeePayroll }: Prop): HookReturn {
       }
     },
     onSuccess: () => {
-      message.success("Payroll updated successfully");
+      message.success("Added successfully");
       handleCloseModal();
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries(); // Update to use salesKeys
     },
   });
 
@@ -97,4 +81,4 @@ function useEditEmployeePayroll({ employeePayroll }: Prop): HookReturn {
   };
 }
 
-export default useEditEmployeePayroll;
+export default useAddBonus;

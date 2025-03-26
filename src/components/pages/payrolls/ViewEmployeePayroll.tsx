@@ -1,6 +1,7 @@
 import { Button, Modal, Tabs, TabsProps } from "antd";
 import { useState } from "react";
 import Deductions from "./Deductions";
+import Bonuses from "./Bonuses";
 
 interface Props {
   payrollId: string;
@@ -15,6 +16,11 @@ function ViewEmployeePayroll({ payrollId }: Props) {
       key: "1",
       label: "Deductions",
       children: <Deductions payrollId={payrollId} />,
+    },
+    {
+      key: "2",
+      label: "Bonuses",
+      children: <Bonuses payrollId={payrollId} />,
     },
   ];
 
