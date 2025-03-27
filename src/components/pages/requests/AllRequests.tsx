@@ -15,6 +15,9 @@ function AllRequests() {
     handleShiftChange,
     shiftFilter,
     shiftOptions,
+    itemFilter,
+    itemOptions,
+    handleItemChange,
   } = useFilters();
   const {
     isLoading,
@@ -26,6 +29,7 @@ function AllRequests() {
     dateFilter,
     warehouseFilter,
     shiftFilter,
+    itemFilter,
   });
 
   return (
@@ -39,6 +43,9 @@ function AllRequests() {
         onShiftChange={handleShiftChange}
         shiftOptions={shiftOptions}
         shiftFilter={shiftFilter}
+        itemFilter={itemFilter}
+        itemOptions={itemOptions}
+        onItemChange={handleItemChange}
       />
       <Table
         size="small"

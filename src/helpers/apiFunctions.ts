@@ -570,15 +570,17 @@ export const getAllRequests = async ({
   dateFilter,
   warehouseFilter,
   shiftFilter,
+  itemFilter,
 }: ApiFilterOptions): Promise<RequestWithItems[]> => {
   let q = supabase
     .from("requests")
-    .select("*, request_items (*)")
+    .select("*, request_items!inner(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) q = q.eq("date_requested", dateFilter);
   if (shiftFilter) q = q.eq("shift", shiftFilter);
+  if (itemFilter) q = q.eq("request_items.item", itemFilter);
   if (warehouseFilter) {
     q = q.eq("warehouse", warehouseFilter);
   }
@@ -588,6 +590,45 @@ export const getAllRequests = async ({
 
   return data;
 };
+//alternate item filter that returns all items
+// export const getAllRequests = async ({
+//   pageParam,
+//   dateFilter,
+//   warehouseFilter,
+//   shiftFilter,
+//   itemFilter,
+// }: ApiFilterOptions): Promise<RequestWithItems[]> => {
+//   let q = supabase
+//     .from("requests")
+//     .select("*, request_items(*)") // Changed to left join
+//     .range((pageParam - 1) * 50, pageParam * 50 - 1)
+//     .order("created_at", { ascending: false });
+
+//   // Apply filters
+//   if (dateFilter) q = q.eq("date_requested", dateFilter);
+//   if (shiftFilter) q = q.eq("shift", shiftFilter);
+//   if (warehouseFilter) q = q.eq("warehouse", warehouseFilter);
+
+//   // Handle itemFilter separately to fetch all items for matching requests
+//   if (itemFilter) {
+//     // Get request IDs that have the item
+//     const { data: requestIdsData, error: itemError } = await supabase
+//       .from("request_items")
+//       .select("request_id")
+//       .eq("item", itemFilter);
+
+//     if (itemError) throw itemError.message;
+
+//     const requestIds = requestIdsData.map((row) => row.request_id);
+//     q = q.in("id", requestIds); // Filter requests to those IDs
+//   }
+
+//   const { data, error } = await q;
+
+//   if (error) throw error.message;
+//   return data;
+// };
+
 export const getEmployeeDeductions = async ({
   pageParam = 1,
   payrollId,

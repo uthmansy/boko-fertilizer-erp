@@ -24,12 +24,14 @@ interface Props {
   dateFilter: string | null;
   warehouseFilter: string | null;
   shiftFilter: string | null;
+  itemFilter: string | null;
 }
 
 function useAllRequests({
   dateFilter,
   warehouseFilter,
   shiftFilter,
+  itemFilter,
 }: Props): HookReturn {
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
@@ -41,6 +43,7 @@ function useAllRequests({
       warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
       dateFilter,
       shiftFilter,
+      itemFilter,
     });
     return requests;
   };
@@ -53,7 +56,13 @@ function useAllRequests({
     isFetchingNextPage,
     isRefetching,
   } = useInfiniteQuery(
-    [requestsKeys.getAllRequests, dateFilter, warehouseFilter, shiftFilter],
+    [
+      requestsKeys.getAllRequests,
+      dateFilter,
+      warehouseFilter,
+      shiftFilter,
+      itemFilter,
+    ],
     fetchData,
     {
       getNextPageParam: (lastPage, allPages) => {
