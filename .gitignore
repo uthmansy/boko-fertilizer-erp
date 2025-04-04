@@ -9,10 +9,14 @@ lerna-debug.log*
 
 node_modules
 dist
+sale-purchase-vehicle-sql
 dist-ssr
 /dist-electron/
 .env
 generate_db_type.bat
+dump-command.txt
+backup.dump
+backup.sql
 *.local
 
 # Editor directories and files
