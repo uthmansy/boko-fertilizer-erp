@@ -274,6 +274,22 @@ export const getPayrollEmployees = async ({
   if (error) throw error.message;
   return data;
 };
+export const getPayrollEmployeesAll = async ({
+  payrollId,
+}: {
+  payrollId: string;
+}): Promise<EmployeePayrollJoined[]> => {
+  let query = supabase
+    .from("employee_payroll")
+    .select("*, employee:employee_id!inner(*)")
+    .eq("payroll_id", payrollId)
+    .order("id", { ascending: false });
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+  return data;
+};
 
 export const getPositions = async (
   pageNumber: number = 1

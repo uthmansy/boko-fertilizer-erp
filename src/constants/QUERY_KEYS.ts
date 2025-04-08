@@ -13,6 +13,7 @@ export const payrollKeys = {
   getPayrolls: "getPayrolls",
   getAllPayrolls: "getAllPayrolls",
   getPayrollEmployeesPaginated: "getPayrollEmployeesPaginated",
+  getPayrollEmployeesAll: "getPayrollEmployeesAll",
 };
 export const enrollmentKeys = {
   getEnrollments: "getEnrollments",
