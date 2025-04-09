@@ -10,8 +10,13 @@ import { salesKeys } from "../../../constants/QUERY_KEYS";
 import { BorderInnerOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 import { Headers } from "react-csv/lib/core";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 function Receivables() {
+  const { debouncedSearchTerm, searchTerm, handleSearchChange, resetFilters } =
+    useFilters();
+
   const {
     isLoading,
     receivables,
@@ -19,7 +24,7 @@ function Receivables() {
     isFetchingNextPage,
     isRefetching,
     salesPaymentsBalanceSum,
-  } = useReceivables();
+  } = useReceivables({ debouncedSearch: debouncedSearchTerm });
   const { darkMode } = useDarkMode();
 
   const headers: Headers = [
@@ -69,6 +74,12 @@ function Receivables() {
             </CSVLink>
           </Button>
         )}
+        <Filters
+          onSearchChange={handleSearchChange}
+          searchTerm={searchTerm}
+          searchPlaceholder="search customer"
+          onReset={resetFilters}
+        />
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}

@@ -149,9 +149,15 @@ export interface SalesAndPayments extends Sales {
   payments: SalesPayments[];
   item_info: InventoryItems;
 }
+export interface SalesPaymentsJoined extends SalesPayments {
+  sale: Sales;
+}
 
 export interface StocksWithDetails extends Stocks {
   item_info: InventoryItems;
+}
+export interface PurchasePaymentsJoined extends PurchasePayments {
+  purchase: Purchases;
 }
 export interface StockInWithDetails extends StockIn {
   stocked_by_info: UserProfile;

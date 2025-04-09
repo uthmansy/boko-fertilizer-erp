@@ -26,12 +26,14 @@ import {
   ProductSubmissionWithDetails,
   ProductionWithItems,
   PurchasePayments,
+  PurchasePaymentsJoined,
   Purchases,
   PurchasesAndPayments,
   RequestWithItems,
   Sales,
   SalesAndPayments,
   SalesPayments,
+  SalesPaymentsJoined,
   StockIn,
   StockInWithDetails,
   Stocks,
@@ -194,8 +196,8 @@ export const getExpenses = async ({
 };
 export const getSalesPayments = async (
   pageNumber: number = 1
-): Promise<SalesPayments[]> => {
-  let query = supabase.from("sales_payments").select("*");
+): Promise<SalesPaymentsJoined[]> => {
+  let query = supabase.from("sales_payments").select("*, sale:order_number(*)");
 
   // Apply ordering and pagination after filtering
   query = query
@@ -210,8 +212,10 @@ export const getSalesPayments = async (
 };
 export const getPurchasePayments = async (
   pageNumber: number = 1
-): Promise<PurchasePayments[]> => {
-  let query = supabase.from("purchase_order_payments").select("*");
+): Promise<PurchasePaymentsJoined[]> => {
+  let query = supabase
+    .from("purchase_order_payments")
+    .select("*, purchase:order_number(*)");
 
   // Apply ordering and pagination after filtering
   query = query
@@ -251,7 +255,10 @@ export const getPayrollEmployees = async ({
     .select("*, employee:employee_id!inner(*)")
     .eq("payroll_id", payrollId)
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
-    .order("id", { ascending: false });
+    .order("employee_id", {
+      // foreignTable: "employee",
+      ascending: false,
+    });
 
   if (debouncedSearchTerm) {
     // Split search term into individual words (e.g. "musa isa" → ["musa", "isa"])
@@ -324,7 +331,7 @@ export const getAllSales = async (
   if (dateFilter) query = query.eq("date", dateFilter);
   if (itemFilter) query = query.eq("item_purchased", itemFilter);
   if (debouncedSearchTerm)
-    query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
+    query = query.ilike("customer_name", `%${debouncedSearchTerm}%`);
   if (warehouseFilter) {
     query = query.eq("warehouse", warehouseFilter);
   }

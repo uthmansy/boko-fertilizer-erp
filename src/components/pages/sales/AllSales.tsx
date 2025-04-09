@@ -32,6 +32,7 @@ function AllSales() {
       <Filters
         onSearchChange={handleSearchChange}
         searchTerm={searchTerm}
+        searchPlaceholder="search customer"
         onDateChange={handleDateChange}
         itemFilter={itemFilter}
         itemOptions={itemOptions}

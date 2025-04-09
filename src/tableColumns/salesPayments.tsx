@@ -1,11 +1,11 @@
 import { ColumnsType } from "antd/es/table";
-import { SalesPayments } from "../types/db"; // Use the appropriate type for sales payments
+import { SalesPaymentsJoined } from "../types/db"; // Use the appropriate type for sales payments
 import { formatNumber } from "../helpers/functions";
 import { Image } from "antd";
 import { PLACEHOLDER } from "../assets/images";
 import SalesPaymentActions from "../components/pages/sales/SalesPaymentActions";
 
-export const salesPaymentsAdminColumns: ColumnsType<SalesPayments> = [
+export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
   {
     title: "S.N",
     render: (_, __, index) => index + 1, // Calculate row number
@@ -16,6 +16,22 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPayments> = [
     dataIndex: "date",
     key: "date",
     render: (text) => <span className="capitalize font-semibold">{text}</span>,
+  },
+  {
+    title: "Order Number",
+    dataIndex: "order_number",
+    key: "order_number",
+    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+  },
+  {
+    title: "Customer",
+    dataIndex: "customer_name",
+    key: "customer_name",
+    render: (_, record) => (
+      <span className="capitalize font-semibold">
+        {record.sale.customer_name}
+      </span>
+    ),
   },
   {
     title: "Amount",
@@ -53,12 +69,7 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPayments> = [
     key: "payment_mode",
     render: (text) => <span className="capitalize font-semibold">{text}</span>,
   },
-  {
-    title: "Order Number",
-    dataIndex: "order_number",
-    key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
-  },
+
   {
     title: "Receipt",
     key: "receipt",

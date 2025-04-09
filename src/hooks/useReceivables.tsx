@@ -23,7 +23,11 @@ interface HookReturn {
   salesPaymentsBalanceSum: number | undefined;
 }
 
-function useReceivables(): HookReturn {
+interface Props {
+  debouncedSearch: string | null;
+}
+
+function useReceivables({ debouncedSearch }: Props): HookReturn {
   // Updated hook name
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
@@ -31,7 +35,11 @@ function useReceivables(): HookReturn {
   const fetchData = async ({ pageParam = 1 }) => {
     let isAdmin: boolean = userProfile?.role === "SUPER ADMIN";
     const receivables = await getAllSales(
-      { pageParam, warehouseFilter: isAdmin ? null : userProfile?.warehouse },
+      {
+        pageParam,
+        warehouseFilter: isAdmin ? null : userProfile?.warehouse,
+        debouncedSearchTerm: debouncedSearch,
+      },
       true
     );
     return receivables;
@@ -44,7 +52,7 @@ function useReceivables(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
-  } = useInfiniteQuery([receivablesKeys.getAll], fetchData, {
+  } = useInfiniteQuery([receivablesKeys.getAll, debouncedSearch], fetchData, {
     // Updated query key
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length === 50) {
