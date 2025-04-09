@@ -62,6 +62,9 @@ export const purchasesKeys = {
   getAllPurchases: "getAllPurchases",
   getPurchasePayments: "getPurchasePayments",
   getCsv: "getPurchasesCsv",
+  getPurchaseItems: "getPurchaseItems",
+  getAllPurchaseItems: "getAllPurchaseItems",
+  getPurchaseByOrderNumber: "getPurchaseByOrderNumber",
 };
 export const purchasePaymentsKeys = {
   getAll: "getAllPurchasesPayments",
@@ -74,6 +77,8 @@ export const salesKeys = {
   getUncompletedSales: "getUncompletedSales",
   getSalePayments: "getSalePayments",
   getCsvData: "getCsvData",
+  getSaleItems: "getSaleItems",
+  getSaleByOrderNumber: "getSaleByOrderNumber",
 };
 export const payrollDeductionKeys = {
   getEmployeeDeductions: "getEmployeeDeductions",
@@ -93,6 +98,7 @@ export const vehiclesKeys = {
   getTransitCsv: "getTransitCsv",
   getReceivedCsv: "getReceivedCsv",
   getDeliveredCsv: "getDeliveredCsv",
+  getVehicleById: "getVehicleById",
 };
 
 export const requestsKeys = {

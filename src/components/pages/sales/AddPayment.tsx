@@ -20,7 +20,7 @@ function AddSalesPayment({ orderNumber }: Props) {
   return (
     <>
       <Button onClick={handleOpenModal} type="default">
-        Add Payment
+        + Add Payment
       </Button>
       <Modal
         footer={null}

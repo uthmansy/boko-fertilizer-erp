@@ -2,6 +2,7 @@ import { ColumnsType } from "antd/es/table";
 import { PurchasesAndPayments } from "../types/db";
 import TableActions from "../components/pages/purchases/TableActions";
 import { formatNumber } from "../helpers/functions";
+import ViewPurchase from "../components/pages/purchases/ViewPurchase";
 
 export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
   {
@@ -24,38 +25,49 @@ export const purchasesAdminColumns: ColumnsType<PurchasesAndPayments> = [
     render: (text) => <span className="capitalize">{text}</span>,
   },
   {
-    title: "Item",
-    dataIndex: "item",
-    key: "item",
+    title: "Seller",
+    dataIndex: "seller",
+    key: "seller",
     render: (text) => <span className="capitalize">{text}</span>,
   },
+
   {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
+    title: "Amount",
+    dataIndex: "amount",
+    key: "amount",
     render: (_, record) => (
-      <span className="">
-        {`${formatNumber(record.quantity)}`} {record.item_info.unit}
-      </span>
+      <span className="">{`₦${
+        record.amount ? formatNumber(record.amount) : "NA"
+      }`}</span>
     ),
-  },
-  {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
   },
   {
     title: "Amount Paid",
     dataIndex: "paid",
     key: "paid",
-    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
+    render: (_, record) => (
+      <span className="">{`₦${formatNumber(record.paid)}`}</span>
+    ),
   },
   {
     title: "Balance",
     dataIndex: "balance",
     key: "balance",
-    render: (text) => <span className="">{`₦${formatNumber(text)}`}</span>,
+    render: (_, record) => (
+      <span className="">{`₦${
+        record.balance ? formatNumber(record.balance) : "NA"
+      }`}</span>
+    ),
+  },
+  {
+    title: "View",
+    key: "view",
+    render: (_, record) => (
+      <ViewPurchase
+        orderNumber={record.order_number}
+        buttonTitle="View Purchase"
+      />
+    ),
   },
   {
     title: "Action",

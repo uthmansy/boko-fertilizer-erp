@@ -21,9 +21,7 @@ function EditPurchase({ purchase }: Props) {
 
   return (
     <>
-      <Button onClick={handleOpenModal} type="default">
-        <MdModeEdit />
-      </Button>
+      <Button onClick={handleOpenModal} type="default" icon={<MdModeEdit />} />
       <Modal
         footer={null}
         title="Edit Purchase"

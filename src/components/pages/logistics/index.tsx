@@ -39,7 +39,14 @@ function Logistics() {
       children: <ScanWaybill />,
     },
   ];
-  return <Tabs size="large" defaultActiveKey="1" items={tabs} />;
+  return (
+    <Tabs
+      destroyInactiveTabPane
+      size="large"
+      defaultActiveKey="1"
+      items={tabs}
+    />
+  );
 }
 
 export default Logistics;

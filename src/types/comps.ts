@@ -13,7 +13,7 @@ export interface ExternalStockItems {
 
 export interface FieldConfig {
   name: string;
-  label: string;
+  label?: string;
   noLabel?: boolean;
   type:
     | "text"
@@ -28,7 +28,13 @@ export interface FieldConfig {
     | "select"
     | "dynamic"
     | "search"
-    | "image";
+    | "image"
+    | "group";
+  nestAsArray?: boolean;
+  groupLabel?: string;
+  groupFields?: FieldConfig[];
+  groupStyle?: React.CSSProperties;
+  groupClassName?: string;
   showBasedOn?: {
     field: string;
     value: string | boolean | number; // Show this field only when 'as_collection' is true
@@ -40,7 +46,7 @@ export interface FieldConfig {
   rules?: Rule[];
   suffix?: string;
   options?: SelectOption[];
-  onSelect?: (value: string) => void;
+  onSelect?: (value: string | number | boolean) => void;
   dependencies?: string[];
   getValueFromDependency?: (values: Record<string, any> | undefined) => any;
   getMaxFromDependency?: (
@@ -49,4 +55,5 @@ export interface FieldConfig {
   max?: number;
   min?: number;
   subFields?: FieldConfig[];
+  defaultSubFields?: any[];
 }

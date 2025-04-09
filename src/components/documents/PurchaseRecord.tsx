@@ -243,7 +243,7 @@ const PurchaseRecord: React.FC<PurchaseRecordProps> = ({
           </Text>
         </View>
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>
-          <View style={styles.section1}>
+          {/* <View style={styles.section1}>
             <View style={styles.storeTable}>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Price:</Text>
@@ -287,6 +287,34 @@ const PurchaseRecord: React.FC<PurchaseRecordProps> = ({
                   {data.quantity} {data.item_info.unit}
                 </Text>
               </View>
+            </View>
+          </View> */}
+          <View>
+            <View style={styles.horizontalTable}>
+              <View style={styles.horizontalRow}>
+                <Text style={styles.label}>SN</Text>
+                <Text style={styles.label}>Item:</Text>
+                <Text style={styles.label}>Quantity:</Text>
+                <Text style={styles.label}>Price:</Text>
+                <Text style={styles.label}>Total:</Text>
+                <Text style={styles.label}>Quantity Taken:</Text>
+              </View>
+              {data.items.map((item, i) => (
+                <View key={i} style={styles.horizontalRow}>
+                  <Text style={styles.value}>{i + 1}</Text>
+                  <Text style={styles.value}>{item.item}</Text>
+                  <Text style={styles.value}>
+                    {formatNumber(item.quantity)}
+                  </Text>
+                  <Text style={styles.value}>N{formatNumber(item.price)}</Text>
+                  <Text style={styles.value}>
+                    N{formatNumber(item.quantity * item.price)}
+                  </Text>
+                  <Text style={styles.value}>
+                    {formatNumber(item.quantity_received)}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
           <View>

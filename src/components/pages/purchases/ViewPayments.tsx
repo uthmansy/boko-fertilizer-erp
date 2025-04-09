@@ -1,12 +1,14 @@
 import { Button, Modal, Table } from "antd";
 import useViewPurchasePayments from "../../../hooks/useViewPurchasePayments";
 import { purchasesPaymentsAdminColumns } from "../../../tableColumns/purchasePayments";
+import AddPayment from "./AddPayment";
+import { PurchasesAndPayments } from "../../../types/db";
 
 interface Props {
-  orderNumber: string;
+  purchase: PurchasesAndPayments;
 }
 
-function ViewPayments({ orderNumber }: Props) {
+function ViewPayments({ purchase }: Props) {
   const {
     payments,
     isLoading,
@@ -16,7 +18,7 @@ function ViewPayments({ orderNumber }: Props) {
     handleCloseModal,
     handleOpenModal,
     isModalOpen,
-  } = useViewPurchasePayments({ orderNumber });
+  } = useViewPurchasePayments({ orderNumber: purchase.order_number });
 
   return (
     <>
@@ -30,6 +32,9 @@ function ViewPayments({ orderNumber }: Props) {
         onCancel={handleCloseModal}
         width={720}
       >
+        <div className="mb-5">
+          <AddPayment orderNumber={purchase.order_number} />
+        </div>
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}

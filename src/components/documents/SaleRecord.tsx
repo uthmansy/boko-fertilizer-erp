@@ -241,7 +241,7 @@ const SaleRecord: React.FC<SaleRecordProps> = ({ data, qrCodeDataUri }) => {
         </View>
         <View style={{ borderColor: "#222222", borderWidth: 1, padding: 20 }}>
           <View style={styles.section1}>
-            <View style={styles.storeTable}>
+            {/* <View style={styles.storeTable}>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Price:</Text>
                 <Text style={styles.value}>
@@ -260,8 +260,8 @@ const SaleRecord: React.FC<SaleRecordProps> = ({ data, qrCodeDataUri }) => {
                   N{formatNumber(data.price - data.paid) || ""}
                 </Text>
               </View>
-            </View>
-            <View style={styles.verticalTable}>
+            </View> */}
+            {/* <View style={styles.verticalTable}>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Order Number:</Text>
                 <Text style={styles.value}>{data.order_number}</Text>
@@ -284,6 +284,34 @@ const SaleRecord: React.FC<SaleRecordProps> = ({ data, qrCodeDataUri }) => {
                   {data.quantity} {data.item_info.unit}
                 </Text>
               </View>
+            </View> */}
+          </View>
+          <View>
+            <View style={styles.horizontalTable}>
+              <View style={styles.horizontalRow}>
+                <Text style={styles.label}>SN</Text>
+                <Text style={styles.label}>Item:</Text>
+                <Text style={styles.label}>Quantity:</Text>
+                <Text style={styles.label}>Price:</Text>
+                <Text style={styles.label}>Total:</Text>
+                <Text style={styles.label}>Quantity Taken:</Text>
+              </View>
+              {data.items.map((item, i) => (
+                <View key={i} style={styles.horizontalRow}>
+                  <Text style={styles.value}>{i + 1}</Text>
+                  <Text style={styles.value}>{item.item_purchased}</Text>
+                  <Text style={styles.value}>
+                    {formatNumber(item.quantity)}
+                  </Text>
+                  <Text style={styles.value}>N{formatNumber(item.price)}</Text>
+                  <Text style={styles.value}>
+                    N{formatNumber(item.quantity * item.price)}
+                  </Text>
+                  <Text style={styles.value}>
+                    {formatNumber(item.quantity_taken)}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
           <View>

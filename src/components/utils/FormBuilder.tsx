@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -44,6 +44,20 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
   const [internalForm] = Form.useForm();
   const form = externalForm || internalForm; // Use provided form or internal
   const [formValues, setFormValues] = useState(form.getFieldsValue());
+
+  useEffect(() => {
+    const initialValues = formConfig.reduce((acc, field) => {
+      if (field.type === "dynamic" && field.defaultSubFields) {
+        acc[field.name] = field.defaultSubFields;
+      }
+      if (field.type === "group" && field.nestAsArray) {
+        acc[field.name] = field.defaultSubFields || [{}];
+      }
+      return acc;
+    }, {} as Record<string, any>);
+
+    form.setFieldsValue(initialValues);
+  }, [form, formConfig]);
 
   const onFinish = (values: any) => {
     const validatedValues = { ...values };
@@ -251,6 +265,90 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
         } grid-cols-1 gap-x-3`}
       >
         {formConfig.map((field) => {
+          if (field.type === "group") {
+            if (field.nestAsArray) {
+              return (
+                <div
+                  key={field.name}
+                  style={field.groupStyle}
+                  className={`${field.groupClassName} border rounded-lg p-4 mb-4`}
+                >
+                  {field.groupLabel && (
+                    <h3 className="text-lg font-semibold mb-4">
+                      {field.groupLabel}
+                    </h3>
+                  )}
+                  <Form.List name={field.name}>
+                    {(subFields) => (
+                      <div
+                        className={`grid ${
+                          columns === 1 ? "" : "md:grid-cols-2"
+                        } gap-x-3`}
+                      >
+                        {subFields.map((subField) => (
+                          <React.Fragment key={subField.key}>
+                            {field.groupFields?.map((sub) => (
+                              <Form.Item
+                                key={`${field.name}-${subField.key}-${sub.name}`}
+                                name={[subField.name, sub.name]}
+                                label={!sub.noLabel && sub.label}
+                                rules={[
+                                  {
+                                    required: sub.required || false,
+                                    message: `${sub.label} is required`,
+                                  },
+                                  ...(sub.rules || []),
+                                ]}
+                              >
+                                {renderFormField(sub)}
+                              </Form.Item>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
+                  </Form.List>
+                </div>
+              );
+            } else {
+              // Original group rendering
+              return (
+                <div
+                  key={field.name}
+                  style={field.groupStyle}
+                  className={`${field.groupClassName} border rounded-lg p-4 mb-4`}
+                >
+                  {field.groupLabel && (
+                    <h3 className="text-lg font-semibold mb-4">
+                      {field.groupLabel}
+                    </h3>
+                  )}
+                  <div
+                    className={`grid ${
+                      columns === 1 ? "" : "md:grid-cols-2"
+                    } gap-x-3`}
+                  >
+                    {field.groupFields?.map((sub) => (
+                      <Form.Item
+                        key={sub.name}
+                        name={sub.name}
+                        label={!sub.noLabel && sub.label}
+                        rules={[
+                          {
+                            required: sub.required || false,
+                            message: `${sub.label} is required`,
+                          },
+                          ...(sub.rules || []),
+                        ]}
+                      >
+                        {renderFormField(sub)}
+                      </Form.Item>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+          }
           if (!shouldShowField(field, formValues)) return null;
           if (field.type === "dynamic")
             return (

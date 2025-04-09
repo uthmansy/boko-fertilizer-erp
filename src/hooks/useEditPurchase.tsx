@@ -51,32 +51,6 @@ function useEditPurchase({ purchase }: Prop): HookReturn {
         { max: 50, message: "Seller name cannot exceed 50 characters" },
       ],
     },
-    {
-      name: "price",
-      label: "Price",
-      type: "money",
-      required: false,
-      defaultValue: purchase.price,
-      rules: [
-        {
-          pattern: /^[1-9]\d*(\.\d{1,2})?$/,
-          message: "Invalid price format",
-        },
-      ],
-    },
-    {
-      name: "quantity",
-      label: "Quantity",
-      type: "number",
-      required: false,
-      defaultValue: purchase.quantity,
-      rules: [
-        {
-          pattern: /^[1-9]\d*$/,
-          message: "Quantity must be a positive integer",
-        },
-      ],
-    },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({

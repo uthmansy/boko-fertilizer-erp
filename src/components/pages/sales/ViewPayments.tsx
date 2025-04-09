@@ -3,6 +3,8 @@ import useViewSalesPayments from "../../../hooks/useViewSalesPayments"; // Use t
 import { salesPaymentsAdminColumns } from "../../../tableColumns/salesPayments"; // Use the appropriate columns for sales payments
 import { Sales } from "../../../types/db";
 import { formatNumber } from "../../../helpers/functions";
+import AddSalesPayment from "./AddPayment";
+import useAuthStore from "../../../store/auth";
 
 interface Props {
   orderNumber: string;
@@ -20,6 +22,8 @@ function ViewSalesPayments({ orderNumber, sale }: Props) {
     handleOpenModal,
     isModalOpen,
   } = useViewSalesPayments({ orderNumber }); // Use the sales payments hook
+  const { userProfile } = useAuthStore();
+  const showAdminActions = userProfile?.role === "SUPER ADMIN";
 
   return (
     <>
@@ -33,11 +37,19 @@ function ViewSalesPayments({ orderNumber, sale }: Props) {
         onCancel={handleCloseModal}
         width={720}
       >
-        <Space>
-          <Tag>Price: ₦{formatNumber(sale.price)}</Tag>
+        <Space className="mb-5">
+          <Tag>Price: ₦{sale.amount ? formatNumber(sale.amount) : "NA"}</Tag>
           <Tag>Paid: ₦{formatNumber(sale.paid)}</Tag>
-          <Tag>Balance: ₦{formatNumber(sale.payment_balance)}</Tag>
+          <Tag>
+            Balance: ₦
+            {sale.payment_balance ? formatNumber(sale.payment_balance) : "NA"}
+          </Tag>
         </Space>
+        {(showAdminActions || userProfile?.role === "ACCOUNTING") && (
+          <div className="mb-5">
+            <AddSalesPayment orderNumber={orderNumber} />
+          </div>
+        )}
         <Table
           size="small"
           loading={isLoading || isFetchingNextPage || isRefetching}

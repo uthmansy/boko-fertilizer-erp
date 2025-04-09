@@ -54,6 +54,7 @@ export type InventoryTransfer =
 export type InventoryTransferInsert =
   Database["public"]["Tables"]["inventory_transfers"]["Insert"];
 export type Vehicles = Database["public"]["Tables"]["vehicles"]["Row"];
+export type VehicleItems = Database["public"]["Tables"]["vehicle_items"]["Row"];
 export type Requests = Database["public"]["Tables"]["requests"]["Row"];
 export type Departments = Database["public"]["Tables"]["departments"]["Row"];
 export type Positions = Database["public"]["Tables"]["positions"]["Row"];
@@ -75,14 +76,17 @@ export type UpdateVehicles = Database["public"]["Tables"]["vehicles"]["Update"];
 export interface StockDestination extends Stocks {
   warehouse_info: Warehouses;
 }
-export interface VehiclesAndDestination extends Vehicles {
-  destination_stock: StockDestination;
-  origin_stock: Stocks;
-  external_origin_stock: ExternalStocksAndPurchases;
-  sale: Sales;
-  dispatch_officer_info: UserProfile;
-  receive_officer_info: UserProfile;
+export interface VehicleItemsJoined extends VehicleItems {
+  destination_info: Warehouses;
   item_info: InventoryItems;
+  purchase_info: PurchaseItemsJoined;
+  Sale_info: SalesItemsJoined;
+}
+export interface VehiclesAndDestination extends Vehicles {
+  destination_info?: Warehouses;
+  dispatch_officer_info: UserProfile;
+  receive_officer_info?: UserProfile;
+  items: VehicleItemsJoined[];
 }
 export interface RequestWithItems extends Requests {
   request_items: RequestItemJoined[];
@@ -110,12 +114,13 @@ export type InventoryItems =
 export type SubItems = Database["public"]["Tables"]["sub_items"]["Row"];
 export type StockIn = Database["public"]["Tables"]["stock_in"]["Row"];
 export type Stocks = Database["public"]["Tables"]["stocks"]["Row"];
+export type PurchaseItems =
+  Database["public"]["Tables"]["purchase_items"]["Row"];
 export type ExternalStocks =
   Database["public"]["Tables"]["external_stocks"]["Row"];
 export interface ExternalStocksAndPurchases extends ExternalStocks {
   stock_purchases: Purchases;
   purchase_item: { item: InventoryItems };
-  sales: Sales[];
 }
 export interface ProductSubmissionWithDetails extends ProductSubmission {
   product_info: InventoryItems;
@@ -140,14 +145,24 @@ export interface StocksWithSoldBalance extends ExternalStocksAndPurchases {
   totalSoldBalance: number;
 }
 
+export interface PurchaseItemsJoined extends PurchaseItems {
+  item_info: InventoryItems;
+  purchase_info: Purchases;
+}
 export interface PurchasesAndPayments extends Purchases {
   payments: PurchasePayments[];
-  item_info: InventoryItems;
+  items: PurchaseItemsJoined[];
 }
 
+export type SalesItems = Database["public"]["Tables"]["sales_items"]["Row"];
+
+export interface SalesItemsJoined extends SalesItems {
+  item_info: InventoryItems;
+  purchase_item_info?: PurchaseItemsJoined;
+}
 export interface SalesAndPayments extends Sales {
   payments: SalesPayments[];
-  item_info: InventoryItems;
+  items: SalesItemsJoined[];
 }
 export interface SalesPaymentsJoined extends SalesPayments {
   sale: Sales;
@@ -171,6 +186,8 @@ export interface SubItemsWithDetails extends SubItems {
 export type UpdateInventoryItems =
   Database["public"]["Tables"]["inventory_items"]["Update"];
 export type Shifts = Database["public"]["Enums"]["shifts"];
+export type DispatchTypes =
+  Database["public"]["Enums"]["vehicle_dispatch_type"];
 
 export type DailyProductionSummary = {
   product_info: {
