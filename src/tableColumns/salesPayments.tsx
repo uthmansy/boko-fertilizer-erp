@@ -22,7 +22,7 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
     title: "Order Number",
     dataIndex: "order_number",
     key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+    render: (text) => <ViewSale buttonTitle={text} orderNumber={text} />,
   },
   {
     title: "Customer",
@@ -70,12 +70,7 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
     key: "payment_mode",
     render: (text) => <span className="capitalize font-semibold">{text}</span>,
   },
-  {
-    title: "Order Number",
-    dataIndex: "order_number",
-    key: "order_number",
-    render: (text) => <ViewSale buttonTitle={text} orderNumber={text} />,
-  },
+
   {
     title: "Receipt",
     key: "receipt",

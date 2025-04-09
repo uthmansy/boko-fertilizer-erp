@@ -20,6 +20,12 @@ export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePaymentsJoined> 
       ),
     },
     {
+      title: "Order Number",
+      dataIndex: "order_number",
+      key: "order_number",
+      render: (text) => <ViewPurchase buttonTitle={text} orderNumber={text} />,
+    },
+    {
       title: "Seller",
       dataIndex: "seller",
       key: "seller",
@@ -75,12 +81,7 @@ export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePaymentsJoined> 
         <span className="capitalize font-semibold">{text}</span>
       ),
     },
-    {
-      title: "Order Number",
-      dataIndex: "order_number",
-      key: "order_number",
-      render: (text) => <ViewPurchase buttonTitle={text} orderNumber={text} />,
-    },
+
     {
       title: "Action",
       key: "action",
