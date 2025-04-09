@@ -74,19 +74,20 @@ function ViewSale({ orderNumber, buttonTitle }: Props) {
     {
       key: "6",
       label: "Amount",
-      children: sale?.amount ? `₦${formatNumber(sale?.amount)}` : "NA",
+      children: sale?.amount != null ? `₦${formatNumber(sale?.amount)}` : "NA",
     },
     {
       key: "7",
       label: "Paid",
-      children: sale?.paid ? `₦${formatNumber(sale?.paid)}` : "NA",
+      children: sale?.paid != null ? `₦${formatNumber(sale?.paid)}` : "NA",
     },
     {
       key: "8",
       label: "Balance",
-      children: sale?.payment_balance
-        ? `₦${formatNumber(sale?.payment_balance)}`
-        : "NA",
+      children:
+        sale?.payment_balance != null
+          ? `₦${formatNumber(sale?.payment_balance)}`
+          : "NA",
     },
   ];
 
