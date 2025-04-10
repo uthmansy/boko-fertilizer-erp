@@ -243,7 +243,7 @@ export const getPayrolls = async (
 };
 export const getPayrollEmployees = async ({
   payrollId,
-  pageNumber = 1,
+  // pageNumber = 1,
   debouncedSearchTerm,
 }: {
   payrollId: string;
@@ -254,11 +254,11 @@ export const getPayrollEmployees = async ({
     .from("employee_payroll")
     .select("*, employee:employee_id!inner(*)")
     .eq("payroll_id", payrollId)
-    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
-    .order("employee_id", {
-      // foreignTable: "employee",
+    .order("first_name", {
+      referencedTable: "employee",
       ascending: false,
     });
+  // .range((pageNumber - 1) * 50, pageNumber * 50 - 1);
 
   if (debouncedSearchTerm) {
     // Split search term into individual words (e.g. "musa isa" → ["musa", "isa"])
@@ -279,7 +279,14 @@ export const getPayrollEmployees = async ({
   const { data, error } = await query;
 
   if (error) throw error.message;
-  return data;
+  if (debouncedSearchTerm) return data;
+  return data.sort((a, b) => {
+    const firstNameComparison = a.employee.first_name.localeCompare(
+      b.employee.first_name
+    );
+    if (firstNameComparison !== 0) return firstNameComparison;
+    return a.employee.last_name.localeCompare(b.employee.last_name);
+  });
 };
 export const getPayrollEmployeesAll = async ({
   payrollId,
