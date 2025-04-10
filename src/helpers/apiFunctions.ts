@@ -25,6 +25,7 @@ import {
   Positions,
   ProductSubmissionWithDetails,
   ProductionWithItems,
+  PurchaseItemsJoined,
   PurchasePaymentsJoined,
   Purchases,
   PurchasesAndPayments,
