@@ -18,6 +18,12 @@ function AllSales() {
     handleWarehouseChange,
     warehouseFilter,
     warehouseOptions,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
   } = useFilters();
   const { isLoading, sales, fetchNextPage, isFetchingNextPage, isRefetching } =
     useAllSales({
@@ -25,6 +31,8 @@ function AllSales() {
       dateFilter,
       itemFilter,
       warehouseFilter,
+      monthFilter,
+      yearFilter,
     });
 
   return (
@@ -41,6 +49,12 @@ function AllSales() {
         onWarehouseChange={handleWarehouseChange}
         warehouseFilter={warehouseFilter}
         warehouseOptions={warehouseOptions}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
       />
       <Table
         size="small"

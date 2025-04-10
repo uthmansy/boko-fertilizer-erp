@@ -3,6 +3,7 @@ import Record from "./Record";
 import { PurchasesAndPayments } from "../../../types/db";
 import EditPurchase from "./EditPurchase";
 import useAuthStore from "../../../store/auth";
+import DeletePurchase from "./DeletePurchase";
 
 interface Props {
   purchase: PurchasesAndPayments;
@@ -19,6 +20,7 @@ function TableActions({ purchase }: Props) {
       {showAdminActions && (
         <>
           <EditPurchase purchase={purchase} />
+          <DeletePurchase purchase={purchase} />
         </>
       )}
     </Space>

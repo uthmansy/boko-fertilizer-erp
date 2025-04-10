@@ -21,4 +21,6 @@ export interface ApiFilterOptions {
   warehouseFilter?: string | null;
   shiftFilter?: string | null;
   expenseCategoryFilter?: string | null;
+  monthFilter?: number | null;
+  yearFilter?: number | null;
 }

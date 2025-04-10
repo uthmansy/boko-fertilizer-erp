@@ -91,8 +91,12 @@ export interface VehiclesAndDestination extends Vehicles {
 export interface RequestWithItems extends Requests {
   request_items: RequestItemJoined[];
 }
+export interface ProductionRawMaterialsJoined extends ProductionRawMaterials {
+  item_info: InventoryItems;
+}
 export interface ProductionWithItems extends Productions {
   production_raw_materials: ProductionRawMaterials[];
+  product_info: InventoryItems;
 }
 export interface EmployeePayrollJoined extends EmployeePayroll {
   employee: Employees;

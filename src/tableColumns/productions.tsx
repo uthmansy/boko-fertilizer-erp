@@ -40,6 +40,14 @@ export const productionsAdminColumns: ColumnsType<ProductionWithItems> = [
     render: (text) => <span className="capitalize">{text}</span>,
   },
   {
+    title: "Length",
+    dataIndex: "product",
+    key: "product_cutting_lenght",
+    render: (_, record) => (
+      <span className="capitalize">{record.product_info.length} CM</span>
+    ),
+  },
+  {
     title: "Quantity Produced",
     dataIndex: "quantity_produced",
     key: "quantity_produced",

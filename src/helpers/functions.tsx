@@ -179,3 +179,45 @@ export const flattenObject = (
     {}
   );
 };
+
+export const getDateRange = (
+  month: number | null,
+  year: number | null
+): { start: string; end: string } | null => {
+  // Resolve year: if year is null or 0, use the current UTC year.
+  const resolvedYear =
+    year === null || year === 0 ? new Date().getUTCFullYear() : year;
+
+  // Helper to format dates as 'yyyy-mm-dd' using UTC
+  const format = (date: Date): string =>
+    [
+      date.getUTCFullYear(),
+      String(date.getUTCMonth() + 1).padStart(2, "0"),
+      String(date.getUTCDate()).padStart(2, "0"),
+    ].join("-");
+
+  // If month is null or 0, return the full-year range
+  if (month === null || month === 0) {
+    const startDate = new Date(Date.UTC(resolvedYear, 0, 1)); // January 1
+    const endDate = new Date(Date.UTC(resolvedYear, 11, 31)); // December 31
+    return {
+      start: format(startDate),
+      end: format(endDate),
+    };
+  }
+
+  // If a month is provided but is outside the valid range (1-12), return null.
+  if (month < 1 || month > 12) {
+    return null;
+  }
+
+  // Otherwise, create the range for the provided month.
+  const startDate = new Date(Date.UTC(resolvedYear, month - 1, 1));
+  // Using day 0 of next month gives the last day of the current month.
+  const endDate = new Date(Date.UTC(resolvedYear, month, 0));
+
+  return {
+    start: format(startDate),
+    end: format(endDate),
+  };
+};

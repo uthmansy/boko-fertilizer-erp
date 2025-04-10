@@ -25,6 +25,8 @@ interface Props {
   dateFilter: string | null;
   itemFilter: string | null;
   warehouseFilter: string | null;
+  monthFilter: number | null;
+  yearFilter: number | null;
 }
 
 function useAllSales({
@@ -32,6 +34,8 @@ function useAllSales({
   debouncedSearchTerm,
   itemFilter,
   warehouseFilter,
+  monthFilter,
+  yearFilter,
 }: Props): HookReturn {
   // Updated hook name
   const { message } = App.useApp();
@@ -45,6 +49,8 @@ function useAllSales({
       itemFilter,
       debouncedSearchTerm,
       dateFilter,
+      monthFilter,
+      yearFilter,
     }); // Update to sales API function
     return sales;
   };
@@ -63,6 +69,8 @@ function useAllSales({
       debouncedSearchTerm,
       itemFilter,
       warehouseFilter,
+      monthFilter,
+      yearFilter,
     ],
     fetchData,
     {

@@ -1,5 +1,4 @@
 import {
-  Badge,
   Button,
   Descriptions,
   Empty,
@@ -20,6 +19,7 @@ import useAuthStore from "../../../store/auth";
 import AddSalesPayment from "./AddPayment";
 import useViewSalesPayments from "../../../hooks/useViewSalesPayments";
 import { salesPaymentsAdminColumns } from "../../../tableColumns/salesPayments";
+import useDashboard from "../../../hooks/useDashboard";
 
 interface Props {
   orderNumber: string;
@@ -91,6 +91,8 @@ function ViewSale({ orderNumber, buttonTitle }: Props) {
     },
   ];
 
+  const { isMobile } = useDashboard();
+
   const tabs: TabsProps["items"] = [
     {
       key: "1",
@@ -103,7 +105,7 @@ function ViewSale({ orderNumber, buttonTitle }: Props) {
         <>
           <div>
             <Descriptions
-              column={2}
+              column={isMobile ? 1 : 2}
               title="Sale Info"
               bordered
               items={descs}

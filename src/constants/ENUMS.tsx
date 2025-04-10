@@ -86,3 +86,18 @@ export const USER_ROLE: UserRole[] = [
 
 export const SHIFTS: Shifts[] = ["morning", "night"];
 export const DISPATCH_TYPES: DispatchTypes[] = ["purchase", "sale", "transfer"];
+
+export const MONTHS: string[] = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+];

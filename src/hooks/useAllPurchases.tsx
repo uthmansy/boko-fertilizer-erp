@@ -23,12 +23,16 @@ interface Props {
   debouncedSearchTerm: string;
   dateFilter: string | null;
   itemFilter: string | null;
+  monthFilter: number | null;
+  yearFilter: number | null;
 }
 
 function useAllPurchases({
   dateFilter,
   debouncedSearchTerm,
   itemFilter,
+  monthFilter,
+  yearFilter,
 }: Props): HookReturn {
   const { message } = App.useApp();
 
@@ -38,6 +42,8 @@ function useAllPurchases({
       dateFilter,
       debouncedSearchTerm,
       itemFilter,
+      monthFilter,
+      yearFilter,
     });
     return purchases;
   };
@@ -55,6 +61,8 @@ function useAllPurchases({
       dateFilter,
       debouncedSearchTerm,
       itemFilter,
+      monthFilter,
+      yearFilter,
     ],
     fetchData,
     {

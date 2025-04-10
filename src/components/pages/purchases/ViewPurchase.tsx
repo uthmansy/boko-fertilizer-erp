@@ -19,6 +19,7 @@ import AddPurchasePayment from "./AddPayment";
 import useViewPurchasePayments from "../../../hooks/useViewPurchasePayments";
 import { puchaseItemsAdminColumns } from "../../../tableColumns/purchaseItems";
 import { purchasesPaymentsAdminColumns } from "../../../tableColumns/purchasePayments";
+import useDashboard from "../../../hooks/useDashboard";
 
 interface Props {
   orderNumber: string;
@@ -87,6 +88,8 @@ function ViewPurchase({ orderNumber, buttonTitle }: Props) {
     },
   ];
 
+  const { isMobile } = useDashboard();
+
   const tabs: TabsProps["items"] = [
     {
       key: "1",
@@ -99,7 +102,7 @@ function ViewPurchase({ orderNumber, buttonTitle }: Props) {
         <>
           <div>
             <Descriptions
-              column={2}
+              column={isMobile ? 1 : 2}
               title="Purchase Info"
               bordered
               items={descs}

@@ -75,6 +75,7 @@ import { CreatePurchase } from "../zodSchemas/purchases";
 import { ReceiveVehicles } from "../zodSchemas/receive";
 import { CreateSaleType } from "../zodSchemas/sales";
 import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
+import { getDateRange } from "./functions";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -95,7 +96,13 @@ export const getAllStockPurchases = async ({
   dateFilter,
   debouncedSearchTerm,
   itemFilter,
+  monthFilter,
+  yearFilter,
 }: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("stock_purchases")
     .select(
@@ -105,6 +112,8 @@ export const getAllStockPurchases = async ({
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
+  if (dateRange && !dateFilter)
+    query = query.gte("date", dateRange.start).lte("date", dateRange.end);
   if (itemFilter) query = query.eq("items.item", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
@@ -338,9 +347,15 @@ export const getAllSales = async (
     debouncedSearchTerm,
     itemFilter,
     warehouseFilter,
+    monthFilter,
+    yearFilter,
   }: ApiFilterOptions,
   receivables?: boolean
 ): Promise<SalesAndPayments[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("sales")
     .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
@@ -348,6 +363,8 @@ export const getAllSales = async (
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
+  if (dateRange && !dateFilter)
+    query = query.gte("date", dateRange.start).lte("date", dateRange.end);
   if (itemFilter) query = query.eq("items.item_purchased", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("customer_name", `%${debouncedSearchTerm}%`);
@@ -866,7 +883,7 @@ export const getAllProductions = async ({
 }: ApiFilterOptions): Promise<ProductionWithItems[]> => {
   let q = supabase
     .from("production_runs")
-    .select("*, production_raw_materials (*)")
+    .select("*, production_raw_materials (*), product_info:product(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -1566,6 +1583,17 @@ export const deleteSale = async (saleId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Sale:", error);
+    throw new Error(error.message);
+  }
+};
+export const deletePurchase = async (purchaseId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("stock_purchases")
+    .delete()
+    .eq("id", purchaseId);
+
+  if (error) {
+    console.error("Failed to delete Purchase:", error);
     throw new Error(error.message);
   }
 };
