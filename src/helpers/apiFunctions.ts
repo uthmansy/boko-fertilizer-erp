@@ -25,8 +25,6 @@ import {
   Positions,
   ProductSubmissionWithDetails,
   ProductionWithItems,
-  PurchaseItemsJoined,
-  PurchasePayments,
   PurchasePaymentsJoined,
   Purchases,
   PurchasesAndPayments,
@@ -912,10 +910,10 @@ export const getAllFinishedProducts = async ({
 export const getAllPurchasePayments = async (
   pageNumber: number = 1,
   orderNumber: string // Assuming orderNumber is of type string
-): Promise<PurchasePayments[]> => {
+): Promise<PurchasePaymentsJoined[]> => {
   const { data, error } = await supabase
     .from("purchase_order_payments")
-    .select("*")
+    .select("*, purchase:order_number(*)")
     .eq("order_number", orderNumber) // Filter by order_number
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
@@ -928,10 +926,10 @@ export const getAllPurchasePayments = async (
 export const getAllSalesPayments = async (
   pageNumber: number = 1,
   orderNumber: string // Assuming orderNumber is of type string
-): Promise<SalesPayments[]> => {
+): Promise<SalesPaymentsJoined[]> => {
   const { data, error } = await supabase
     .from("sales_payments")
-    .select("*")
+    .select("*, sale:order_number(*)")
     .eq("order_number", orderNumber) // Filter by order_number
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });

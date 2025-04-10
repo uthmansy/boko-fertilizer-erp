@@ -4,17 +4,17 @@ import {
   useInfiniteQuery,
 } from "react-query";
 import { getAllPurchasePayments } from "../helpers/apiFunctions";
-import { PurchasePayments } from "../types/db";
+import { PurchasePaymentsJoined } from "../types/db";
 import { App } from "antd";
 import { purchasesKeys } from "../constants/QUERY_KEYS";
 import { useState } from "react";
 
 interface HookReturn {
-  payments: PurchasePayments[];
+  payments: PurchasePaymentsJoined[];
   isLoading: boolean;
   fetchNextPage: (
     options?: FetchNextPageOptions | undefined
-  ) => Promise<InfiniteQueryObserverResult<PurchasePayments[], unknown>>;
+  ) => Promise<InfiniteQueryObserverResult<PurchasePaymentsJoined[], unknown>>;
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
