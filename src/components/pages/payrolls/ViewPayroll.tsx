@@ -43,13 +43,15 @@ function ViewPayroll({ payroll }: Props) {
     queryKey: payrollKeys.getPayrollEmployeesAll,
   });
 
-  const flatData = data?.map((payroll) => ({
-    ...payroll,
-    name: `${payroll.employee.first_name} ${payroll.employee.last_name}`,
-    bank: payroll.employee.bank_name,
-    acc_number: payroll.employee.bank_account_number,
-    bank_name: payroll.employee.bank_name,
-  }));
+  const flatData = data
+    ?.map((payroll) => ({
+      ...payroll,
+      name: `${payroll.employee.first_name} ${payroll.employee.last_name}`,
+      bank: payroll.employee.bank_name,
+      acc_number: payroll.employee.bank_account_number,
+      bank_name: payroll.employee.bank_name,
+    }))
+    ?.sort((a, b) => a.name.localeCompare(b.name));
 
   const headers: Headers = [
     { label: "Name", key: "name" },
