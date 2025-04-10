@@ -4,17 +4,17 @@ import {
   useInfiniteQuery,
 } from "react-query";
 import { getAllSalesPayments } from "../helpers/apiFunctions"; // Use the appropriate API function for sales payments
-import { SalesPayments } from "../types/db"; // Use the appropriate type for sales payments
+import { SalesPaymentsJoined } from "../types/db"; // Use the appropriate type for sales payments
 import { App } from "antd";
 import { salesKeys } from "../constants/QUERY_KEYS"; // Use the appropriate query key for sales payments
 import { useState } from "react";
 
 interface HookReturn {
-  payments: SalesPayments[]; // Change to SalesPayments[]
+  payments: SalesPaymentsJoined[]; // Change to SalesPaymentsJoined[]
   isLoading: boolean;
   fetchNextPage: (
     options?: FetchNextPageOptions | undefined
-  ) => Promise<InfiniteQueryObserverResult<SalesPayments[], unknown>>; // Change to SalesPayments[]
+  ) => Promise<InfiniteQueryObserverResult<SalesPaymentsJoined[], unknown>>; // Change to SalesPayments[]
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
