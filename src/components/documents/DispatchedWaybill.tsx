@@ -10,7 +10,7 @@ import {
 import { VehiclesAndDestination } from "../../types/db"; // Ensure this import is correct based on your project structure
 import { COMPANY } from "../../constants/COMPANY";
 import { ABJ_LOGO, LOGO } from "../../assets/images";
-import { formatNumber } from "../../helpers/functions";
+import { baleAndPieces, formatNumber } from "../../helpers/functions";
 
 // Define styles for the PDF document
 const styles = StyleSheet.create({
@@ -327,7 +327,9 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
                 <Text style={styles.value}>{item.item}</Text>
                 <Text style={styles.value}>{item.item_info.unit}</Text>
                 <Text style={styles.value}>
-                  {item.qty_carried} {item.item_info.unit}
+                  {item.item_info.unit.toLowerCase() === "bale"
+                    ? `${baleAndPieces(item.qty_carried)}`
+                    : `${item.qty_carried} ${item.item_info.unit}`}
                 </Text>
               </View>
             ))}

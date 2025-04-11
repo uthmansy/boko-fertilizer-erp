@@ -221,3 +221,16 @@ export const getDateRange = (
     end: format(endDate),
   };
 };
+
+export const baleAndPieces = (num: number) => {
+  let bales = Math.floor(num);
+  let pieces = Math.round((num - bales) * 500);
+
+  // Check if pieces make another full bale
+  if (pieces === 500) {
+    bales += 1;
+    pieces = 0;
+  }
+
+  return `${bales} bale, ${pieces} pieces`;
+};

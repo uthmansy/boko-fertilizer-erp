@@ -25,6 +25,8 @@ interface Props {
   itemFilter: string | null;
   warehouseFilter: string | null;
   shiftFilter: string | null;
+  monthFilter: number | null;
+  yearFilter: number | null;
 }
 
 function useAllProductions({
@@ -32,6 +34,8 @@ function useAllProductions({
   itemFilter,
   warehouseFilter,
   shiftFilter,
+  monthFilter,
+  yearFilter,
 }: Props): HookReturn {
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
@@ -44,6 +48,8 @@ function useAllProductions({
       itemFilter,
       dateFilter,
       shiftFilter,
+      monthFilter,
+      yearFilter,
     }); // Fetch production data
     return productions;
   };
@@ -62,6 +68,8 @@ function useAllProductions({
       itemFilter,
       warehouseFilter,
       shiftFilter,
+      monthFilter,
+      yearFilter,
     ],
     fetchData,
     {

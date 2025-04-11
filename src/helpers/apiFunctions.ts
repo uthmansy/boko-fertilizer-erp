@@ -682,7 +682,7 @@ export const getAllRequests = async ({
 }: ApiFilterOptions): Promise<RequestWithItems[]> => {
   let q = supabase
     .from("requests")
-    .select("*, request_items!inner(*)")
+    .select("*, request_items!inner(*, item_info:item(*))")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -880,7 +880,13 @@ export const getAllProductions = async ({
   itemFilter,
   warehouseFilter,
   shiftFilter,
+  monthFilter,
+  yearFilter,
 }: ApiFilterOptions): Promise<ProductionWithItems[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let q = supabase
     .from("production_runs")
     .select("*, production_raw_materials (*), product_info:product(*)")
@@ -888,6 +894,8 @@ export const getAllProductions = async ({
     .order("created_at", { ascending: false });
 
   if (dateFilter) q = q.eq("date", dateFilter);
+  if (dateRange && !dateFilter)
+    q = q.gte("date", dateRange.start).lte("date", dateRange.end);
   if (itemFilter) q = q.eq("product", itemFilter);
   if (shiftFilter) q = q.eq("shift", shiftFilter);
   if (warehouseFilter) {

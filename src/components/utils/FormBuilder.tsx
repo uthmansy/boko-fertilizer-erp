@@ -7,7 +7,6 @@ import {
   Select,
   DatePicker,
   InputNumber,
-  Space,
   FormInstance,
 } from "antd";
 import { FieldConfig } from "../../types/comps";
@@ -140,7 +139,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
             //@ts-ignore
             onSelect={field.onSelect || (() => null)}
             optionFilterProp="label"
-            style={{ minWidth: 200 }}
+            style={{ minWidth: 130 }}
             options={field.options || []}
           >
             {/* {Array.isArray(field.options) &&
@@ -356,7 +355,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
                 <Form.List name={[field.name]}>
                   {(subFields, subOpt) => (
                     <div
-                      className="p-5 border rounded bg-gray-50"
+                      className="p-5 border-dashed border-2 border-primary rounded "
                       style={{
                         display: "flex",
                         flexDirection: "column",
@@ -364,7 +363,10 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
                       }}
                     >
                       {subFields.map((subField) => (
-                        <Space key={subField.key}>
+                        <div
+                          className="grid grid-cols-2 gap-3 relative px-5 pt-8 pb-4 border border-primary bg-primary/10"
+                          key={subField.key}
+                        >
                           {field.subFields?.map((field) => (
                             <Form.Item
                               className="w-full"
@@ -383,11 +385,12 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
                             </Form.Item>
                           ))}
                           <CloseOutlined
+                            className="absolute top-0 right-0 p-3 bg-red-600 text-white"
                             onClick={() => {
                               subOpt.remove(subField.name);
                             }}
                           />
-                        </Space>
+                        </div>
                       ))}
                       <Button type="dashed" onClick={() => subOpt.add()} block>
                         + Add Item

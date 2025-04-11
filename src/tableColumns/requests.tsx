@@ -2,6 +2,7 @@ import { ColumnsType } from "antd/es/table";
 import { RequestWithItems } from "../types/db";
 import { Tag } from "antd";
 import RequestsTableActions from "../components/pages/requests/RequestsTableActions";
+import { formatNumber } from "../helpers/functions";
 // import TransitTableActions from "../components/pages/transit/TransitTableActions";
 
 export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
@@ -73,6 +74,13 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
           <div className="flex space-x-3">
             <span>{item.item}:</span>
             <span>{item.quantity}</span>
+            <span>
+              {item.item_info.purchase_cost
+                ? `₦${formatNumber(
+                    item.quantity * item.item_info?.purchase_cost
+                  )}`
+                : "NA"}
+            </span>
           </div>
         ))}
       </div>
