@@ -108,6 +108,7 @@ export const vehiclesKeys = {
 export const requestsKeys = {
   getAllRequests: "getAllRequests",
   getCsv: "getRequestsCsv",
+  getItemProductionInflow: "getItemProductionInflow",
 };
 export const productionsKeys = {
   getAllProductions: "getAllProductions",

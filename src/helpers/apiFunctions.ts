@@ -77,6 +77,8 @@ import { ReceiveVehicles } from "../zodSchemas/receive";
 import { CreateSaleType } from "../zodSchemas/sales";
 import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
 import { getDateRange } from "./functions";
+import { UpdateFinishedProductsType } from "../zodSchemas/finishedProducts";
+import { ItemInflowType } from "../hooks/useItemRequestInflow";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -744,6 +746,26 @@ export const getAllRequests = async ({
   if (warehouseFilter) {
     q = q.eq("warehouse", warehouseFilter);
   }
+  const { data, error } = await q;
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getItemProductionInflow = async ({
+  pageParam,
+  dateFilter,
+  itemFilter,
+}: ApiFilterOptions): Promise<ItemInflowType[]> => {
+  let q = supabase.rpc("get_item_production_receipt_summary", {
+    // start_date: dateFilter,
+    // end_date: dateFilter,
+    specific_date: dateFilter,
+    item_filter: itemFilter,
+    result_limit: 50,
+    result_offset: (pageParam - 1) * 50,
+  });
+
   const { data, error } = await q;
 
   if (error) throw error.message;
@@ -1474,6 +1496,16 @@ export const updatePurchase = async (
 export const updateSale = async (payload: UpdateSaleInput): Promise<void> => {
   const { error } = await supabase
     .from("sales")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateFinishedProduct = async (
+  payload: UpdateFinishedProductsType
+): Promise<void> => {
+  const { error } = await supabase
+    .from("finished_products")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);
