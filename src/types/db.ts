@@ -129,6 +129,9 @@ export interface ExternalStocksAndPurchases extends ExternalStocks {
 export interface ProductSubmissionWithDetails extends ProductSubmission {
   product_info: InventoryItems;
 }
+export interface StocksJoined extends Stocks {
+  item_info: InventoryItems;
+}
 export interface InventoryTransferWithStocks extends InventoryTransfer {
   originStock: Stocks;
   destinationStock: Stocks;

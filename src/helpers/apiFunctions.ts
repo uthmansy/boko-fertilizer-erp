@@ -38,6 +38,7 @@ import {
   StockIn,
   StockInWithDetails,
   Stocks,
+  StocksJoined,
   StocksWithDetails,
   SubItemsWithDetails,
   UpdateEmployeePayroll,
@@ -385,6 +386,42 @@ export const getAllSales = async (
 
   return data;
 };
+export const getAssetValuations = async ({
+  pageParam,
+  warehouseFilter,
+}: ApiFilterOptions): Promise<StocksJoined[]> => {
+  let query = supabase
+    .from("stocks")
+    .select("*, item_info:item(*)")
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (warehouseFilter) {
+    query = query.eq("warehouse", warehouseFilter);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+
+  return data;
+};
+export const getAllStocks = async (): Promise<StocksJoined[]> => {
+  let query = supabase
+    .from("stocks")
+    .select("*, item_info:item(*)")
+    .order("created_at", { ascending: false });
+  const { data, error } = await query;
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+
+  return data;
+};
 export const getCsvReceivables = async (): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
@@ -586,13 +623,22 @@ export const getAllInternalStocks = async (): Promise<Stocks[]> => {
 
 export const getVehicles = async (
   status: vehicleStatus = "dispatched",
-  pageNumber: number = 1,
-  item: string = "all",
-  destination: string | null = "all",
-  search: string = "",
-  origin: string = "all",
-  paginated: boolean = true
+  {
+    pageParam,
+    dateFilter,
+    debouncedSearchTerm,
+    monthFilter,
+    // warehouseFilter,
+    yearFilter,
+    itemFilter,
+  }: Omit<ApiFilterOptions, "pageParam"> & {
+    pageParam?: number;
+  }
 ): Promise<VehiclesAndDestination[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("vehicles")
     .select(
@@ -605,29 +651,35 @@ export const getVehicles = async (
     query = query.eq("status", status);
   }
 
+  if (dateFilter) query = query.eq("date_dispatched", dateFilter);
+  if (dateRange && !dateFilter)
+    query = query
+      .gte("date_dispatched", dateRange.start)
+      .lte("date_dispatched", dateRange.end);
+
   // Apply item filter if it's not 'all'
-  if (item !== "all") {
-    query = query.eq("items.item", item);
+  if (itemFilter) {
+    query = query.eq("items.item", itemFilter);
   }
 
   // Apply destination filter using inner join if it's not 'all'
-  if (destination !== "all") {
-    query = query.eq("destination_info.name", destination);
-  }
+  // if (destination !== "all") {
+  //   query = query.eq("destination_info.name", destination);
+  // }
 
   // Apply origin filter using inner join if it's not 'all'
-  if (origin !== "all") {
-    query = query.eq("origin_state", origin);
-  }
+  // if (origin !== "all") {
+  //   query = query.eq("origin_state", origin);
+  // }
 
   // Apply search filter to vehicle_number if search term is provided
-  if (search) {
+  if (debouncedSearchTerm) {
     // query = query.textSearch(`vehicle_number`, search);
-    query = query.ilike("vehicle_number", `%${search}%`);
+    query = query.ilike("vehicle_number", `%${debouncedSearchTerm}%`);
   }
 
-  if (paginated) {
-    query = query.range((pageNumber - 1) * 50, pageNumber * 50 - 1);
+  if (pageParam) {
+    query = query.range((pageParam - 1) * 50, pageParam * 50 - 1);
   }
 
   // Apply ordering and pagination after filtering

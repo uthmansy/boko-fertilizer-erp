@@ -53,6 +53,7 @@ export const stocksKeys = {
   getExternalStocks: "getExternalStocks",
   getInternalStocks: "getInternalStocks",
   getStockRecords: "getStockRecords",
+  getAllStocks: "getAllStocks",
 };
 export const externalStocksKeys = {
   getItemExternalRecord: "getItemExternalRecord",
@@ -79,6 +80,9 @@ export const salesKeys = {
   getCsvData: "getCsvData",
   getSaleItems: "getSaleItems",
   getSaleByOrderNumber: "getSaleByOrderNumber",
+};
+export const assetValuationsKeys = {
+  getAssetValuations: "getAssetValuations",
 };
 export const payrollDeductionKeys = {
   getEmployeeDeductions: "getEmployeeDeductions",

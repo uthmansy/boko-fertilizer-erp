@@ -44,16 +44,7 @@ function DispatchedVehicles() {
     },
   ];
   const { data } = useCsv<VehiclesAndDestination[]>({
-    queryFn: () =>
-      getVehicles(
-        "delivered",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        false
-      ),
+    queryFn: () => getVehicles("delivered", {}),
     queryKey: vehiclesKeys.getDeliveredCsv,
   });
 

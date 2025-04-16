@@ -43,16 +43,7 @@ function Transit() {
     },
   ];
   const { data } = useCsv<VehiclesAndDestination[]>({
-    queryFn: () =>
-      getVehicles(
-        "dispatched",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        false
-      ),
+    queryFn: () => getVehicles("dispatched", {}),
     queryKey: vehiclesKeys.getTransitCsv,
   });
 

@@ -1,36 +1,69 @@
 import { Table } from "antd";
 import useTransit from "../../../hooks/useTransit";
 import { useVehicleColumns } from "../../../tableColumns/vehicles";
-import FormBuilder from "../../utils/FormBuilder";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 function AllTransit() {
+  const {
+    debouncedSearchTerm,
+    searchTerm,
+    dateFilter,
+    handleSearchChange,
+    handleDateChange,
+    itemOptions,
+    handleItemChange,
+    resetFilters,
+    itemFilter,
+    handleWarehouseChange,
+    warehouseFilter,
+    warehouseOptions,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
+  } = useFilters();
+
   const {
     isLoading,
     vehicles,
     fetchNextPage,
     isFetchingNextPage,
     isRefetching,
-    filterFormConfig,
-    handleSubmit,
-  } = useTransit();
+  } = useTransit({
+    debouncedSearchTerm,
+    dateFilter,
+    itemFilter,
+    warehouseFilter,
+    monthFilter,
+    yearFilter,
+  });
 
   const { transitColumns } = useVehicleColumns();
 
   return (
     <>
-      <div className="max-w-max overflow-x-auto">
-        <FormBuilder
-          formConfig={filterFormConfig}
-          onSubmit={handleSubmit}
-          loading={isLoading}
-          showSubmitButton={false}
-          styles={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "16px", // Optional: to add spacing between the columns
-          }}
-        />
-      </div>
+      <Filters
+        onSearchChange={handleSearchChange}
+        searchTerm={searchTerm}
+        searchPlaceholder="search truck number"
+        onDateChange={handleDateChange}
+        itemFilter={itemFilter}
+        itemOptions={itemOptions}
+        onItemChange={handleItemChange}
+        onReset={resetFilters}
+        onWarehouseChange={handleWarehouseChange}
+        warehouseFilter={warehouseFilter}
+        warehouseOptions={warehouseOptions}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
+      />
 
       <Table
         size="small"
