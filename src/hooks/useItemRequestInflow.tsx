@@ -7,11 +7,13 @@ import { getItemProductionInflow } from "../helpers/apiFunctions";
 import { App } from "antd";
 import { requestsKeys } from "../constants/QUERY_KEYS";
 import useAuthStore from "../store/auth";
+import { InventoryItems } from "../types/db";
 
 export interface ItemInflowType {
   date: string;
   item: string;
   total_quantity: number;
+  item_data: InventoryItems;
 }
 
 interface HookReturn {
@@ -28,15 +30,17 @@ interface HookReturn {
 interface Props {
   dateFilter: string | null;
   warehouseFilter: string | null;
-  shiftFilter: string | null;
   itemFilter: string | null;
+  monthFilter: number | null;
+  yearFilter: number | null;
 }
 
 function useItemRequestInflow({
   dateFilter,
   warehouseFilter,
-  shiftFilter,
   itemFilter,
+  monthFilter,
+  yearFilter,
 }: Props): HookReturn {
   const { message } = App.useApp();
   const { userProfile } = useAuthStore();
@@ -48,6 +52,8 @@ function useItemRequestInflow({
       warehouseFilter: isAdmin ? warehouseFilter : userProfile?.warehouse,
       dateFilter,
       itemFilter,
+      yearFilter,
+      monthFilter,
     });
     return inflow;
   };
@@ -64,8 +70,9 @@ function useItemRequestInflow({
       requestsKeys.getItemProductionInflow,
       dateFilter,
       warehouseFilter,
-      shiftFilter,
       itemFilter,
+      yearFilter,
+      monthFilter,
     ],
     fetchData,
     {

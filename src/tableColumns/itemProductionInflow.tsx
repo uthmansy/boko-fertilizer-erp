@@ -18,6 +18,10 @@ export const intemProductionInflowColumns: ColumnsType<ItemInflowType> = [
   },
   {
     title: "Quantity",
-    render: (_, record) => record.total_quantity, // Calculate row number
+    render: (_, record) => `${record.total_quantity}`, // Calculate row number
+  },
+  {
+    title: "Unit",
+    render: (_, record) => `${record.item_data.unit}`, // Calculate row number
   },
 ];

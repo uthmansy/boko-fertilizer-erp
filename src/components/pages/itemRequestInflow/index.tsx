@@ -12,19 +12,23 @@ function ItemRequestInflow() {
     handleWarehouseChange,
     warehouseFilter,
     warehouseOptions,
-    handleShiftChange,
-    shiftFilter,
-    shiftOptions,
     itemFilter,
     itemOptions,
     handleItemChange,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
   } = useFilters();
   const { isLoading, inflow, fetchNextPage, isFetchingNextPage, isRefetching } =
     useItemRequestInflow({
       dateFilter,
       warehouseFilter,
-      shiftFilter,
       itemFilter,
+      monthFilter,
+      yearFilter,
     });
 
   return (
@@ -35,12 +39,15 @@ function ItemRequestInflow() {
         onWarehouseChange={handleWarehouseChange}
         warehouseFilter={warehouseFilter}
         warehouseOptions={warehouseOptions}
-        onShiftChange={handleShiftChange}
-        shiftOptions={shiftOptions}
-        shiftFilter={shiftFilter}
         itemFilter={itemFilter}
         itemOptions={itemOptions}
         onItemChange={handleItemChange}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
       />
       <Table
         size="small"

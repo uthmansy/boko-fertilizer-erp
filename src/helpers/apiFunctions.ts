@@ -490,10 +490,9 @@ export const getPurchaseByOrderNumber = async (
   return data;
 };
 export const getAllEmployeesData = async (): Promise<Employees[]> => {
-  let query = supabase
-    .from("employees")
-    .select("*")
-    .order("created_at", { ascending: false });
+  let query = supabase.from("employees").select("*").order("first_name", {
+    ascending: true,
+  });
 
   const { data, error } = await query;
 
@@ -756,10 +755,18 @@ export const getItemProductionInflow = async ({
   pageParam,
   dateFilter,
   itemFilter,
+  monthFilter,
+  yearFilter,
+  warehouseFilter,
 }: ApiFilterOptions): Promise<ItemInflowType[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let q = supabase.rpc("get_item_production_receipt_summary", {
-    // start_date: dateFilter,
-    // end_date: dateFilter,
+    start_date: dateRange?.start,
+    end_date: dateRange?.end,
+    warehouse_filter: warehouseFilter,
     specific_date: dateFilter,
     item_filter: itemFilter,
     result_limit: 50,
@@ -855,14 +862,16 @@ export const getEmployeeBonuses = async ({
 };
 
 export const getEmployees = async ({
-  pageParam,
+  // pageParam,
   debouncedSearchTerm,
 }: ApiFilterOptions): Promise<Employees[]> => {
   let q = supabase
     .from("employees")
     .select("*")
-    .range((pageParam - 1) * 50, pageParam * 50 - 1)
-    .order("created_at", { ascending: false });
+    // .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("first_name", {
+      ascending: true,
+    });
 
   if (debouncedSearchTerm) {
     q = q.or(
