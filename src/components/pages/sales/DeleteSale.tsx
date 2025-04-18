@@ -1,7 +1,7 @@
 import { Button, Modal } from "antd";
 import useDeleteSale from "../../../hooks/useDeleteSale"; // Create this hook similar to useDeleteRequest
 import { Sales } from "../../../types/db"; // Adjust type import according to your schema
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 
 interface Props {
   sale: Sales; // Adjust according to your type for sales
@@ -28,9 +28,12 @@ function DeleteSale({ sale }: Props) {
 
   return (
     <>
-      <Button type="primary" danger onClick={showPromiseConfirm}>
-        Delete
-      </Button>
+      <Button
+        type="primary"
+        danger
+        icon={<DeleteOutlined />}
+        onClick={showPromiseConfirm}
+      />
     </>
   );
 }

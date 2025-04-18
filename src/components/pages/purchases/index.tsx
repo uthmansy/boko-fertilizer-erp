@@ -19,12 +19,10 @@ function Purchases() {
   const headers: Headers = [
     { label: "Date", key: "date" },
     { label: "Order Number", key: "order_number" },
-    { label: "Item", key: "item" },
     { label: "Seller", key: "seller" },
-    { label: "Price", key: "price" },
+    { label: "Amount", key: "amount" },
     { label: "Paid", key: "paid" },
     { label: "Price Balance", key: "balance" },
-    { label: "Quantity", key: "quantity" },
   ];
 
   return (

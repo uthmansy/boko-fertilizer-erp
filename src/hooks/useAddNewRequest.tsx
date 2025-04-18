@@ -83,32 +83,51 @@ function useAddNewRequest(): HookReturn {
       required: true,
     },
     {
-      name: "items",
-      label: "Items",
-      type: "dynamic",
+      name: "item",
+      label: "Item",
+      type: "select",
+      options:
+        items
+          ?.filter((item) => item.type === "raw")
+          .map((item) => ({
+            label: `${item.name} (in ${item.unit})`,
+            value: item.name,
+          })) || [],
       required: true,
-      subFields: [
-        {
-          name: "item",
-          label: "Item",
-          type: "select",
-          options:
-            items
-              ?.filter((item) => item.type === "raw")
-              .map((item) => ({
-                label: `${item.name} (in ${item.unit})`,
-                value: item.name,
-              })) || [],
-          required: true,
-        },
-        {
-          name: "quantity",
-          label: "Quantity",
-          type: "number",
-          required: true,
-        },
-      ],
     },
+    {
+      name: "quantity",
+      label: "Quantity",
+      type: "number",
+      required: true,
+    },
+    // {
+    //   name: "items",
+    //   label: "Items",
+    //   type: "dynamic",
+    //   required: true,
+    //   subFields: [
+    //     {
+    //       name: "item",
+    //       label: "Item",
+    //       type: "select",
+    //       options:
+    //         items
+    //           ?.filter((item) => item.type === "raw")
+    //           .map((item) => ({
+    //             label: `${item.name} (in ${item.unit})`,
+    //             value: item.name,
+    //           })) || [],
+    //       required: true,
+    //     },
+    //     {
+    //       name: "quantity",
+    //       label: "Quantity",
+    //       type: "number",
+    //       required: true,
+    //     },
+    //   ],
+    // },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
@@ -122,8 +141,10 @@ function useAddNewRequest(): HookReturn {
           values.warehouse = userProfile?.warehouse;
         }
 
-        await RequestSchema.parseAsync(values);
-        await createRequest(values);
+        values.items = [{ item: values.item, quantity: values.quantity }];
+
+        const payload = await RequestSchema.parseAsync(values);
+        await createRequest(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);

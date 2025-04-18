@@ -37,7 +37,7 @@ function Record({ sale }: Props) {
   return (
     <>
       <Button onClick={handleOpenModal} type="default">
-        View
+        Print
       </Button>
       <Modal
         footer={null}

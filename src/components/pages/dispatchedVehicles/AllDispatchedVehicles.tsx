@@ -1,24 +1,51 @@
 import { Table } from "antd";
 import useDispatchedVehicles from "../../../hooks/useDispatchedVehicles"; // Use a hook for dispatched vehicles
 import { useVehicleColumns } from "../../../tableColumns/vehicles"; // Columns for dispatched vehicles
-import FormBuilder from "../../utils/FormBuilder";
+import useFilters from "../../../hooks/useFilters";
+import Filters from "../../Filters";
 
 function AllDispatchedVehicles() {
+  const {
+    debouncedSearchTerm,
+    searchTerm,
+    dateFilter,
+    handleSearchChange,
+    handleDateChange,
+    itemOptions,
+    handleItemChange,
+    resetFilters,
+    itemFilter,
+    handleWarehouseChange,
+    warehouseFilter,
+    warehouseOptions,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
+  } = useFilters();
+
   const {
     isLoading,
     vehicles,
     fetchNextPage,
     isFetchingNextPage,
     isRefetching,
-    filterFormConfig,
-    handleSubmit,
-  } = useDispatchedVehicles(); // Use the correct hook for dispatched vehicles
+  } = useDispatchedVehicles({
+    debouncedSearchTerm,
+    dateFilter,
+    itemFilter,
+    warehouseFilter,
+    monthFilter,
+    yearFilter,
+  }); // Use the correct hook for dispatched vehicles
 
   const { dispatchedColumns } = useVehicleColumns();
 
   return (
     <>
-      <div className="max-w-max overflow-x-auto">
+      {/* <div className="max-w-max overflow-x-auto">
         <FormBuilder
           formConfig={filterFormConfig}
           onSubmit={handleSubmit}
@@ -30,7 +57,26 @@ function AllDispatchedVehicles() {
             gap: "16px", // Optional: to add spacing between the columns
           }}
         />
-      </div>
+      </div> */}
+      <Filters
+        onSearchChange={handleSearchChange}
+        searchTerm={searchTerm}
+        searchPlaceholder="search truck number"
+        onDateChange={handleDateChange}
+        itemFilter={itemFilter}
+        itemOptions={itemOptions}
+        onItemChange={handleItemChange}
+        onReset={resetFilters}
+        onWarehouseChange={handleWarehouseChange}
+        warehouseFilter={warehouseFilter}
+        warehouseOptions={warehouseOptions}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
+      />
       <Table
         size="small"
         loading={isLoading || isFetchingNextPage || isRefetching}

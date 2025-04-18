@@ -2,22 +2,22 @@ import { Button, Space } from "antd";
 import useDispatchStore from "../../../store/dispatch";
 
 function SelectToCustomer() {
-  const { nextPage, setToCustomer } = useDispatchStore();
+  const { nextPage, setDispatchType } = useDispatchStore();
 
-  const handleToCustomer = () => {
-    setToCustomer(true);
+  const handleSale = () => {
+    setDispatchType("sale");
     nextPage();
   };
   const handleToWarehouse = () => {
-    setToCustomer(false);
+    setDispatchType("purchase");
     nextPage();
   };
 
   return (
     <div className="h-full flex items-center justify-center">
       <Space>
-        <Button size="large" onClick={handleToCustomer}>
-          To Customer
+        <Button size="large" onClick={handleSale}>
+          Sale
         </Button>{" "}
         /{" "}
         <Button size="large" onClick={handleToWarehouse}>

@@ -17,6 +17,7 @@ import { VscEmptyWindow, VscFileSymlinkFile, VscFiles } from "react-icons/vsc";
 import Receivables from "./Receivables";
 import { HomeOutlined } from "@ant-design/icons";
 import Invoices from "../invoices";
+import AssetValuations from "./AssetValuations";
 
 function FinancialReports() {
   const { isLoading, isRefetching, reports, csvHeaders } =
@@ -69,6 +70,11 @@ function FinancialReports() {
       key: "8",
       label: <TabLabel Icon={TfiWallet} label="Invoice Accounts" />,
       children: <Invoices />,
+    },
+    {
+      key: "9",
+      label: <TabLabel Icon={TfiWallet} label="Asset Valuation" />,
+      children: <AssetValuations />,
     },
   ];
 

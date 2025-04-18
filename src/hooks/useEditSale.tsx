@@ -55,37 +55,7 @@ function useEditSale({ sale }: Prop): HookReturn {
       label: "Customer Phone",
       type: "text",
       required: false,
-      defaultValue: sale.customer_name,
-      rules: [
-        { min: 3, message: "Customer name must be at least 3 characters" },
-        { max: 50, message: "Customer name cannot exceed 50 characters" },
-      ],
-    },
-    {
-      name: "price",
-      label: "Price",
-      type: "money",
-      required: false,
-      defaultValue: sale.price,
-      rules: [
-        {
-          pattern: /^[1-9]\d*(\.\d{1,2})?$/,
-          message: "Invalid price format",
-        },
-      ],
-    },
-    {
-      name: "quantity",
-      label: "Quantity",
-      type: "number",
-      required: false,
-      defaultValue: sale.quantity,
-      rules: [
-        {
-          pattern: /^[1-9]\d*$/,
-          message: "Quantity must be a positive integer",
-        },
-      ],
+      defaultValue: sale.customer_phone || undefined,
     },
   ];
 

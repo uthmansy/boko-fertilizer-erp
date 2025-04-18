@@ -15,6 +15,12 @@ function AllPurchases() {
     handleItemChange,
     resetFilters,
     itemFilter,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
   } = useFilters();
   const {
     isLoading,
@@ -26,6 +32,8 @@ function AllPurchases() {
     debouncedSearchTerm,
     dateFilter,
     itemFilter,
+    monthFilter,
+    yearFilter,
   });
 
   return (
@@ -38,6 +46,12 @@ function AllPurchases() {
         itemOptions={itemOptions}
         onItemChange={handleItemChange}
         onReset={resetFilters}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
       />
       <Table
         size="small"

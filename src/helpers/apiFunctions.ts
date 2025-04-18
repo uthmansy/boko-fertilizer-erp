@@ -25,17 +25,23 @@ import {
   Positions,
   ProductSubmissionWithDetails,
   ProductionWithItems,
+<<<<<<< HEAD
+=======
+  PurchaseItemsJoined,
+>>>>>>> updates
   PurchasePaymentsJoined,
   Purchases,
   PurchasesAndPayments,
   RequestWithItems,
   Sales,
   SalesAndPayments,
+  SalesItemsJoined,
   SalesPayments,
   SalesPaymentsJoined,
   StockIn,
   StockInWithDetails,
   Stocks,
+  StocksJoined,
   StocksWithDetails,
   SubItemsWithDetails,
   UpdateEmployeePayroll,
@@ -47,7 +53,6 @@ import {
   UpdateRequests,
   UpdateSubmission,
   UpdateUserProfile,
-  UpdateVehicles,
   UserProfile,
   Vehicles,
   VehiclesAndDestination,
@@ -64,10 +69,19 @@ import {
   CreateRequest,
   UpdateExpenseInput,
   UpdatePurchaseInput,
+  UpdatePurchaseItem,
   UpdateSaleInput,
+  UpdateSaleItem,
 } from "../types/forms";
 import { CreatePayrollBonus, PayrollBonus } from "../zodSchemas/payrollBonuses";
+import { CreateDispatch } from "../zodSchemas/dispatch";
+import { CreatePurchase } from "../zodSchemas/purchases";
+import { ReceiveVehicles } from "../zodSchemas/receive";
+import { CreateSaleType } from "../zodSchemas/sales";
 import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
+import { getDateRange } from "./functions";
+import { UpdateFinishedProductsType } from "../zodSchemas/finishedProducts";
+import { ItemInflowType } from "../hooks/useItemRequestInflow";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -88,15 +102,25 @@ export const getAllStockPurchases = async ({
   dateFilter,
   debouncedSearchTerm,
   itemFilter,
+  monthFilter,
+  yearFilter,
 }: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*, item_info:item(*))"
+    )
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
-  if (itemFilter) query = query.eq("item", itemFilter);
+  if (dateRange && !dateFilter)
+    query = query.gte("date", dateRange.start).lte("date", dateRange.end);
+  if (itemFilter) query = query.eq("items.item", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("order_number", `%${debouncedSearchTerm}%`);
 
@@ -111,7 +135,9 @@ export const getPayables = async ({
 }: ApiFilterOptions): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*)"
+    )
     .neq("balance", 0)
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
@@ -125,7 +151,9 @@ export const getPayables = async ({
 export const getCsvPayables = async (): Promise<PurchasesAndPayments[]> => {
   let query = supabase
     .from("stock_purchases")
-    .select("*, payments:purchase_order_payments (*), item_info:item(*)")
+    .select(
+      "*, payments:purchase_order_payments (*), items:purchase_items!inner(*)"
+    )
     .neq("balance", 0)
     .order("created_at", { ascending: false });
 
@@ -325,17 +353,25 @@ export const getAllSales = async (
     debouncedSearchTerm,
     itemFilter,
     warehouseFilter,
+    monthFilter,
+    yearFilter,
   }: ApiFilterOptions,
   receivables?: boolean
 ): Promise<SalesAndPayments[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
+    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) query = query.eq("date", dateFilter);
-  if (itemFilter) query = query.eq("item_purchased", itemFilter);
+  if (dateRange && !dateFilter)
+    query = query.gte("date", dateRange.start).lte("date", dateRange.end);
+  if (itemFilter) query = query.eq("items.item_purchased", itemFilter);
   if (debouncedSearchTerm)
     query = query.ilike("customer_name", `%${debouncedSearchTerm}%`);
   if (warehouseFilter) {
@@ -355,10 +391,46 @@ export const getAllSales = async (
 
   return data;
 };
+export const getAssetValuations = async ({
+  pageParam,
+  warehouseFilter,
+}: ApiFilterOptions): Promise<StocksJoined[]> => {
+  let query = supabase
+    .from("stocks")
+    .select("*, item_info:item(*)")
+    .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (warehouseFilter) {
+    query = query.eq("warehouse", warehouseFilter);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+
+  return data;
+};
+export const getAllStocks = async (): Promise<StocksJoined[]> => {
+  let query = supabase
+    .from("stocks")
+    .select("*, item_info:item(*)")
+    .order("created_at", { ascending: false });
+  const { data, error } = await query;
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+
+  return data;
+};
 export const getCsvReceivables = async (): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), item_info:item_purchased(*)")
+    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
     .neq("payment_balance", 0)
     .order("created_at", { ascending: false });
 
@@ -386,11 +458,44 @@ export const getSalesCsvData = async (): Promise<Sales[]> => {
   }
   return data;
 };
-export const getAllEmployeesData = async (): Promise<Employees[]> => {
+export const getSaleByOrderNumber = async (
+  orderNumber: string
+): Promise<Sales> => {
   let query = supabase
-    .from("employees")
+    .from("sales")
     .select("*")
-    .order("created_at", { ascending: false });
+    .eq("order_number", orderNumber)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getPurchaseByOrderNumber = async (
+  orderNumber: string
+): Promise<Purchases> => {
+  let query = supabase
+    .from("stock_purchases")
+    .select("*")
+    .eq("order_number", orderNumber)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+    throw error.message;
+  }
+  return data;
+};
+export const getAllEmployeesData = async (): Promise<Employees[]> => {
+  let query = supabase.from("employees").select("*").order("first_name", {
+    ascending: true,
+  });
 
   const { data, error } = await query;
 
@@ -495,11 +600,13 @@ export const getUncompletedSales = async (
   return data;
 };
 
-export const getAllUncompletedSales = async (): Promise<Sales[]> => {
+export const getAllUncompletedSales = async (): Promise<SalesAndPayments[]> => {
   const { data, error } = await supabase
     .from("sales")
-    .select("*")
-    .gt("balance", 0)
+    .select(
+      "*, payments:sales_payments (*), items:sales_items(*, purchase_item_info:purchase_item(*, purchase_info:purchase_id(*)))"
+    )
+    .eq("is_completed", false)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -520,52 +627,63 @@ export const getAllInternalStocks = async (): Promise<Stocks[]> => {
 
 export const getVehicles = async (
   status: vehicleStatus = "dispatched",
-  pageNumber: number = 1,
-  item: string = "all",
-  destination: string | null = "all",
-  search: string = "",
-  origin: string = "all",
-  paginated: boolean = true
+  {
+    pageParam,
+    dateFilter,
+    debouncedSearchTerm,
+    monthFilter,
+    // warehouseFilter,
+    yearFilter,
+    itemFilter,
+  }: Omit<ApiFilterOptions, "pageParam"> & {
+    pageParam?: number;
+  }
 ): Promise<VehiclesAndDestination[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let query = supabase
     .from("vehicles")
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items!inner(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .eq("status", status);
 
   // Check the value of status and adjust the join type accordingly
   if (status === "delivered") {
-    query = supabase
-      .from("vehicles")
-      .select(
-        "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!left(*, warehouse_info:warehouse (*)), sale:sale_order_number (*), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
-      )
-      .eq("status", status);
+    query = query.eq("status", status);
   }
 
+  if (dateFilter) query = query.eq("date_dispatched", dateFilter);
+  if (dateRange && !dateFilter)
+    query = query
+      .gte("date_dispatched", dateRange.start)
+      .lte("date_dispatched", dateRange.end);
+
   // Apply item filter if it's not 'all'
-  if (item !== "all") {
-    query = query.eq("item", item);
+  if (itemFilter) {
+    query = query.eq("items.item", itemFilter);
   }
 
   // Apply destination filter using inner join if it's not 'all'
-  if (destination !== "all") {
-    query = query.eq("destination_stock.warehouse", destination);
-  }
+  // if (destination !== "all") {
+  //   query = query.eq("destination_info.name", destination);
+  // }
 
   // Apply origin filter using inner join if it's not 'all'
-  if (origin !== "all") {
-    query = query.eq("origin_state", origin);
-  }
+  // if (origin !== "all") {
+  //   query = query.eq("origin_state", origin);
+  // }
 
   // Apply search filter to vehicle_number if search term is provided
-  if (search) {
-    query = query.textSearch(`vehicle_number`, search);
+  if (debouncedSearchTerm) {
+    // query = query.textSearch(`vehicle_number`, search);
+    query = query.ilike("vehicle_number", `%${debouncedSearchTerm}%`);
   }
 
-  if (paginated) {
-    query = query.range((pageNumber - 1) * 50, pageNumber * 50 - 1);
+  if (pageParam) {
+    query = query.range((pageParam - 1) * 50, pageParam * 50 - 1);
   }
 
   // Apply ordering and pagination after filtering
@@ -583,7 +701,7 @@ export const getVehicleByWaybill = async (
   let query = supabase
     .from("vehicles")
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination!inner(*, warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .eq("waybill_number", waybillNumber)
     .single();
@@ -591,6 +709,23 @@ export const getVehicleByWaybill = async (
   const { data, error } = await query;
 
   if (error) throw error.message;
+  return data;
+};
+export const getVehicleById = async (
+  vehicleId: string
+): Promise<VehiclesAndDestination> => {
+  let query = supabase
+    .from("vehicles")
+    .select(
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
+    )
+    .eq("id", vehicleId)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) throw error.message;
+  console.log(data);
   return data;
 };
 
@@ -603,7 +738,7 @@ export const getAllRequests = async ({
 }: ApiFilterOptions): Promise<RequestWithItems[]> => {
   let q = supabase
     .from("requests")
-    .select("*, request_items!inner(*)")
+    .select("*, request_items!inner(*, item_info:item(*))")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -613,6 +748,34 @@ export const getAllRequests = async ({
   if (warehouseFilter) {
     q = q.eq("warehouse", warehouseFilter);
   }
+  const { data, error } = await q;
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getItemProductionInflow = async ({
+  pageParam,
+  dateFilter,
+  itemFilter,
+  monthFilter,
+  yearFilter,
+  warehouseFilter,
+}: ApiFilterOptions): Promise<ItemInflowType[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
+  let q = supabase.rpc("get_item_production_receipt_summary", {
+    start_date: dateRange?.start,
+    end_date: dateRange?.end,
+    warehouse_filter: warehouseFilter,
+    specific_date: dateFilter,
+    item_filter: itemFilter,
+    result_limit: 50,
+    result_offset: (pageParam - 1) * 50,
+  });
+
   const { data, error } = await q;
 
   if (error) throw error.message;
@@ -702,14 +865,16 @@ export const getEmployeeBonuses = async ({
 };
 
 export const getEmployees = async ({
-  pageParam,
+  // pageParam,
   debouncedSearchTerm,
 }: ApiFilterOptions): Promise<Employees[]> => {
   let q = supabase
     .from("employees")
     .select("*")
-    .range((pageParam - 1) * 50, pageParam * 50 - 1)
-    .order("created_at", { ascending: false });
+    // .range((pageParam - 1) * 50, pageParam * 50 - 1)
+    .order("first_name", {
+      ascending: true,
+    });
 
   if (debouncedSearchTerm) {
     q = q.or(
@@ -801,14 +966,22 @@ export const getAllProductions = async ({
   itemFilter,
   warehouseFilter,
   shiftFilter,
+  monthFilter,
+  yearFilter,
 }: ApiFilterOptions): Promise<ProductionWithItems[]> => {
+  const dateRange =
+    monthFilter !== undefined && yearFilter !== undefined
+      ? getDateRange(monthFilter, yearFilter)
+      : null;
   let q = supabase
     .from("production_runs")
-    .select("*, production_raw_materials (*)")
+    .select("*, production_raw_materials (*), product_info:product(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
   if (dateFilter) q = q.eq("date", dateFilter);
+  if (dateRange && !dateFilter)
+    q = q.gte("date", dateRange.start).lte("date", dateRange.end);
   if (itemFilter) q = q.eq("product", itemFilter);
   if (shiftFilter) q = q.eq("shift", shiftFilter);
   if (warehouseFilter) {
@@ -870,6 +1043,36 @@ export const getAllSalesPayments = async (
     .from("sales_payments")
     .select("*, sale:order_number(*)")
     .eq("order_number", orderNumber) // Filter by order_number
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getAllSaleItems = async (
+  pageNumber: number = 1,
+  saleId: string // Assuming orderNumber is of type string
+): Promise<SalesItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("sales_items")
+    .select("*")
+    .eq("sale_id", saleId) // Filter by order_number
+    .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getAllPurchaseItems = async (
+  pageNumber: number = 1,
+  purchaseId: string // Assuming orderNumber is of type string
+): Promise<PurchaseItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("purchase_items")
+    .select("*, item_info:item(*), purchase_info:purchase_id(*)")
+    .eq("purchase_id", purchaseId) // Filter by order_number
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -949,6 +1152,17 @@ export const getWarehouses = async (): Promise<Warehouses[]> => {
   const { data, error } = await supabase
     .from("warehouses")
     .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getPurchaseItems = async (): Promise<PurchaseItemsJoined[]> => {
+  const { data, error } = await supabase
+    .from("purchase_items")
+    .select("*, item_info:item(*), purchase_info:purchase_id(*)")
+    .gt("balance", 0)
     .order("created_at", { ascending: false });
 
   if (error) throw error.message;
@@ -1103,7 +1317,7 @@ export const getExternalStocks = async (): Promise<
 > => {
   const { data, error } = await supabase
     .from("external_stocks")
-    .select("*, stock_purchases!inner(*), sales(*)")
+    .select("*, stock_purchases!inner(*)")
     .gt("balance", 0);
 
   if (error) throw error.message;
@@ -1116,7 +1330,7 @@ export const getAllExternalStocks = async (): Promise<
 > => {
   const { data, error } = await supabase
     .from("external_stocks")
-    .select("*, stock_purchases!inner(*), sales(*)");
+    .select("*, stock_purchases!inner(*)");
 
   if (error) throw error.message;
 
@@ -1199,7 +1413,7 @@ export const addNewVehicle = async (
     .from("vehicles")
     .insert([payload])
     .select(
-      "*, item_info:item(*), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*), destination_stock:destination (*,  warehouse_info:warehouse (*)), origin_stock:origin_stock_id (*), external_origin_stock:external_origin_id (*, stock_purchases:order_number (*))"
+      "*, destination_info:destination(*),items:vehicle_items(*, destination_info:destination(*), item_info:item(*), purchase_info:purchase_item( purchase_info:purchase_id(order_number)),sale_info:sale_item(*)), receive_officer_info:received_by (*), dispatch_officer_info:dispatched_by (*)"
     )
     .single();
 
@@ -1228,25 +1442,36 @@ export const stockIn = async (payload: StockIn): Promise<void> => {
   if (error) throw new Error(error.message);
 };
 
-export const addPurchase = async (payload: Purchases): Promise<void> => {
-  const { error } = await supabase.from("stock_purchases").insert([payload]);
+export const addPurchase = async (payload: CreatePurchase): Promise<void> => {
+  const { error } = await supabase.rpc("create_purchase", payload);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
+export const createDispatch = async (
+  payload: CreateDispatch
+): Promise<string> => {
+  const { error, data } = await supabase.rpc("create_dispatch", payload);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+  return data;
+};
 
-export const addSale = async (payload: Sales): Promise<void> => {
-  const { error } = await supabase.from("sales").insert([payload]);
+export const addSale = async (payload: CreateSaleType): Promise<void> => {
+  const { error } = await supabase.rpc("create_sale", payload);
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
 
 export const receiveVehicle = async (
-  payload: UpdateVehicles
+  payload: ReceiveVehicles
 ): Promise<void> => {
-  const { error } = await supabase
-    .from("vehicles")
-    .update(payload)
-    .eq("id", payload.id);
+  const { error } = await supabase.rpc("receive_vehicle", {
+    vehicle_id: payload.id,
+    received_by_text: payload.received_by,
+    paid_on_receive_num: payload.paid_on_receive,
+    date_received_date: payload.date_received,
+    items_json: payload.items,
+  });
   if (error) console.error(error);
   if (error) throw new Error(error.message);
 };
@@ -1283,6 +1508,36 @@ export const updatePurchase = async (
 export const updateSale = async (payload: UpdateSaleInput): Promise<void> => {
   const { error } = await supabase
     .from("sales")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateFinishedProduct = async (
+  payload: UpdateFinishedProductsType
+): Promise<void> => {
+  const { error } = await supabase
+    .from("finished_products")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateSaleItem = async (
+  payload: UpdateSaleItem
+): Promise<void> => {
+  const { error } = await supabase
+    .from("sales_items")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updatePurchaseItem = async (
+  payload: UpdatePurchaseItem
+): Promise<void> => {
+  const { error } = await supabase
+    .from("purchase_items")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);
@@ -1435,6 +1690,17 @@ export const deleteSale = async (saleId: string): Promise<void> => {
     throw new Error(error.message);
   }
 };
+export const deletePurchase = async (purchaseId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("stock_purchases")
+    .delete()
+    .eq("id", purchaseId);
+
+  if (error) {
+    console.error("Failed to delete Purchase:", error);
+    throw new Error(error.message);
+  }
+};
 export const deleteItem = async (itemId: string): Promise<void> => {
   const { error } = await supabase
     .from("inventory_items")
@@ -1454,6 +1720,28 @@ export const deleteSalePayment = async (paymentId: string): Promise<void> => {
 
   if (error) {
     console.error("Failed to delete Sale Payment:", error);
+    throw new Error(error.message);
+  }
+};
+export const deleteSaleItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("sales_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("Failed to delete Sale Item:", error);
+    throw new Error(error.message);
+  }
+};
+export const deletePurchaseItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("purchase_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("Failed to delete Purchase Item:", error);
     throw new Error(error.message);
   }
 };

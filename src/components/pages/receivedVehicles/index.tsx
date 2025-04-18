@@ -43,16 +43,7 @@ function ReceivedVehicles() {
     },
   ];
   const { data } = useCsv<VehiclesAndDestination[]>({
-    queryFn: () =>
-      getVehicles(
-        "received",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        false
-      ),
+    queryFn: () => getVehicles("received", {}),
     queryKey: vehiclesKeys.getReceivedCsv,
   });
 

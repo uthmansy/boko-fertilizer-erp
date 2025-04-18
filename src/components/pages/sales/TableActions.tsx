@@ -1,6 +1,4 @@
 import { Space } from "antd";
-import AddPayment from "./AddPayment";
-import ViewPayments from "./ViewPayments";
 import { SalesAndPayments } from "../../../types/db";
 import DeleteSale from "./DeleteSale";
 import useAuthStore from "../../../store/auth";
@@ -12,24 +10,20 @@ interface Props {
   sale: SalesAndPayments;
 }
 
-function TableActions({ orderNumber, sale }: Props) {
+function TableActions({ sale }: Props) {
   const { userProfile } = useAuthStore();
   const showAdminActions = userProfile?.role === "SUPER ADMIN";
   return (
     <Space size="small">
-      {(showAdminActions || userProfile?.role === "ACCOUNTING") && (
-        <AddPayment orderNumber={orderNumber} />
-      )}
-      <ViewPayments sale={sale} orderNumber={orderNumber} />
+      {/* <ViewPayments sale={sale} orderNumber={orderNumber} /> */}
+      {/* <ViewSaleItems saleId={sale.id} /> */}
+      <Record sale={sale} />
       {showAdminActions && (
         <>
           <EditSale sale={sale} />
         </>
       )}
-      <Record sale={sale} />
-      {sale.quantity_taken === 0 && showAdminActions && (
-        <DeleteSale sale={sale} />
-      )}
+      <DeleteSale sale={sale} />
     </Space>
   );
 }

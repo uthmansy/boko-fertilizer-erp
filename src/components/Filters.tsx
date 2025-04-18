@@ -21,6 +21,18 @@ interface FiltersProps {
   itemOptions?: SelectOption[];
   itemPlaceholder?: string;
 
+  // Month filter
+  monthFilter?: number | null;
+  onMonthChange?: (value: number | null) => void;
+  monthOptions?: SelectOption[];
+  monthPlaceholder?: string;
+
+  // Year filter
+  yearFilter?: number | null;
+  onYearChange?: (value: number | null) => void;
+  yearOptions?: SelectOption[];
+  yearPlaceholder?: string;
+
   // Warehouse filter
   warehouseFilter?: string | null;
   onWarehouseChange?: (value: string | null) => void;
@@ -59,6 +71,18 @@ export default function Filters({
   itemOptions,
   itemPlaceholder = "Select item",
 
+  // month
+  monthFilter,
+  onMonthChange,
+  monthOptions,
+  monthPlaceholder = "Select month",
+
+  // year
+  yearFilter,
+  onYearChange,
+  yearOptions,
+  yearPlaceholder = "Select year",
+
   // Warehouse
   warehouseFilter,
   onWarehouseChange,
@@ -87,6 +111,10 @@ export default function Filters({
   const shouldShowDate = onDateChange;
   const shouldShowItem =
     itemFilter !== undefined && onItemChange && itemOptions;
+  const shouldShowMonth =
+    monthFilter !== undefined && onMonthChange && monthOptions;
+  const shouldShowYear =
+    yearFilter !== undefined && onYearChange && yearOptions;
   const shouldShowWarehouse =
     warehouseFilter !== undefined &&
     onWarehouseChange &&
@@ -133,6 +161,32 @@ export default function Filters({
           onChange={(value) => onItemChange(value || null)}
           value={itemFilter || undefined}
           placeholder={itemPlaceholder}
+          showSearch
+          optionFilterProp="label"
+          allowClear
+        />
+      )}
+
+      {shouldShowMonth && (
+        <Select
+          className="w-56"
+          options={monthOptions}
+          onChange={(value) => onMonthChange(value || null)}
+          value={monthFilter || undefined}
+          placeholder={monthPlaceholder}
+          showSearch
+          optionFilterProp="label"
+          allowClear
+        />
+      )}
+
+      {shouldShowYear && (
+        <Select
+          className="w-56"
+          options={yearOptions}
+          onChange={(value) => onYearChange(value || null)}
+          value={yearFilter || undefined}
+          placeholder={yearPlaceholder}
           showSearch
           optionFilterProp="label"
           allowClear

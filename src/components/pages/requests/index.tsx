@@ -9,6 +9,7 @@ import { Button } from "antd";
 import { BorderInnerOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 import { Headers } from "react-csv/lib/core";
+import { formatNumber } from "../../../helpers/functions";
 
 type TransformedRequest = Omit<RequestWithItems, "request_items"> & {
   request_items: string;
@@ -29,7 +30,11 @@ function Requests() {
       request_items: request.request_items
         .map(
           (item) =>
-            `${item.item} (${item.quantity} ${item.item_info.unit}, ${item.item_info.purchase_cost} per ${item.item_info.unit})`
+            `${item.item} (${item.quantity} ${item.item_info.unit}, ${
+              item.item_info.purchase_cost
+            } per ${item.item_info.unit}, Total: ₦${formatNumber(
+              item.quantity * (item.item_info.purchase_cost || 0)
+            )})`
         )
         .join(", "),
       total_cost: request.request_items.reduce(

@@ -18,6 +18,12 @@ function AllProductions() {
     handleShiftChange,
     shiftFilter,
     shiftOptions,
+    monthFilter,
+    yearFilter,
+    handleMonthChange,
+    handleYearChange,
+    monthOptions,
+    yearOptions,
   } = useFilters();
   const {
     isLoading,
@@ -30,6 +36,8 @@ function AllProductions() {
     itemFilter,
     warehouseFilter,
     shiftFilter,
+    monthFilter,
+    yearFilter,
   }); // Use the new hook
 
   return (
@@ -46,6 +54,12 @@ function AllProductions() {
         onShiftChange={handleShiftChange}
         shiftOptions={shiftOptions}
         shiftFilter={shiftFilter}
+        monthFilter={monthFilter}
+        monthOptions={monthOptions}
+        onMonthChange={handleMonthChange}
+        yearFilter={yearFilter}
+        yearOptions={yearOptions}
+        onYearChange={handleYearChange}
       />
       <Table
         size="small"

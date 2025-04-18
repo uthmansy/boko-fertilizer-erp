@@ -10,7 +10,7 @@ import {
 import { VehiclesAndDestination } from "../../types/db"; // Ensure this import is correct based on your project structure
 import { COMPANY } from "../../constants/COMPANY";
 import { ABJ_LOGO, LOGO } from "../../assets/images";
-import { formatNumber } from "../../helpers/functions";
+import { baleAndPieces, formatNumber } from "../../helpers/functions";
 
 // Define styles for the PDF document
 const styles = StyleSheet.create({
@@ -194,7 +194,7 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Watermark Logo */}
-        {!data.item.toLowerCase().startsWith("olam") && (
+        {!data.items[0].item.toLowerCase().startsWith("olam") && (
           <Image src={LOGO} style={styles.watermark} />
         )}
         <View style={styles.topWaybillNumber}>
@@ -204,7 +204,11 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
         <View style={styles.header}>
           {/* Add the logo here */}
           <Image
-            src={data.item.toLowerCase().startsWith("olam") ? ABJ_LOGO : LOGO}
+            src={
+              data.items[0].item.toLowerCase().startsWith("olam")
+                ? ABJ_LOGO
+                : LOGO
+            }
             style={styles.logo}
           />{" "}
           {/* Update this path */}
@@ -215,7 +219,8 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               textTransform: "uppercase", // Uppercase for consistent styling
             }}
           >
-            {!data.item.toLowerCase().startsWith("olam") && COMPANY.name}{" "}
+            {!data.items[0].item.toLowerCase().startsWith("olam") &&
+              COMPANY.name}{" "}
             Customer Delivery Waybill
           </Text>
           <Text
@@ -241,10 +246,6 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
                   <Text style={styles.value}>{data.date_dispatched}</Text>
                 </View>
                 <View style={styles.verticalRow}>
-                  <Text style={styles.label}>Item Carried:</Text>
-                  <Text style={styles.value}>{data.item}</Text>
-                </View>
-                <View style={styles.verticalRow}>
                   <Text style={styles.label}>Delivery Address:</Text>
                   <Text style={styles.value}>
                     {data.destination_address || ""}
@@ -266,10 +267,6 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
                   <Text style={styles.label}>Driver Signature:</Text>
                   <Text style={styles.value}></Text>
                 </View>
-                <View style={styles.verticalRow}>
-                  <Text style={styles.label}>Date:</Text>
-                  <Text style={styles.value}></Text>
-                </View>
               </View>
             </View>
           </View>
@@ -284,11 +281,7 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Origin:</Text>
-                <Text style={styles.value}>
-                  {data.from_external_stock
-                    ? data.external_origin_stock?.stock_purchases.seller || ""
-                    : data.origin_stock?.warehouse || ""}
-                </Text>
+                <Text style={styles.value}>{data.origin_warehouse}</Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Origin State:</Text>
@@ -325,26 +318,21 @@ const DispatchedWaybill: React.FC<DispatchedWaybillProps> = ({
           </View>
           <View style={styles.verticalTable}>
             <View style={styles.verticalRow}>
+              <Text style={styles.label}>ITEM:</Text>
               <Text style={styles.label}>UNIT:</Text>
-              <Text style={styles.value}>QUANTITY DISPATCHED</Text>
-              <Text style={styles.value}>QUANTITY RECEIVED</Text>
-              <Text style={styles.value}>SHORTAGE</Text>
+              <Text style={styles.label}>QUANTITY DISPATCHED</Text>
             </View>
-            <View style={styles.verticalRow}>
-              <Text style={styles.label}>{data.item_info.unit}:</Text>
-              <Text style={styles.value}>
-                {data.qty_carried} {data.item_info.unit}
-              </Text>
-              <Text style={styles.value}></Text>
-              <Text style={styles.value}></Text>
-            </View>
-            {/* <View style={styles.verticalRow}>
-              <Text style={styles.label}>MTS:</Text>
-              <Text style={styles.value}>
-                {bagsToTons(data.qty_carried)} MTS
-              </Text>
-              <Text style={styles.value}></Text>
-            </View> */}
+            {data.items.map((item) => (
+              <View key={item.id} style={styles.verticalRow}>
+                <Text style={styles.value}>{item.item}</Text>
+                <Text style={styles.value}>{item.item_info.unit}</Text>
+                <Text style={styles.value}>
+                  {item.item_info.unit.toLowerCase() === "bale"
+                    ? `${baleAndPieces(item.qty_carried)}`
+                    : `${item.qty_carried} ${item.item_info.unit}`}
+                </Text>
+              </View>
+            ))}
           </View>
           {/* Signature and Stamp Section */}
           <View style={styles.signatureStampContainer}>

@@ -4,6 +4,7 @@ import { formatNumber } from "../helpers/functions";
 import { Image } from "antd";
 import { PLACEHOLDER } from "../assets/images";
 import SalesPaymentActions from "../components/pages/sales/SalesPaymentActions";
+import ViewSale from "../components/pages/sales/ViewSale";
 
 export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
   {
@@ -21,7 +22,7 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
     title: "Order Number",
     dataIndex: "order_number",
     key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+    render: (text) => <ViewSale buttonTitle={text} orderNumber={text} />,
   },
   {
     title: "Customer",

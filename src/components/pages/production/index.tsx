@@ -3,6 +3,7 @@ import ProductionRuns from "../productionRuns";
 import Requests from "../requests";
 import ProductSubmissions from "../productSubmissions";
 import FinishedProducts from "../finishedProducts";
+import ItemRequestInflow from "../itemRequestInflow";
 
 function Production() {
   const tabs: TabsProps["items"] = [
@@ -25,6 +26,11 @@ function Production() {
       key: "4",
       label: "Finished Products",
       children: <FinishedProducts />,
+    },
+    {
+      key: "5",
+      label: "Request Inflow Summary",
+      children: <ItemRequestInflow />,
     },
   ];
   return <Tabs size="large" defaultActiveKey="1" items={tabs} />;

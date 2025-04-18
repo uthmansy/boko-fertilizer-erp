@@ -2,6 +2,7 @@ import { ColumnsType } from "antd/es/table";
 import { PurchasePaymentsJoined } from "../types/db";
 import { formatNumber } from "../helpers/functions";
 import PurchcasePaymentActions from "../components/pages/purchases/PurchasePaymentActions";
+import ViewPurchase from "../components/pages/purchases/ViewPurchase";
 
 export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePaymentsJoined> =
   [
@@ -17,6 +18,12 @@ export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePaymentsJoined> 
       render: (text) => (
         <span className="capitalize font-semibold">{text}</span>
       ),
+    },
+    {
+      title: "Order Number",
+      dataIndex: "order_number",
+      key: "order_number",
+      render: (text) => <ViewPurchase buttonTitle={text} orderNumber={text} />,
     },
     {
       title: "Seller",
@@ -74,14 +81,7 @@ export const purchasesPaymentsAdminColumns: ColumnsType<PurchasePaymentsJoined> 
         <span className="capitalize font-semibold">{text}</span>
       ),
     },
-    {
-      title: "Order Number",
-      dataIndex: "order_number",
-      key: "order_number",
-      render: (text) => (
-        <span className="capitalize font-semibold">{text}</span>
-      ),
-    },
+
     {
       title: "Action",
       key: "action",

@@ -2,23 +2,11 @@ import {
   FetchNextPageOptions,
   InfiniteQueryObserverResult,
   useInfiniteQuery,
-  useQuery,
 } from "react-query";
-import {
-  getInventoryItems,
-  getVehicles,
-  getWarehouses,
-} from "../helpers/apiFunctions";
+import { getVehicles } from "../helpers/apiFunctions";
 import { VehiclesAndDestination } from "../types/db";
 import { App } from "antd";
-import {
-  inventoryItemsKeys,
-  vehiclesKeys,
-  warehousesKeys,
-} from "../constants/QUERY_KEYS";
-import { FieldConfig, SelectOption } from "../types/comps";
-import { useState } from "react";
-import { STATES } from "../constants/ENUMS";
+import { vehiclesKeys } from "../constants/QUERY_KEYS";
 import useAuthStore from "../store/auth";
 
 interface HookReturn {
@@ -30,118 +18,45 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
-  filterFormConfig: FieldConfig[];
-  handleSubmit: (values: any) => void;
 }
 
-function useReceivedVehicles(): HookReturn {
+interface Props {
+  debouncedSearchTerm: string;
+  dateFilter: string | null;
+  itemFilter: string | null;
+  warehouseFilter: string | null;
+  monthFilter: number | null;
+  yearFilter: number | null;
+}
+
+function useReceivedVehicles({
+  dateFilter,
+  debouncedSearchTerm,
+  itemFilter,
+  monthFilter,
+  warehouseFilter,
+  yearFilter,
+}: Props): HookReturn {
   const { message } = App.useApp();
-  const [filterItem, setFilterItem] = useState<string>("all");
-  const [filterDestination, setFilterDestination] = useState<string>("all");
-  const [filterOrigin, setFilterOrigin] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { userProfile } = useAuthStore();
 
   const fetchData = async ({ pageParam = 1 }) => {
-    let destination =
-      userProfile?.role === "SUPER ADMIN" ||
-      userProfile?.role === "ADMIN" ||
-      userProfile?.role === "LOGISTICS"
-        ? filterDestination // Use filterDestination if the user is SUPER ADMIN or ADMIN
-        : userProfile?.warehouse;
-    const vehicles = await getVehicles(
-      "received",
+    const vehicles = await getVehicles("received", {
       pageParam,
-      filterItem,
-      destination,
-      searchTerm,
-      filterOrigin
-    );
+      dateFilter,
+      debouncedSearchTerm,
+      itemFilter,
+      yearFilter,
+      monthFilter,
+      warehouseFilter:
+        userProfile?.role === "SUPER ADMIN" ||
+        userProfile?.role === "ADMIN" ||
+        userProfile?.role === "LOGISTICS"
+          ? warehouseFilter // Use filterDestination if the user is SUPER ADMIN or ADMIN
+          : userProfile?.warehouse,
+    });
     return vehicles;
-  };
-
-  const { data: items } = useQuery({
-    queryKey: inventoryItemsKeys.getAllItems,
-    queryFn: async (): Promise<SelectOption[]> => {
-      const items = await getInventoryItems();
-      return items.map((item) => ({ label: item.name, value: item.name }));
-    },
-    onError: () => {
-      message.error("Failed to Load Inventory Items");
-    },
-  });
-
-  const { data: destinations } = useQuery({
-    queryKey: warehousesKeys.getDispatchWarehouses,
-    queryFn: async (): Promise<SelectOption[]> => {
-      const warehouses = await getWarehouses();
-      return warehouses.map((warehouse) => ({
-        label: warehouse.name,
-        value: warehouse.name,
-      }));
-    },
-    onError: () => {
-      message.error("Failed to Load Inventory warehouses");
-    },
-  });
-
-  const filterFormConfig: FieldConfig[] = [
-    {
-      name: "search",
-      label: "Search By Truck Number",
-      type: "search",
-      noLabel: true,
-      required: false,
-      onSearch: (value) => {
-        setSearchTerm(value);
-      },
-    },
-    {
-      name: "item",
-      label: "Item",
-      type: "select",
-      onSelect: (value) => {
-        setFilterItem(value);
-      },
-      noLabel: true,
-      options: [{ label: "All", value: "all" }, ...(items || [])],
-      required: false,
-    },
-    {
-      name: "destination",
-      label: "Destination",
-      type: "select",
-      onSelect: (value) => {
-        setFilterDestination(value);
-      },
-      noLabel: true,
-      options: [{ label: "All", value: "all" }, ...(destinations || [])],
-      required: false,
-    },
-    {
-      name: "origin",
-      label: "Origin",
-      type: "select",
-      onSelect: (value) => {
-        setFilterOrigin(value);
-      },
-      noLabel: true,
-      options: [
-        { label: "All", value: "all" },
-        ...STATES.map((state) => ({
-          label: state.charAt(0).toUpperCase() + state.slice(1).toLowerCase(),
-          value: state,
-        })),
-      ],
-      required: false,
-    },
-  ];
-
-  const handleSubmit = (values: any) => {
-    setFilterItem(values.item);
-    setFilterDestination(values.destination);
-    setFilterOrigin(values.origin);
   };
 
   const {
@@ -154,10 +69,12 @@ function useReceivedVehicles(): HookReturn {
   } = useInfiniteQuery(
     [
       vehiclesKeys.getReceivedVehicles,
-      filterItem,
-      filterDestination,
-      searchTerm,
-      filterOrigin,
+      dateFilter,
+      debouncedSearchTerm,
+      itemFilter,
+      monthFilter,
+      warehouseFilter,
+      yearFilter,
     ],
     fetchData,
     {
@@ -182,8 +99,6 @@ function useReceivedVehicles(): HookReturn {
     hasNextPage,
     fetchNextPage,
     isRefetching,
-    filterFormConfig,
-    handleSubmit,
   };
 }
 

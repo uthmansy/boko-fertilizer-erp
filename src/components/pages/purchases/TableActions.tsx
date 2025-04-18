@@ -1,10 +1,9 @@
 import { Space } from "antd";
-import AddPayment from "./AddPayment";
-import ViewPayments from "./ViewPayments";
 import Record from "./Record";
 import { PurchasesAndPayments } from "../../../types/db";
 import EditPurchase from "./EditPurchase";
 import useAuthStore from "../../../store/auth";
+import DeletePurchase from "./DeletePurchase";
 
 interface Props {
   purchase: PurchasesAndPayments;
@@ -15,12 +14,13 @@ function TableActions({ purchase }: Props) {
   const showAdminActions = userProfile?.role === "SUPER ADMIN";
   return (
     <Space size="small">
-      <AddPayment orderNumber={purchase.order_number} />
-      <ViewPayments orderNumber={purchase.order_number} />
+      {/* <ViewPayments purchase={purchase} /> */}
+      {/* <ViewPurchaseItems purchaseId={purchase.id} /> */}
       <Record purchase={purchase} />
       {showAdminActions && (
         <>
           <EditPurchase purchase={purchase} />
+          <DeletePurchase purchase={purchase} />
         </>
       )}
     </Space>

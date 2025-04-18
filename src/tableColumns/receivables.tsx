@@ -1,6 +1,7 @@
 import { ColumnsType } from "antd/es/table";
 import { SalesAndPayments } from "../types/db"; // Use the appropriate type for sales payments
 import { formatNumber } from "../helpers/functions";
+import ViewSale from "../components/pages/sales/ViewSale";
 
 export const receivablesColumns: ColumnsType<SalesAndPayments> = [
   {
@@ -36,6 +37,6 @@ export const receivablesColumns: ColumnsType<SalesAndPayments> = [
     title: "Order Number",
     dataIndex: "order_number",
     key: "order_number",
-    render: (text) => <span className="capitalize font-semibold">{text}</span>,
+    render: (text) => <ViewSale buttonTitle={text} orderNumber={text} />,
   },
 ];

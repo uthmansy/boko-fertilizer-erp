@@ -140,6 +140,21 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     marginBottom: 4,
   },
+  horizontalTable: {
+    display: "flex",
+    flexDirection: "column",
+    borderWidth: 1,
+    borderColor: "222222",
+    marginBottom: 20,
+    padding: 0,
+  },
+  horizontalRow: {
+    display: "flex",
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "222222",
+    paddingVertical: 0,
+  },
   officerName: {
     fontSize: 10,
     marginBottom: 30,
@@ -177,7 +192,7 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Watermark Logo */}
-        {!sale.item_purchased.toLowerCase().startsWith("olam") && (
+        {!sale.items[0].item_purchased.toLowerCase().startsWith("olam") && (
           <Image src={LOGO} style={styles.watermark} />
         )}
 
@@ -185,7 +200,7 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
           <Text>{`INV-${sale.order_number}`}</Text>
         </View>
         {/* Header Section */}
-        {sale.item_purchased.toLowerCase().startsWith("olam") ? (
+        {sale.items[0].item_purchased.toLowerCase().startsWith("olam") ? (
           <View
             style={{
               border: 1,
@@ -287,25 +302,27 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
           {/* Vertical Grouped Table */}
           <Text>Item Details</Text>
           <View style={styles.section1}>
-            <View style={styles.verticalTable}>
-              <View style={styles.verticalRow}>
+            <View style={styles.horizontalTable}>
+              <View style={styles.horizontalRow}>
+                <Text style={styles.label}>SN</Text>
                 <Text style={styles.label}>Item:</Text>
-                <Text style={styles.label}>{sale.item_purchased}</Text>
-              </View>
-              <View style={styles.verticalRow}>
                 <Text style={styles.label}>Quantity:</Text>
-                <Text style={styles.label}>{formatNumber(sale.quantity)}</Text>
+                <Text style={styles.label}>Price:</Text>
+                <Text style={styles.label}>Total:</Text>
               </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Unit Of Measurement:</Text>
-                <Text style={styles.label}>{sale.item_info.unit}</Text>
-              </View>
-              <View style={styles.verticalRow}>
-                <Text style={styles.label}>Unit Price:</Text>
-                <Text style={styles.label}>
-                  N{formatNumber(sale.price / sale.quantity)}
-                </Text>
-              </View>
+              {sale.items.map((item, i) => (
+                <View key={i} style={styles.horizontalRow}>
+                  <Text style={styles.value}>{i + 1}</Text>
+                  <Text style={styles.value}>{item.item_purchased}</Text>
+                  <Text style={styles.value}>
+                    {formatNumber(item.quantity)}
+                  </Text>
+                  <Text style={styles.value}>N{formatNumber(item.price)}</Text>
+                  <Text style={styles.value}>
+                    N{formatNumber(item.quantity * item.price)}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
           <Text>Summary</Text>
@@ -313,7 +330,9 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
             <View style={styles.verticalTable}>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Total Price:</Text>
-                <Text style={styles.label}>N{formatNumber(sale.price)}</Text>
+                <Text style={styles.label}>
+                  N{sale.amount ? formatNumber(sale.amount) : "NA"}
+                </Text>
               </View>
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Total Paid:</Text>
@@ -322,7 +341,10 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
               <View style={styles.verticalRow}>
                 <Text style={styles.label}>Total Balance (including VAT):</Text>
                 <Text style={styles.label}>
-                  N{formatNumber(sale.payment_balance)}
+                  N
+                  {sale.payment_balance
+                    ? formatNumber(sale.payment_balance)
+                    : "NA"}
                 </Text>
               </View>
             </View>
