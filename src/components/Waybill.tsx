@@ -1,15 +1,15 @@
 import React from "react";
 import { VehiclesAndDestination } from "../types/db";
-import { QRCode, Watermark } from "antd";
+import { Watermark } from "antd";
 
 interface WaybillProps {
   data: VehiclesAndDestination;
 }
 
-const Waybill: React.FC<WaybillProps> = ({ data }) => {
+const Waybill: React.FC<WaybillProps> = ({}) => {
   return (
     <Watermark gap={[30, 30]} content={["Ant Design", "Happy Working"]}>
-      <div className="p-8 mx-auto bg-white shadow-lg rounded-lg max-w-a4">
+      {/* <div className="p-8 mx-auto bg-white shadow-lg rounded-lg max-w-a4">
         <div className="flex justify-between items-center mb-6">
           <div>
             <img
@@ -57,7 +57,7 @@ const Waybill: React.FC<WaybillProps> = ({ data }) => {
           </tbody>
         </table>
         <QRCode value={"hellohellohellohellohellohello"} />
-      </div>
+      </div> */}
     </Watermark>
   );
 };

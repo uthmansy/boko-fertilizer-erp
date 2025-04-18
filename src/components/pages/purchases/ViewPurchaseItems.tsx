@@ -1,5 +1,5 @@
 // ViewPurchaseItems.tsx
-import { Button, Modal, Table, Tag } from "antd";
+import { Button, Modal, Table } from "antd";
 import useViewPurchaseItems from "../../../hooks/useViewPurchaseItems";
 import { puchaseItemsAdminColumns } from "../../../tableColumns/purchaseItems";
 
