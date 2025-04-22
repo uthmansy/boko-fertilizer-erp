@@ -29,6 +29,13 @@ function useEditFinishedProduct({ product }: Prop): HookReturn {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const formConfig: FieldConfig[] = [
+    // {
+    //   name: "quantity_produced",
+    //   label: "Quantity Produced",
+    //   type: "number",
+    //   required: false,
+    //   defaultValue: product.quantity_produced || undefined,
+    // },
     {
       name: "waste",
       label: "Rejects",

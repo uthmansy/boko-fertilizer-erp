@@ -1,6 +1,6 @@
 import RefreshButton from "../../RefreshButton";
 import { finishedProductsKeys } from "../../../constants/QUERY_KEYS";
-// import AddNew from "./AddNew";
+import AddNew from "./AddNew";
 import AllFinishedProducts from "./AllFinishedProducts";
 import { Breadcrumb, Button } from "antd";
 import { BorderInnerOutlined, HomeOutlined } from "@ant-design/icons";
@@ -47,7 +47,7 @@ function FinishedProducts() {
       />
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={finishedProductsKeys.getAll} />
-        {/* <AddNew /> */}
+        <AddNew />
         {data && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink
