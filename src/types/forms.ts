@@ -3,7 +3,6 @@ import WarehouseSchema from "../zodSchemas/warehouses";
 import { InventoryItemSchema } from "../zodSchemas/inventoryItems";
 import { PurchasesSchema, UpdatePurchaseSchema } from "../zodSchemas/purchases";
 import { PurchasePaymentSchema } from "../zodSchemas/purchasePayment";
-import DispatchSchema from "../zodSchemas/dispatch";
 import ReceiveSchema from "../zodSchemas/receive";
 import { RequestSchema } from "../zodSchemas/requests";
 import {
@@ -20,6 +19,7 @@ import { UpdateSaleSchema } from "../zodSchemas/sales";
 import { UpdateExpenseSchema } from "../zodSchemas/expenses";
 import { UpdateSaleItemSchema } from "../zodSchemas/saleItem";
 import { UpdatePurchaseItemSchema } from "../zodSchemas/purchaseItem";
+import { DispatchSchema } from "../zodSchemas/dispatch";
 
 export type NewWarehouse = z.TypeOf<typeof WarehouseSchema>;
 export type NewInventoryItem = z.TypeOf<typeof InventoryItemSchema>;

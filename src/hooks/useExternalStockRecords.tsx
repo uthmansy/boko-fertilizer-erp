@@ -93,7 +93,7 @@ function useExternalStockRecordss(): HookReturn {
       {
         key: "3",
         label: "Item",
-        children: record.stock_purchases.item,
+        children: record.purchase_item.item.name,
       },
       {
         key: "4",

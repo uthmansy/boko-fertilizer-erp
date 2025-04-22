@@ -13,8 +13,6 @@ function ReceiveScanVehicle({ vehicle }: Props) {
     formConfig,
     handleSubmit: handleReceive,
     isLoading: isReceiving,
-    shortage,
-    onValuesChange,
     handleCloseModal,
     handleOpenModal,
     isModalOpen,
@@ -35,8 +33,6 @@ function ReceiveScanVehicle({ vehicle }: Props) {
         formConfig={formConfig}
         handleSubmit={handleReceive}
         isLoading={isReceiving}
-        onValuesChange={onValuesChange}
-        shortage={shortage}
         vehicle={vehicle}
       />
     </Modal>

@@ -15,7 +15,7 @@ function TransitWaybillViewer({ vehicle }: Props) {
     <>
       {/* <Waybill data={vehicle} /> */}
       <DocumentViewer fileName={`Transit-${vehicle.waybill_number}`}>
-        {vehicle.to_customer ? (
+        {vehicle.sale_order_number ? (
           <DispatchedWaybill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
         ) : (
           <TransitWabill data={vehicle} qrCodeDataUri={qrCodeDataUri} />
