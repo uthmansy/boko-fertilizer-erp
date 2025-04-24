@@ -1,4 +1,4 @@
-const name = "Abjar Agric Processing";
-const address = "NO 12 KATSINA ROAD FUNTUA, KATSINA STATE";
-const phone = "08035769962, 08086652885";
+const name = "Boko Agro Allied Nig Ltd";
+const address = "";
+const phone = "";
 export const COMPANY = { name, address, phone };

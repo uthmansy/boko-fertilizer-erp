@@ -128,7 +128,7 @@ export default function Filters({
     expenseCategoryOptions;
 
   return (
-    <div className="mb-5 flex space-x-3">
+    <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
       {onReset && (
         <Button className="uppercase" onClick={onReset}>
           Reset All Filters
@@ -137,7 +137,6 @@ export default function Filters({
 
       {shouldShowDate && (
         <DatePicker
-          className="w-56"
           onChange={onDateChange}
           value={dateFilter}
           format="YYYY-MM-DD"
@@ -146,7 +145,6 @@ export default function Filters({
 
       {shouldShowSearch && (
         <Input
-          className="w-56"
           value={searchTerm}
           onChange={onSearchChange}
           placeholder={searchPlaceholder}
@@ -156,7 +154,6 @@ export default function Filters({
 
       {shouldShowItem && (
         <Select
-          className="w-56"
           options={itemOptions}
           onChange={(value) => onItemChange(value || null)}
           value={itemFilter || undefined}
@@ -169,7 +166,6 @@ export default function Filters({
 
       {shouldShowMonth && (
         <Select
-          className="w-56"
           options={monthOptions}
           onChange={(value) => onMonthChange(value || null)}
           value={monthFilter || undefined}
@@ -182,7 +178,6 @@ export default function Filters({
 
       {shouldShowYear && (
         <Select
-          className="w-56"
           options={yearOptions}
           onChange={(value) => onYearChange(value || null)}
           value={yearFilter || undefined}
@@ -195,7 +190,6 @@ export default function Filters({
 
       {shouldShowWarehouse && (
         <Select
-          className="w-56"
           options={warehouseOptions}
           onChange={(value) => onWarehouseChange(value || null)}
           value={warehouseFilter || undefined}
@@ -208,7 +202,6 @@ export default function Filters({
 
       {shouldShowShift && (
         <Select
-          className="w-56"
           options={shiftOptions}
           onChange={(value) => onShiftChange(value || null)}
           value={shiftFilter || undefined}
@@ -221,7 +214,6 @@ export default function Filters({
 
       {shouldShowExpenseCategory && (
         <Select
-          className="w-56"
           options={expenseCategoryOptions}
           onChange={(value) => onExpenseCategoryChange(value || null)}
           value={expenseCategoryFilter || undefined}

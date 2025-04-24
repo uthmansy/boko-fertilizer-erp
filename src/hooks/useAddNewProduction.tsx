@@ -4,9 +4,9 @@ import { App, FormInstance } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import { inventoryItemsKeys, warehousesKeys } from "../constants/QUERY_KEYS";
-import { ProductionMultipleProductsSchema } from "../zodSchemas/production";
+import { ProductionSchema } from "../zodSchemas/production";
 import {
-  createMultiProduction,
+  createProduction,
   getInventoryItems,
   getWarehouses,
 } from "../helpers/apiFunctions";
@@ -89,21 +89,34 @@ function useAddNewProduction(form: FormInstance): HookReturn {
       required: true,
     },
     {
-      name: "products",
-      label: "Products",
+      name: "product",
+      label: "Product",
+      type: "select",
+      options: items?.products,
+      required: true,
+    },
+    {
+      name: "quantity_produced",
+      label: "Quantity Produced",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "items",
+      label: "Raw Materials",
       type: "dynamic",
       required: true,
       subFields: [
         {
-          name: "product",
-          label: "Product",
+          name: "item",
+          label: "Item",
           type: "select",
-          options: items?.products,
+          options: items?.raw,
           required: true,
         },
         {
-          name: "quantity_produced",
-          label: "Quantity Produced (in Metres)",
+          name: "quantity",
+          label: "Quantity",
           type: "number",
           required: true,
         },
@@ -122,8 +135,8 @@ function useAddNewProduction(form: FormInstance): HookReturn {
           values.warehouse = userProfile?.warehouse;
         }
 
-        await ProductionMultipleProductsSchema.parseAsync(values);
-        await createMultiProduction(values);
+        const payload = await ProductionSchema.parseAsync(values);
+        await createProduction(payload);
       } catch (error) {
         if (error instanceof ZodError) {
           console.error("Zod Validation failed:", error.errors);
