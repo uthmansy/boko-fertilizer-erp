@@ -62,7 +62,7 @@ function App() {
         token: {
           // colorPrimary: "#fa8c16",
           // colorPrimary: "#55YY44",
-          colorPrimary: "#ABC32F",
+          colorPrimary: "#019934",
           colorInfo: "#fa8c16",
           borderRadius: 0,
         },
@@ -72,8 +72,8 @@ function App() {
           },
 
           Table: {
-            borderColor: darkMode ? "#ABC32F" : "#ABC32F",
-            headerBg: "#ABC32F",
+            borderColor: darkMode ? "#019934" : "#019934",
+            headerBg: "#019934",
           },
           Menu: {
             /* here is your component tokens */

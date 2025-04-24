@@ -38,7 +38,7 @@ const createWindow = () => {
   });
 
   // Load the external web URL
-  const externalUrl = "https://tomatildemo.netlify.app";
+  const externalUrl = "https://boko-fertilizer-erp.netlify.app";
 
   // Wait for splash screen to show, then load the main app
   setTimeout(() => {

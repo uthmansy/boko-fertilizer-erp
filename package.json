@@ -1,5 +1,5 @@
 {
-  "name": "tomatil",
+  "name": "boko-fertilizer-erp",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -58,6 +58,7 @@
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-pwa": "^1.0.0",
     "wait-on": "^8.0.1"
   },
   "build": {
