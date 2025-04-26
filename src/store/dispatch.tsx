@@ -25,7 +25,7 @@ const useDispatchStore = create<Store>((set) => ({
   setNewDispatchVehicle: (value) => set({ newDispatchVehicle: value }),
   resetValues: () =>
     set({
-      currentPage: 2,
+      currentPage: 1,
       newDispatchVehicle: null,
       dispatchType: "sale",
       originType: "internal",

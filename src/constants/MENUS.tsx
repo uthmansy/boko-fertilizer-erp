@@ -49,7 +49,7 @@ const menuItems = {
   },
   payrolls: { label: "Payrolls", icon: HiBanknotes, path: ROUTES.payroll },
   financialReports: {
-    label: "Financial Reports",
+    label: "Audit Reports",
     icon: HiChartPie,
     path: ROUTES.financialReports,
   },
@@ -217,7 +217,7 @@ const {
   // expenses,
   financialReports,
   stockIn,
-  dailyProduction,
+  // dailyProduction,
   invoices,
   company,
   hr,
@@ -238,7 +238,7 @@ export const superAdminMenuItems: SidebarMenuItem[] = [
   logistics,
   production,
   inventory,
-  dailyProduction,
+  // dailyProduction,
 ];
 
 export const adminMenuItems: SidebarMenuItem[] = [
@@ -265,7 +265,7 @@ export const adminMenuItems: SidebarMenuItem[] = [
   dispatchedTrucks,
   productionRuns,
   finishedProducts,
-  dailyProduction,
+  // dailyProduction,
   // employees,
 ];
 
@@ -276,7 +276,7 @@ export const productionMenuItems: SidebarMenuItem[] = [
   productionRuns,
   finishedProducts,
   productSubmissions,
-  dailyProduction,
+  // dailyProduction,
 ];
 export const inventoryMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -290,7 +290,7 @@ export const inventoryMenuItems: SidebarMenuItem[] = [
   dispatchedTrucks,
   requests,
   productSubmissions,
-  dailyProduction,
+  // dailyProduction,
 ];
 export const accountingMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -303,7 +303,7 @@ export const accountingMenuItems: SidebarMenuItem[] = [
   stockRecords,
   dispatchedTrucks,
   receivedTrucks,
-  dailyProduction,
+  // dailyProduction,
 ];
 export const logisticsMenuItems: SidebarMenuItem[] = [
   dashboard,
@@ -330,7 +330,7 @@ export const managerMenuItems: SidebarMenuItem[] = [
   // productionRuns,
   // productSubmissions,
   // employees,
-  dailyProduction,
+  // dailyProduction,
   inventory,
   logistics,
   production,

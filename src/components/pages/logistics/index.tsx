@@ -15,7 +15,7 @@ function Logistics() {
     },
     {
       key: "2",
-      label: "Dispatch (to warehouse)",
+      label: "External Dispatch",
       children: <ExternalDispatch />,
     },
     {

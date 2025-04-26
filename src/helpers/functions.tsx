@@ -234,3 +234,7 @@ export const baleAndPieces = (num: number) => {
 
   return `${bales} bale, ${pieces} pieces`;
 };
+
+export const bagsToTon = (bags: number) => {
+  return bags / 20;
+};

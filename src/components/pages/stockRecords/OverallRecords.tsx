@@ -1,5 +1,5 @@
 import { Card, Statistic } from "antd";
-import { formatNumber } from "../../../helpers/functions";
+import { bagsToTon, formatNumber } from "../../../helpers/functions";
 import { StocksWithDetails } from "../../../types/db";
 import useDarkMode from "../../../store/theme";
 
@@ -32,6 +32,13 @@ function OverallRecords({ record }: Props) {
                 </span>
               }
             />
+            <Statistic
+              title="In Tonnage"
+              value={formatNumber(
+                bagsToTon(record.balance || 0) + record.production_balance
+              )}
+              suffix={<span className="text-sm uppercase">Ton</span>}
+            />
           </Card>
           <Card
             title="Quantity received"
@@ -46,6 +53,15 @@ function OverallRecords({ record }: Props) {
                   {record.item_info.unit}
                 </span>
               }
+            />
+            <Statistic
+              title="In Ton"
+              value={
+                record.received
+                  ? formatNumber(bagsToTon(record.received))
+                  : "NA"
+              }
+              suffix={<span className="text-sm uppercase">Ton</span>}
             />
           </Card>
           <Card
@@ -62,6 +78,15 @@ function OverallRecords({ record }: Props) {
                 </span>
               }
             />
+            <Statistic
+              title="In Ton"
+              value={
+                record.dispatched
+                  ? formatNumber(bagsToTon(record.dispatched))
+                  : "NA"
+              }
+              suffix={<span className="text-sm uppercase">Ton</span>}
+            />
           </Card>
           <Card title="Quantity Used" bordered={true} style={{ width: "100%" }}>
             <Statistic
@@ -72,6 +97,15 @@ function OverallRecords({ record }: Props) {
                   {record.item_info.unit}
                 </span>
               }
+            />
+            <Statistic
+              title="In Ton"
+              value={
+                record.utilized
+                  ? formatNumber(bagsToTon(record.utilized))
+                  : "NA"
+              }
+              suffix={<span className="text-sm uppercase">Ton</span>}
             />
           </Card>
         </div>

@@ -22,7 +22,7 @@ function SiteHeader() {
     token: { colorBgContainer },
   } = theme.useToken();
   const { darkMode, toggleMode } = useDarkMode();
-  const { setWindow, currentWindow } = useWindow();
+  const { currentWindow } = useWindow();
   const { setMenu, currentMenu } = useAdminMenu();
   const { userProfile } = useAuthStore();
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ function SiteHeader() {
       <div>
         {isDesktop && (
           <Space>
-            <Select
+            {/* <Select
               defaultValue={currentWindow}
               style={{ width: 200, borderRadius: "50%" }}
               placeholder="Select Window"
@@ -62,7 +62,7 @@ function SiteHeader() {
                   { value: "pos", label: "POS System" },
                 ] as SelectOption[]
               }
-            />
+            /> */}
             {currentWindow === "main" &&
               (userProfile?.role === "ADMIN" ||
                 userProfile?.role === "SUPER ADMIN") && (

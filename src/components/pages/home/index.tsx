@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Table } from "antd";
 import { LOGO } from "../../../assets/images";
 import useAuthStore from "../../../store/auth";
-import DailyProduction from "../dailyProduction";
+import StockRecords from "../stockRecords";
 
 const Home: React.FC = () => {
   const { userProfile } = useAuthStore();
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
       userProfile?.role === "INVENTORY" ||
       userProfile?.role === "PRODUCTION" ||
       userProfile?.role === "MANAGER" ? (
-        <DailyProduction />
+        <StockRecords />
       ) : (
         <div className="flex justify-center items-center p-10">
           <Card
