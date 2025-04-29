@@ -42,7 +42,7 @@ function useDispatchForm(): HookReturn {
   const { userProfile } = useAuthStore();
 
   const { data: destinations } = useQuery({
-    queryKey: warehousesKeys.getDispatchWarehouses,
+    queryKey: warehousesKeys.getDispatchWarehousesWithId,
     queryFn: async (): Promise<SelectOption[]> => {
       const warehouses = await getWarehouses();
       return warehouses.map((warehouse) => ({
@@ -326,6 +326,7 @@ function useDispatchForm(): HookReturn {
         if (originType === "internal")
           values.v_origin_warehouse = userProfile?.warehouse;
         const payload = await DispatchSchema.parseAsync(values);
+        console.log(payload);
         const vehicle = await createDispatch(payload);
         setNewDispatchVehicle(vehicle);
         nextPage();

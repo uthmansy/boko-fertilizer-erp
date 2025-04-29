@@ -7,7 +7,6 @@ const VehicleItemSchema = z.object({
   qty_received: z.number().optional(),
   received_by: z.string().optional(),
   shortage: z.number().optional().default(0),
-  // Assuming destination is a UUID in string form; adjust if needed
   destination: z.string().optional(),
   status: z.enum(["dispatched", "delivered"]).default("dispatched"),
   // Adjust dispatch_type if needed – original function casts to a type with default 'purchase'
@@ -33,7 +32,7 @@ export const DispatchSchema = z.object({
   v_origin_warehouse: z.string().optional().nullable(),
   v_status: z.string(),
   v_dispatched_by: z.string(),
-  v_destination: z.string().uuid().optional(),
+  v_destination: z.string().uuid().optional().nullable(),
   v_driver_name: z.string().optional(),
   v_driver_number: z
     .string()

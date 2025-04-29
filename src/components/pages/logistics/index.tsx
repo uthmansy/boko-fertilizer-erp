@@ -5,6 +5,7 @@ import Transit from "../transit/index.tsx";
 import ReceivedVehicles from "../receivedVehicles/index.tsx";
 import DispatchedVehicles from "../dispatchedVehicles/index.tsx";
 import ScanWaybill from "../scanWaybill/index.tsx";
+// import Seeding from "./Seeding.tsx";
 
 function Logistics() {
   const tabs: TabsProps["items"] = [
@@ -38,6 +39,11 @@ function Logistics() {
       label: "Scan Waybill",
       children: <ScanWaybill />,
     },
+    // {
+    //   key: "7",
+    //   label: "Seeding",
+    //   children: <Seeding />,
+    // },
   ];
   return (
     <Tabs
