@@ -208,3 +208,5 @@ export type DailyProductionSummary = {
   pieces?: number | null;
   bales?: number | null;
 };
+export type FinancialReportLedger =
+  Database["public"]["Views"]["monthly_ledger"]["Row"];
