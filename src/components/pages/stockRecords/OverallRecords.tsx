@@ -33,9 +33,9 @@ function OverallRecords({ record }: Props) {
               }
             />
             <Statistic
-              title="In Tonnage"
+              title="In Ton"
               value={formatNumber(
-                bagsToTon(record.balance || 0) + record.production_balance
+                bagsToTon((record.balance || 0) + record.production_balance)
               )}
               suffix={<span className="text-sm uppercase">Ton</span>}
             />
