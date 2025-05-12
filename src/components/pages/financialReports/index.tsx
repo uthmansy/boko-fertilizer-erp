@@ -97,7 +97,7 @@ function FinancialReports() {
           },
         ]}
       />
-      <Tabs size="large" defaultActiveKey="1" items={tabs} />
+      <Tabs size="small" defaultActiveKey="1" items={tabs} />
     </>
   );
 }

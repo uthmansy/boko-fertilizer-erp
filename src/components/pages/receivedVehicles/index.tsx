@@ -7,47 +7,52 @@ import { VehiclesAndDestination } from "../../../types/db";
 import { getVehicles } from "../../../helpers/apiFunctions";
 import useCsv from "../../../hooks/useCsv";
 import { Headers } from "react-csv/lib/core";
-import { flattenObject } from "../../../helpers/functions";
+// import { flattenObject } from "../../../helpers/functions";
 import { CSVLink } from "react-csv";
 
 function ReceivedVehicles() {
+  const { data } = useCsv<VehiclesAndDestination[]>({
+    queryFn: () => getVehicles("received", {}),
+    queryKey: vehiclesKeys.getReceivedCsv,
+  });
+
+  const flatVehicleItems = data?.flatMap((v) => v.items) || [];
+
+  const vehicleItemsHeaders = Array.from(
+    new Set(flatVehicleItems.map((item) => item.item))
+  ).map((item) => ({ label: item, key: item }));
+
+  const transformedData = data?.map((vehicle) => {
+    // Create accumulator for quantities
+    const itemTotals = vehicle.items.reduce((acc, item) => {
+      //@ts-ignore
+      acc[item.item] = (acc[item.item] || 0) + item.qty_received;
+      return acc;
+    }, {});
+
+    // Return new object with merged properties
+    return {
+      ...vehicle,
+      ...itemTotals,
+    };
+  });
+
   const headers: Headers = [
     { label: "Waybill Number", key: "waybill_number" },
     { label: "Vehicle Number", key: "vehicle_number" },
-    { label: "Item", key: "item" },
-    { label: "Quantity Carried", key: "qty_carried" },
-    { label: "Quantity Received", key: "qty_received" },
+    { label: "Date Dispatched", key: "date_dispatched" },
+    { label: "Date Received", key: "date_received" },
     { label: "Dispatched By", key: "dispatched_by" },
     { label: "Received By", key: "received_by" },
     { label: "Driver Name", key: "driver_name" },
     { label: "Driver Number", key: "driver_number" },
     { label: "Origin State", key: "origin_state" },
     { label: "Transporter", key: "transporter" },
-    { label: "Date Dispatched", key: "date_dispatched" },
-    { label: "Date Received", key: "date_received" },
-    { label: "Item Code", key: "item_info_code" },
-    { label: "Item Unit", key: "item_info_unit" },
-    { label: "Purchase Cost", key: "item_info_purchase_cost" },
-    { label: "Destination Warehouse", key: "destination_stock_warehouse" },
-    {
-      label: "Warehouse Address",
-      key: "destination_stock_warehouse_info_address",
-    },
-    {
-      label: "Stock Purchases Seller",
-      key: "external_origin_stock_stock_purchases_seller",
-    },
-    {
-      label: "Stock Purchases Quantity",
-      key: "external_origin_stock_stock_purchases_quantity",
-    },
+    { label: "Destination Warehouse", key: "destination_info.name" },
+    ...vehicleItemsHeaders,
   ];
-  const { data } = useCsv<VehiclesAndDestination[]>({
-    queryFn: () => getVehicles("received", {}),
-    queryKey: vehiclesKeys.getReceivedCsv,
-  });
 
-  const flatData = data?.map((item) => flattenObject(item));
+  // const flatData = data?.map((item) => flattenObject(item));
 
   return (
     <>
@@ -70,11 +75,11 @@ function ReceivedVehicles() {
       />
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={vehiclesKeys.getReceivedVehicles} />
-        {flatData && (
+        {transformedData && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink
               filename={"received-trucks.csv"}
-              data={flatData}
+              data={transformedData}
               headers={headers}
             >
               Export to CSV

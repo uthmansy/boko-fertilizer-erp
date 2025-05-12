@@ -65,10 +65,12 @@ function App() {
           colorPrimary: "#019934",
           colorInfo: "#fa8c16",
           borderRadius: 0,
+          fontFamily: "Plus Jakarta Sans",
         },
         components: {
           Layout: {
-            siderBg: darkMode ? "#222222" : "#ffffff",
+            // siderBg: darkMode ? "#222222" : "#ffffff",
+            siderBg: "#222222",
           },
 
           Table: {

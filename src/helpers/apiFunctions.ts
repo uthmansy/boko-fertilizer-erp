@@ -650,7 +650,14 @@ export const getVehicles = async (
 
   // Check the value of status and adjust the join type accordingly
   if (status === "delivered") {
-    query = query.eq("status", status);
+    query = query
+      .eq("status", status)
+      .order("date_dispatched", { ascending: false });
+  }
+  if (status !== "delivered") {
+    query = query
+      .eq("status", status)
+      .order("date_received", { ascending: false });
   }
 
   if (dateFilter) query = query.eq("date_dispatched", dateFilter);
@@ -685,7 +692,7 @@ export const getVehicles = async (
   }
 
   // Apply ordering and pagination after filtering
-  query = query.order("created_at", { ascending: false });
+  // query = query.order("created_at", { ascending: false });
 
   const { data, error } = await query;
 
@@ -975,7 +982,7 @@ export const getAllProductions = async ({
     .from("production_runs")
     .select("*, production_raw_materials (*), product_info:product(*)")
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
-    .order("created_at", { ascending: false });
+    .order("date", { ascending: false });
 
   if (dateFilter) q = q.eq("date", dateFilter);
   if (dateRange && !dateFilter)

@@ -39,14 +39,14 @@ export const productionsAdminColumns: ColumnsType<ProductionWithItems> = [
     key: "product",
     render: (text) => <span className="capitalize">{text}</span>,
   },
-  {
-    title: "Length",
-    dataIndex: "product",
-    key: "product_cutting_lenght",
-    render: (_, record) => (
-      <span className="capitalize">{record.product_info.length} CM</span>
-    ),
-  },
+  // {
+  //   title: "Length",
+  //   dataIndex: "product",
+  //   key: "product_cutting_lenght",
+  //   render: (_, record) => (
+  //     <span className="capitalize">{record.product_info.length} CM</span>
+  //   ),
+  // },
   {
     title: "Quantity Produced",
     dataIndex: "quantity_produced",
@@ -59,21 +59,21 @@ export const productionsAdminColumns: ColumnsType<ProductionWithItems> = [
   //   key: "waste",
   //   render: (text) => <span className="capitalize">{formatNumber(text)}</span>,
   // },
-  // {
-  //   title: "Raw Materials",
-  //   key: "production_raw_materials",
-  //   render: (_, record) => (
-  //     <div>
-  //       {record.production_raw_materials.map((item) => (
-  //         <div className="flex space-x-3">
-  //           <span>{item.item}:</span>
-  //           <span>{item.quantity}</span>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   ),
-  //   width: 170,
-  // },
+  {
+    title: "Raw Materials",
+    key: "production_raw_materials",
+    render: (_, record) => (
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        {record.production_raw_materials.map((item) => (
+          <div className="flex space-x-3 text-xs">
+            <span>{item.item}:</span>
+            <span>{item.quantity}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+
   {
     title: "Action",
     key: "action",

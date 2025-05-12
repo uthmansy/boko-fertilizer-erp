@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import useAuthStore from "../../store/auth";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import useAdminMenu from "../../store/adminMenu";
-import useDarkMode from "../../store/theme";
+// import useDarkMode from "../../store/theme";
 import { LOGO } from "../../assets/images";
 
 function Sider() {
@@ -24,7 +24,7 @@ function Sider() {
     userProfile?.role === "ADMIN" || userProfile?.role === "SUPER ADMIN"
       ? currentMenu || userProfile?.role
       : userProfile?.role;
-  const { darkMode } = useDarkMode();
+  // const { darkMode } = useDarkMode();
 
   return (
     <Sider
@@ -59,7 +59,8 @@ function Sider() {
       </div>
       <Menu
         onClick={handleMenuClick}
-        theme={darkMode ? "dark" : "light"}
+        // theme={darkMode ? "dark" : "light"}
+        theme={"dark"}
         mode="inline"
         defaultSelectedKeys={["1"]}
         className={`${

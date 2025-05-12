@@ -18,11 +18,11 @@ interface HookReturn {
 }
 
 function useDashboard(): HookReturn {
-  const [collapsed, setCollapsed] = useState(true);
   const { signOut } = useAuthStore();
   const { message } = App.useApp();
   const isDesktop = useMediaQuery({ minWidth: 1025 });
   const isMobile = useMediaQuery({ maxWidth: 1024 });
+  const [collapsed, setCollapsed] = useState(isMobile ? true : false);
 
   const handleMenuClick = () => {
     isMobile && handleCollapse();

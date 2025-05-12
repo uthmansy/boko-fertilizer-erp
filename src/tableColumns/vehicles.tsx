@@ -46,6 +46,20 @@ export const useVehicleColumns = (): {
       key: "waybill_number",
       render: (text) => <span className="capitalize">{text}</span>,
     },
+    {
+      title: "Items Carried",
+      key: "items_carried",
+      render: (_, record) => (
+        <div className="grid grid-cols-2">
+          {record.items.map((item) => (
+            <div className="flex space-x-3">
+              <span>{item.item}:</span>
+              <span>{item.qty_carried}</span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
     ...((userProfile?.role === "SUPER ADMIN" || userProfile?.role === "ADMIN"
       ? [
           {
