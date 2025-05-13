@@ -2,7 +2,7 @@ import { Tabs, TabsProps } from "antd";
 import StockRecords from "../stockRecords";
 // import ExternalStockRecords from "../externalStockRecords";
 import InventoryItems from "../inventoryItems.tsx";
-// import InventoryTransfers from "../inventoryTransfers";
+import InventoryTransfers from "../inventoryTransfers";
 // import StockIn from "../stockIn";
 
 function Inventory() {
@@ -22,11 +22,11 @@ function Inventory() {
       label: "Inventory Items",
       children: <InventoryItems />,
     },
-    // {
-    //   key: "4",
-    //   label: "Inventory Transfer",
-    //   children: <InventoryTransfers />,
-    // },
+    {
+      key: "4",
+      label: "Inventory Transfer",
+      children: <InventoryTransfers />,
+    },
     // {
     //   key: "5",
     //   label: "Waste Record",
