@@ -59,12 +59,12 @@ function ViewSale({ orderNumber, buttonTitle }: Props) {
     {
       key: "3",
       label: "Customer Name",
-      children: sale?.customer_name || "NA",
+      children: sale?.customer_info.name || "NA",
     },
     {
       key: "4",
       label: "Customer Phone",
-      children: sale?.customer_phone || "NA",
+      children: sale?.customer_info.phone || "NA",
     },
     {
       key: "5",

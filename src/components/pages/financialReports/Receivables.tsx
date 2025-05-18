@@ -29,9 +29,9 @@ function Receivables() {
 
   const headers: Headers = [
     { label: "Date", key: "date" },
-    { label: "Customer", key: "customer_name" },
+    { label: "Customer", key: "customer_info.name" },
     { label: "Order Number", key: "order_number" },
-    { label: "Customer Phone", key: "customer_phone" },
+    { label: "Customer Phone", key: "customer_info.phone" },
     { label: "To be received", key: "payment_balance" },
   ];
 

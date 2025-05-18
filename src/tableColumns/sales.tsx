@@ -23,9 +23,11 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
   },
   {
     title: "Customer",
-    dataIndex: "customer_name",
-    key: "customer_name",
-    render: (text) => <span className="capitalize">{text}</span>,
+    dataIndex: "customer",
+    key: "customer",
+    render: (_, record) => (
+      <span className="capitalize">{record.customer_info.name}</span>
+    ),
   },
   // {
   //   title: "Item",
@@ -44,7 +46,7 @@ export const salesAdminColumns: ColumnsType<SalesAndPayments> = [
     title: "Customer Phone",
     dataIndex: "customer_phone",
     key: "customer_phone",
-    render: (text) => <span>{text || "N/A"}</span>, // Display "N/A" if null
+    render: (_, record) => <span>{record.customer_info.name || "N/A"}</span>, // Display "N/A" if null
   },
   {
     title: "View",

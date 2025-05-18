@@ -27,13 +27,13 @@ function EditPurchase({ purchase }: Props) {
         title="Edit Purchase"
         open={isModalOpen}
         onCancel={handleCloseModal}
-        width={800}
+        width={500}
       >
         <FormBuilder
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
-          columns={2}
+          columns={1}
         />
       </Modal>
     </>

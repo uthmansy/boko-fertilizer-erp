@@ -24,7 +24,7 @@ import Payrolls from "../../components/pages/payrolls/index.tsx";
 import Expenses from "../../components/pages/expenses/index.tsx";
 import Enrollment from "../../components/pages/enrollment/index.tsx";
 import UserManagement from "../../components/pages/userManagement/index.tsx";
-import { LOGO } from "../../assets/images/index.ts";
+// import { LOGO } from "../../assets/images/index.ts";
 import ScanWaybill from "../../components/pages/scanWaybill/index.tsx";
 import FinancialReports from "../../components/pages/financialReports/index.tsx";
 import StockIn from "../../components/pages/stockIn/index.tsx";
@@ -54,7 +54,7 @@ function SiteContent() {
       }}
     >
       {/* Background Image Overlay */}
-      <div
+      {/* <div
         className="absolute inset-0"
         style={{
           backgroundImage: `url(${LOGO})`,
@@ -64,7 +64,7 @@ function SiteContent() {
           backgroundAttachment: "fixed",
           opacity: 0.08, // Faint effect
         }}
-      ></div>
+      ></div> */}
       <div className="relative">
         <Routes>
           <Route path={`${ROUTES.home}/*`} element={<Home />} />

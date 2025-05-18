@@ -2,10 +2,9 @@ import { z } from "zod";
 
 export const CreateSaleRPCSchema = z
   .object({
-    customer_name: z.string(),
+    customer_id: z.string().uuid(),
     warehouse: z.string().optional(),
     type: z.enum(["external", "internal"]),
-    customer_phone: z.string().optional(),
     paid: z.number().default(0),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
       message: "Date must be in the format YYYY-MM-DD",
@@ -59,8 +58,7 @@ export const SalesSchema = z.object({
   quantity: z.number(),
   balance: z.number(),
   payment_balance: z.number(),
-  customer_name: z.string(),
-  customer_phone: z.string().optional(),
+  customer_id: z.string().uuid(),
   warehouse: z.string().optional(),
   external_stock: z.string().optional(),
   type: z.enum(["external", "internal"]),
@@ -76,11 +74,5 @@ export const UpdateSaleSchema = z.object({
     .refine((date) => !isNaN(Date.parse(date)), "Invalid date value")
     .optional()
     .nullable(),
-  customer_name: z
-    .string()
-    .min(3, "Customer name must be at least 3 characters")
-    .max(50, "Customer name cannot exceed 50 characters")
-    .optional()
-    .nullable(),
-  customer_phone: z.string().optional().nullable(),
+  customer_id: z.string().uuid().optional().nullable(),
 });

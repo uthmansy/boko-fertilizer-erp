@@ -1,13 +1,13 @@
 // useViewSale.ts
 import { useQuery } from "react-query";
 import { getSaleByOrderNumber } from "../helpers/apiFunctions";
-import { Sales } from "../types/db";
+import { SalesWithCustomers } from "../types/db";
 import { App } from "antd";
 import { salesKeys } from "../constants/QUERY_KEYS";
 import { useState } from "react";
 
 interface HookReturn {
-  sale: Sales | undefined;
+  sale: SalesWithCustomers | undefined;
   isLoading: boolean;
   isModalOpen: boolean;
   handleOpenModal: () => void;
@@ -27,7 +27,7 @@ function useViewSale({ orderNumber }: Props): HookReturn {
 
   const { data: sale, isLoading } = useQuery({
     queryKey: [salesKeys.getSaleByOrderNumber, orderNumber],
-    queryFn: async (): Promise<Sales> => {
+    queryFn: async (): Promise<SalesWithCustomers> => {
       const sale = await getSaleByOrderNumber(orderNumber);
       return sale;
     },

@@ -23,15 +23,19 @@ export const receivablesColumns: ColumnsType<SalesAndPayments> = [
   },
   {
     title: "Customer",
-    dataIndex: "customer_name",
-    key: "customer_name",
-    render: (text) => <span className="">{text}</span>,
+    dataIndex: "customer",
+    key: "customer",
+    render: (_, record) => (
+      <span className="">{record.customer_info.name}</span>
+    ),
   },
   {
     title: "Customer Phone",
     dataIndex: "customer_phone",
     key: "customer_phone",
-    render: (text) => <span className="">{text || "NA"}</span>,
+    render: (_, record) => (
+      <span className="">{record.customer_info.phone || "NA"}</span>
+    ),
   },
   {
     title: "Order Number",

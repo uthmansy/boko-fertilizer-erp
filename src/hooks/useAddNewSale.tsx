@@ -1,14 +1,16 @@
 import { FieldConfig, SelectOption } from "../types/comps";
-import { App } from "antd";
+import { App, Form, FormInstance } from "antd";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import {
   addSale,
+  getAllCustomers,
   getInventoryItems,
   getPurchaseItems,
   getWarehouses,
 } from "../helpers/apiFunctions"; // Update to use addSale function
 import {
+  customersKeys,
   inventoryItemsKeys,
   purchasesKeys,
   warehousesKeys,
@@ -16,19 +18,25 @@ import {
 import { CreateSaleRPCSchema } from "../zodSchemas/sales"; // Update to SalesSchema
 import useSalesStore from "../store/sales";
 import { PurchaseItemsJoined } from "../types/db";
+import { useState } from "react";
 
 interface HookReturn {
   isModalOpen: boolean;
   handleOpenModal: () => void;
   handleCloseModal: () => void;
+  isAddCustomerOpen: boolean;
+  handleOpenAddCusomter: () => void;
+  handleCloseAddCusomter: () => void;
   formConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
   isLoading: boolean;
+  form: FormInstance<any>;
 }
 
 function useAddNewSale(): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm();
 
   const { data: items } = useQuery({
     queryKey: inventoryItemsKeys.getAllItems,
@@ -69,6 +77,28 @@ function useAddNewSale(): HookReturn {
   const { type, isModalOpen, handleCloseModal, handleOpenModal, resetState } =
     useSalesStore();
 
+  const [isAddCustomerOpen, setIsAddCustomerOpen] = useState<boolean>(false);
+  const handleOpenAddCusomter = () => {
+    setIsAddCustomerOpen(true);
+  };
+  const handleCloseAddCusomter = () => {
+    setIsAddCustomerOpen(false);
+  };
+
+  const { data: customers = [] } = useQuery({
+    queryKey: customersKeys.getAllCustomers,
+    queryFn: async () => {
+      const data = await getAllCustomers();
+      return data;
+    },
+    onError: () => message.error("Failed to load customers"),
+  });
+
+  const customerOptions: SelectOption[] = customers.map((customer) => ({
+    label: customer.name,
+    value: customer.id,
+  }));
+
   const formConfig: FieldConfig[] = [
     {
       name: "date",
@@ -77,23 +107,33 @@ function useAddNewSale(): HookReturn {
       required: true,
     },
     {
-      name: "customer_name",
-      label: "Customer Name",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "customer_phone",
-      label: "Customer Phone",
-      type: "text",
-      required: false,
-      rules: [
-        {
-          pattern: /^[0-9]{11}$/,
-          message: "Phone Number must be 11 digits and contain numbers only",
-        },
+      name: "customer_id",
+      label: "Customer",
+      type: "select",
+      options: [
+        { label: "-- Add New --", value: "add_new" },
+        ...customerOptions,
       ],
+      required: true,
+      onSelect: (value) => {
+        if (value === "add_new") {
+          form.setFieldsValue({ customer_id: null });
+          handleOpenAddCusomter();
+        }
+      },
     },
+    // {
+    //   name: "customer_phone",
+    //   label: "Customer Phone",
+    //   type: "text",
+    //   required: false,
+    //   rules: [
+    //     {
+    //       pattern: /^[0-9]{11}$/,
+    //       message: "Phone Number must be 11 digits and contain numbers only",
+    //     },
+    //   ],
+    // },
     ...((type === "internal"
       ? [
           {
@@ -225,11 +265,15 @@ function useAddNewSale(): HookReturn {
 
   return {
     isModalOpen,
+    form,
     handleCloseModal,
     handleOpenModal,
     formConfig,
     handleSubmit,
     isLoading,
+    handleCloseAddCusomter,
+    handleOpenAddCusomter,
+    isAddCustomerOpen,
   };
 }
 

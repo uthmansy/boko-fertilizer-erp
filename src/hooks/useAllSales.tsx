@@ -18,6 +18,7 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
+  isError: boolean;
 }
 
 interface Props {
@@ -62,6 +63,7 @@ function useAllSales({
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
+    isError,
   } = useInfiniteQuery(
     [
       salesKeys.getAllSales,
@@ -96,6 +98,7 @@ function useAllSales({
     hasNextPage,
     fetchNextPage,
     isRefetching,
+    isError,
   };
 }
 

@@ -10,6 +10,9 @@ export const departmentsKeys = {
   getDepartments: "getDepartments",
   getAllDepartments: "getAllDepartments",
 };
+export const customersKeys = {
+  getAllCustomers: "getAllCustomers",
+};
 export const payrollKeys = {
   getPayrolls: "getPayrolls",
   getAllPayrolls: "getAllPayrolls",

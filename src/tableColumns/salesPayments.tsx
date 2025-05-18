@@ -26,11 +26,11 @@ export const salesPaymentsAdminColumns: ColumnsType<SalesPaymentsJoined> = [
   },
   {
     title: "Customer",
-    dataIndex: "customer_name",
-    key: "customer_name",
+    dataIndex: "customer",
+    key: "customer",
     render: (_, record) => (
       <span className="capitalize font-semibold">
-        {record.sale.customer_name}
+        {record.sale.customer_info.name}
       </span>
     ),
   },

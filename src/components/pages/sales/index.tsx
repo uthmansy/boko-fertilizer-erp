@@ -14,8 +14,8 @@ import useCsv from "../../../hooks/useCsv";
 function Sales() {
   const headers: Headers = [
     { label: "Date", key: "date" },
-    { label: "Customer", key: "customer_name" },
-    { label: "Customer Phone", key: "customer_phone" },
+    { label: "Customer", key: "customer_info.name" },
+    { label: "Customer Phone", key: "customer_info.phone" },
     { label: "Item", key: "item_purchased" },
     { label: "Quantity", key: "quantity" },
     { label: "Quantity Taken", key: "quantity_taken" },

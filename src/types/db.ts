@@ -109,6 +109,9 @@ export type InsertFinishedProducts =
 export type UpdateFinishedProducts =
   Database["public"]["Tables"]["finished_products"]["Update"];
 export type Sales = Database["public"]["Tables"]["sales"]["Row"];
+export interface SalesWithCustomers extends Sales {
+  customer_info: Customers;
+}
 export type SalesPayments =
   Database["public"]["Tables"]["sales_payments"]["Row"];
 export type PurchasePayments =
@@ -165,6 +168,9 @@ export interface PurchasesAndPayments extends Purchases {
 }
 
 export type SalesItems = Database["public"]["Tables"]["sales_items"]["Row"];
+export type Customers = Database["public"]["Tables"]["customers"]["Row"];
+export type InsertCustomers =
+  Database["public"]["Tables"]["customers"]["Insert"];
 
 export interface SalesItemsJoined extends SalesItems {
   item_info: InventoryItems;
@@ -173,9 +179,10 @@ export interface SalesItemsJoined extends SalesItems {
 export interface SalesAndPayments extends Sales {
   payments: SalesPayments[];
   items: SalesItemsJoined[];
+  customer_info: Customers;
 }
 export interface SalesPaymentsJoined extends SalesPayments {
-  sale: Sales;
+  sale: SalesWithCustomers;
 }
 
 export interface StocksWithDetails extends Stocks {

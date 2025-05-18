@@ -33,6 +33,33 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
       departments: {
         Row: {
           created_at: string | null
@@ -884,6 +911,7 @@ export type Database = {
       }
       production_runs: {
         Row: {
+          cost_of_production: number
           created_at: string
           date: string
           id: string
@@ -895,6 +923,7 @@ export type Database = {
           waste: number
         }
         Insert: {
+          cost_of_production?: number
           created_at?: string
           date: string
           id?: string
@@ -906,6 +935,7 @@ export type Database = {
           waste?: number
         }
         Update: {
+          cost_of_production?: number
           created_at?: string
           date?: string
           id?: string
@@ -1228,8 +1258,7 @@ export type Database = {
         Row: {
           amount: number | null
           created_at: string
-          customer_name: string
-          customer_phone: string | null
+          customer_id: string
           date: string
           id: string
           is_completed: boolean
@@ -1243,8 +1272,7 @@ export type Database = {
         Insert: {
           amount?: number | null
           created_at?: string
-          customer_name: string
-          customer_phone?: string | null
+          customer_id: string
           date: string
           id?: string
           is_completed?: boolean
@@ -1258,8 +1286,7 @@ export type Database = {
         Update: {
           amount?: number | null
           created_at?: string
-          customer_name?: string
-          customer_phone?: string | null
+          customer_id?: string
           date?: string
           id?: string
           is_completed?: boolean
@@ -1271,6 +1298,13 @@ export type Database = {
           warehouse?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "sales_customer_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sales_warehouse_fkey"
             columns: ["warehouse"]
@@ -1461,9 +1495,12 @@ export type Database = {
           closing_balance_value: number | null
           cost_of_goods_used: number | null
           cumulative_weighted_avg_cost: number | null
+          grand_cost: number
           item: string
           month: number
           opening_balance: number
+          production_cost: number
+          quantity_produced: number
           total_purchase_cost: number
           total_purchased_quantity: number
           total_used_quantity: number
@@ -1474,9 +1511,12 @@ export type Database = {
           closing_balance_value?: number | null
           cost_of_goods_used?: number | null
           cumulative_weighted_avg_cost?: number | null
+          grand_cost?: number
           item: string
           month: number
           opening_balance?: number
+          production_cost?: number
+          quantity_produced?: number
           total_purchase_cost?: number
           total_purchased_quantity?: number
           total_used_quantity?: number
@@ -1487,9 +1527,12 @@ export type Database = {
           closing_balance_value?: number | null
           cost_of_goods_used?: number | null
           cumulative_weighted_avg_cost?: number | null
+          grand_cost?: number
           item?: string
           month?: number
           opening_balance?: number
+          production_cost?: number
+          quantity_produced?: number
           total_purchase_cost?: number
           total_purchased_quantity?: number
           total_used_quantity?: number
@@ -2040,9 +2083,10 @@ export type Database = {
     Views: {
       monthly_ledger: {
         Row: {
+          cogs: number | null
+          cogu: number | null
           month: number | null
           profit: number | null
-          total_cost_of_used: number | null
           total_expenses: number | null
           total_payroll: number | null
           total_revenue: number | null
@@ -2089,6 +2133,10 @@ export type Database = {
       }
       calculate_net_pay: {
         Args: { emp_payroll_id: string; gross_pay?: number }
+        Returns: number
+      }
+      calculate_production_cost: {
+        Args: { prod_run_id: string }
         Returns: number
       }
       create_dispatch: {
@@ -2215,6 +2263,10 @@ export type Database = {
           p_product: string
           p_quantity_produced: number
         }
+        Returns: undefined
+      }
+      update_monthly_production_cost: {
+        Args: { p_item: string; p_month: number; p_year: number }
         Returns: undefined
       }
     }

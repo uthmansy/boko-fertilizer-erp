@@ -18,6 +18,7 @@ interface HookReturn {
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   isRefetching: boolean;
+  isError: boolean;
 }
 
 function useAllUsers(): HookReturn {
@@ -36,6 +37,7 @@ function useAllUsers(): HookReturn {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
+    isError,
   } = useInfiniteQuery(userKeys.getUsers, fetchData, {
     // Updated query key
     getNextPageParam: (lastPage, allPages) => {
@@ -62,6 +64,7 @@ function useAllUsers(): HookReturn {
     hasNextPage,
     fetchNextPage,
     isRefetching,
+    isError,
   };
 }
 

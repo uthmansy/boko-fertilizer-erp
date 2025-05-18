@@ -1,6 +1,7 @@
 import { supabase } from "../lib/supabase";
 import { ApiFilterOptions } from "../types/api";
 import {
+  Customers,
   DailyProductionSummary,
   Departments,
   EmployeePayrollJoined,
@@ -10,6 +11,7 @@ import {
   ExternalStocksAndPurchases,
   FinancialReportLedger,
   FinishedProductsJoint,
+  InsertCustomers,
   InsertDepartments,
   InsertEmployees,
   InsertEnrollment,
@@ -36,6 +38,7 @@ import {
   SalesItemsJoined,
   SalesPayments,
   SalesPaymentsJoined,
+  SalesWithCustomers,
   StockIn,
   StockInWithDetails,
   Stocks,
@@ -222,7 +225,9 @@ export const getExpenses = async ({
 export const getSalesPayments = async (
   pageNumber: number = 1
 ): Promise<SalesPaymentsJoined[]> => {
-  let query = supabase.from("sales_payments").select("*, sale:order_number(*)");
+  let query = supabase
+    .from("sales_payments")
+    .select("*, sale:order_number(*, customer_info:customer_id(*))");
 
   // Apply ordering and pagination after filtering
   query = query
@@ -362,7 +367,9 @@ export const getAllSales = async (
       : null;
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
+    .select(
+      "*, payments:sales_payments (*), items:sales_items!inner(*), customer_info:customer_id!inner(*)"
+    )
     .range((pageParam - 1) * 50, pageParam * 50 - 1)
     .order("created_at", { ascending: false });
 
@@ -371,7 +378,7 @@ export const getAllSales = async (
     query = query.gte("date", dateRange.start).lte("date", dateRange.end);
   if (itemFilter) query = query.eq("items.item_purchased", itemFilter);
   if (debouncedSearchTerm)
-    query = query.ilike("customer_name", `%${debouncedSearchTerm}%`);
+    query = query.ilike("customer_id.name", `%${debouncedSearchTerm}%`);
   if (warehouseFilter) {
     query = query.eq("warehouse", warehouseFilter);
   }
@@ -428,7 +435,9 @@ export const getAllStocks = async (): Promise<StocksJoined[]> => {
 export const getCsvReceivables = async (): Promise<SalesAndPayments[]> => {
   let query = supabase
     .from("sales")
-    .select("*, payments:sales_payments (*), items:sales_items!inner(*)")
+    .select(
+      "*, payments:sales_payments (*), items:sales_items!inner(*), customer_info:customer_id(*)"
+    )
     .neq("payment_balance", 0)
     .order("created_at", { ascending: false });
 
@@ -458,10 +467,10 @@ export const getSalesCsvData = async (): Promise<Sales[]> => {
 };
 export const getSaleByOrderNumber = async (
   orderNumber: string
-): Promise<Sales> => {
+): Promise<SalesWithCustomers> => {
   let query = supabase
     .from("sales")
-    .select("*")
+    .select("*, customer_info:customer_id(*)")
     .eq("order_number", orderNumber)
     .single();
 
@@ -602,7 +611,7 @@ export const getAllUncompletedSales = async (): Promise<SalesAndPayments[]> => {
   const { data, error } = await supabase
     .from("sales")
     .select(
-      "*, payments:sales_payments (*), items:sales_items(*, purchase_item_info:purchase_item(*, purchase_info:purchase_id(*)))"
+      "*, payments:sales_payments (*), items:sales_items(*, purchase_item_info:purchase_item(*, purchase_info:purchase_id(*))), customer_info:customer_id(*)"
     )
     .eq("is_completed", false)
     .order("created_at", { ascending: false });
@@ -1056,7 +1065,7 @@ export const getAllSalesPayments = async (
 ): Promise<SalesPaymentsJoined[]> => {
   const { data, error } = await supabase
     .from("sales_payments")
-    .select("*, sale:order_number(*)")
+    .select("*, sale:order_number(*, customer_info:customer_id(*))")
     .eq("order_number", orderNumber) // Filter by order_number
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
@@ -1166,6 +1175,16 @@ export const getInventoryItems = async (): Promise<InventoryItems[]> => {
 export const getWarehouses = async (): Promise<Warehouses[]> => {
   const { data, error } = await supabase
     .from("warehouses")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error.message;
+
+  return data;
+};
+export const getAllCustomers = async (): Promise<Customers[]> => {
+  const { data, error } = await supabase
+    .from("customers")
     .select("*")
     .order("created_at", { ascending: false });
 
@@ -1356,6 +1375,19 @@ export const addWarehouse = async (payload: Warehouses): Promise<void> => {
   const { error } = await supabase.from("warehouses").insert([payload]);
 
   if (error) throw new Error(error.message);
+};
+
+export const addCustomer = async (
+  payload: InsertCustomers
+): Promise<Customers> => {
+  const { data, error } = await supabase
+    .from("customers")
+    .insert([payload])
+    .select("*")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 export const addDepartment = async (

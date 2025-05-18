@@ -31,7 +31,13 @@ export const financialReportsColumns: ColumnsType<FinancialReportLedger> = [
     title: "Cost of used goods sold/used",
     dataIndex: "total_cost_of_used",
     key: "total_cost_of_used",
-    render: (_, record) => `₦${formatNumber(record.total_cost_of_used || 0)}`,
+    render: (_, record) => `₦${formatNumber(record.cogu || 0)}`,
+  },
+  {
+    title: "COGS",
+    dataIndex: "cogs",
+    key: "cogs",
+    render: (_, record) => `₦${formatNumber(record.cogs || 0)}`,
   },
   {
     title: "Expenses",

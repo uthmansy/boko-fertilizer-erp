@@ -68,8 +68,12 @@ function Sider() {
         } overflow-y-auto`}
       >
         {sidebarMenuMapping[menu || "DEFAULT"].map((menu, index) => (
-          <Menu.Item key={index + 1} icon={<menu.icon color="#019934" />}>
-            <Link to={menu.path} className="uppercase font-semibold">
+          <Menu.Item
+            className="py-7"
+            key={index + 1}
+            icon={<menu.icon color="#019934" />}
+          >
+            <Link to={menu.path} className="uppercase font-semibold py-12">
               {menu.label}
             </Link>
           </Menu.Item>

@@ -3,6 +3,7 @@ import FormBuilder from "../../utils/FormBuilder";
 import { SalesAndPayments } from "../../../types/db";
 import { MdModeEdit } from "react-icons/md";
 import { Button, Modal } from "antd";
+import AddNewCustomer from "../customers/AddNewCustomer";
 
 interface Props {
   sale: SalesAndPayments;
@@ -16,6 +17,9 @@ function EditSale({ sale }: Props) {
     formConfig,
     handleSubmit,
     isLoading,
+    form,
+    handleCloseAddCusomter,
+    isAddCustomerOpen,
   } = useEditSale({ sale });
 
   return (
@@ -26,13 +30,19 @@ function EditSale({ sale }: Props) {
         title="Edit Sale"
         open={isModalOpen}
         onCancel={handleCloseModal}
-        width={800}
+        width={500}
       >
+        <AddNewCustomer
+          isAddCustomerOpen={isAddCustomerOpen}
+          handleCloseAddCusomter={handleCloseAddCusomter}
+          form={form}
+        />
         <FormBuilder
           formConfig={formConfig}
           onSubmit={handleSubmit}
           loading={isLoading}
-          columns={2}
+          columns={1}
+          form={form}
         />
       </Modal>
     </>

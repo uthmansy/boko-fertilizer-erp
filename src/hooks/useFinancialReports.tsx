@@ -6,10 +6,12 @@ import { Headers } from "react-csv/lib/core";
 import { FinancialReportLedger } from "../types/db";
 
 interface HookReturn {
-  reports: FinancialReportLedger[]; // Update to Sales array
+  sortedAscendingReports: FinancialReportLedger[]; // Update to Sales array
   isLoading: boolean;
+  isError: boolean;
   isRefetching: boolean;
   csvHeaders: Headers;
+  sortedDescendingReports: FinancialReportLedger[];
 }
 
 function useFinancialReports(): HookReturn {
@@ -26,7 +28,7 @@ function useFinancialReports(): HookReturn {
     { label: "Profit", key: "profit" },
   ];
 
-  const { data, isLoading, isRefetching } = useQuery(
+  const { data, isLoading, isRefetching, isError } = useQuery(
     financialReportsKeys.getAll,
     {
       queryFn: async () => {
@@ -39,27 +41,44 @@ function useFinancialReports(): HookReturn {
     }
   );
 
-  const sortedReports = data?.sort((a, b) => {
-    // Safely extract year/month with defaults
-    const yearA = a.year ?? -Infinity; // Treat missing years as very old
-    const yearB = b.year ?? -Infinity;
-    const monthA = a.month ?? -Infinity; // Treat missing months as very old
-    const monthB = b.month ?? -Infinity;
+  const sortedAscendingReports = [
+    ...(data?.sort((a, b) => {
+      // Safely extract year/month with defaults
+      const yearA = a.year ?? -Infinity; // Treat missing years as very old
+      const yearB = b.year ?? -Infinity;
+      const monthA = a.month ?? -Infinity; // Treat missing months as very old
+      const monthB = b.month ?? -Infinity;
 
-    // Sort by year descending
-    if (yearA !== yearB) {
-      return yearB - yearA;
-    }
+      if (yearA !== yearB) {
+        return yearA - yearB;
+      }
 
-    // Then sort by month descending
-    return monthB - monthA;
-  });
+      return monthA - monthB;
+    }) || []),
+  ];
+
+  const sortedDescendingReports =
+    data?.sort((a, b) => {
+      // Safely extract year/month with defaults
+      const yearA = a.year ?? -Infinity; // Treat missing years as very old
+      const yearB = b.year ?? -Infinity;
+      const monthA = a.month ?? -Infinity; // Treat missing months as very old
+      const monthB = b.month ?? -Infinity;
+
+      if (yearA !== yearB) {
+        return yearB - yearA;
+      }
+
+      return monthB - monthA;
+    }) || [];
 
   return {
-    reports: sortedReports || [], // Update to Sales array
+    sortedAscendingReports,
+    sortedDescendingReports,
     isLoading,
     isRefetching,
     csvHeaders,
+    isError,
   };
 }
 

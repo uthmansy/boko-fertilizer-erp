@@ -136,7 +136,7 @@ function useDispatchForm(): HookReturn {
             type: "select",
             options:
               filteredOrders?.map((order) => ({
-                label: `${order.customer_name} - ${order.order_number}`,
+                label: `${order.customer_info.name} - ${order.order_number}`,
                 value: order.order_number,
               })) || [],
             required: true,

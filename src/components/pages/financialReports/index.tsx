@@ -1,10 +1,9 @@
-import { Breadcrumb, Tabs, TabsProps } from "antd";
+import { Tabs, TabsProps } from "antd";
 import useFinancialReports from "../../../hooks/useFinancialReports"; // Custom hook for financial reports
 import Ledger from "./Ledger";
 import Expenses from "../expenses";
 import Transactions from "./Transactions";
 import Payrolls from "../payrolls";
-import FinancialReportChart from "./FinancialReportChart";
 import Payables from "./Payables";
 import {
   TfiMoney,
@@ -15,31 +14,33 @@ import {
 import TabLabel from "../../TabLabel";
 import { VscEmptyWindow, VscFileSymlinkFile, VscFiles } from "react-icons/vsc";
 import Receivables from "./Receivables";
-import { HomeOutlined } from "@ant-design/icons";
 import Invoices from "../invoices";
 import AssetValuations from "./AssetValuations";
+import Analytics from "./Analytics";
 
 function FinancialReports() {
-  const { isLoading, isRefetching, reports, csvHeaders } =
+  const { isLoading, isRefetching, sortedDescendingReports, csvHeaders } =
     useFinancialReports(); // Updated hook for financial reports
 
   const tabs: TabsProps["items"] = [
     {
       key: "1",
-      label: <TabLabel Icon={TfiWidgetized} label="Monthly Ledger" />,
-      children: (
-        <Ledger
-          isLoading={isLoading}
-          isRefetching={isRefetching}
-          reports={reports}
-          csvHeaders={csvHeaders}
-        />
-      ),
+      label: <TabLabel Icon={TfiPieChart} label="Analytics" />,
+      children: <Analytics />,
     },
     {
       key: "2",
-      label: <TabLabel Icon={TfiPieChart} label="Analytics" />,
-      children: <FinancialReportChart />,
+      label: <TabLabel Icon={TfiWidgetized} label="Monthly Ledger" />,
+      children: (
+        <>
+          <Ledger
+            isLoading={isLoading}
+            isRefetching={isRefetching}
+            reports={sortedDescendingReports}
+            csvHeaders={csvHeaders}
+          />
+        </>
+      ),
     },
     {
       key: "3",
@@ -80,7 +81,7 @@ function FinancialReports() {
 
   return (
     <>
-      <Breadcrumb
+      {/* <Breadcrumb
         className="mb-5"
         items={[
           {
@@ -96,7 +97,7 @@ function FinancialReports() {
             ),
           },
         ]}
-      />
+      /> */}
       <Tabs size="small" defaultActiveKey="1" items={tabs} />
     </>
   );

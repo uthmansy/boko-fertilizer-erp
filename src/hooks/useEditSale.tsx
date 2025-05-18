@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { FieldConfig } from "../types/comps";
-import { App } from "antd";
-import { useMutation, useQueryClient } from "react-query";
+import { FieldConfig, SelectOption } from "../types/comps";
+import { App, Form, FormInstance } from "antd";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ZodError } from "zod";
 import { UpdateSaleSchema } from "../zodSchemas/sales";
-import { updateSale } from "../helpers/apiFunctions";
+import { getAllCustomers, updateSale } from "../helpers/apiFunctions";
 import { SalesAndPayments } from "../types/db";
 import dayjs from "dayjs";
 import { valueType } from "antd/es/statistic/utils";
+import { customersKeys } from "../constants/QUERY_KEYS";
 
 interface HookReturn {
   isModalOpen: boolean;
@@ -16,6 +17,10 @@ interface HookReturn {
   formConfig: FieldConfig[];
   handleSubmit: (values: any) => void;
   isLoading: boolean;
+  isAddCustomerOpen: boolean;
+  handleOpenAddCusomter: () => void;
+  handleCloseAddCusomter: () => void;
+  form: FormInstance<any>;
 }
 
 interface Prop {
@@ -25,10 +30,33 @@ interface Prop {
 function useEditSale({ sale }: Prop): HookReturn {
   const { message } = App.useApp();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm();
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
+
+  const [isAddCustomerOpen, setIsAddCustomerOpen] = useState<boolean>(false);
+  const handleOpenAddCusomter = () => {
+    setIsAddCustomerOpen(true);
+  };
+  const handleCloseAddCusomter = () => {
+    setIsAddCustomerOpen(false);
+  };
+
+  const { data: customers = [] } = useQuery({
+    queryKey: customersKeys.getAllCustomers,
+    queryFn: async () => {
+      const data = await getAllCustomers();
+      return data;
+    },
+    onError: () => message.error("Failed to load customers"),
+  });
+
+  const customerOptions: SelectOption[] = customers.map((customer) => ({
+    label: customer.name,
+    value: customer.id,
+  }));
 
   const formConfig: FieldConfig[] = [
     {
@@ -40,23 +68,29 @@ function useEditSale({ sale }: Prop): HookReturn {
         undefined) as unknown as valueType,
     },
     {
-      name: "customer_name",
-      label: "Customer Name",
-      type: "text",
-      required: false,
-      defaultValue: sale.customer_name,
-      rules: [
-        { min: 3, message: "Customer name must be at least 3 characters" },
-        { max: 50, message: "Customer name cannot exceed 50 characters" },
+      name: "customer_id",
+      label: "Customer",
+      type: "select",
+      defaultValue: sale.customer_id,
+      options: [
+        { label: "-- Add New --", value: "add_new" },
+        ...customerOptions,
       ],
-    },
-    {
-      name: "customer_phone",
-      label: "Customer Phone",
-      type: "text",
       required: false,
-      defaultValue: sale.customer_phone || undefined,
+      onSelect: (value) => {
+        if (value === "add_new") {
+          form.setFieldsValue({ customer_id: null });
+          handleOpenAddCusomter();
+        }
+      },
     },
+    // {
+    //   name: "customer_phone",
+    //   label: "Customer Phone",
+    //   type: "text",
+    //   required: false,
+    //   defaultValue: sale.customer_info.phone || undefined,
+    // },
   ];
 
   const { mutate: handleSubmit, isLoading } = useMutation({
@@ -93,6 +127,10 @@ function useEditSale({ sale }: Prop): HookReturn {
     formConfig,
     handleSubmit,
     isLoading,
+    form,
+    handleCloseAddCusomter,
+    handleOpenAddCusomter,
+    isAddCustomerOpen,
   };
 }
 

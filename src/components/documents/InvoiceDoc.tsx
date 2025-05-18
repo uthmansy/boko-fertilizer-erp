@@ -367,8 +367,8 @@ const InvoiceDoc: React.FC<InvoiceDocProps> = ({ account, sale }) => {
           </View>
           <View style={{ width: "50%" }}>
             <Text>Billed To:</Text>
-            <Text>Customer Name: {sale.customer_name}</Text>
-            <Text>Customer Phone: {sale.customer_phone}</Text>
+            <Text>Customer Name: {sale.customer_info.name}</Text>
+            <Text>Customer Phone: {sale.customer_info.phone}</Text>
           </View>
         </View>
         <View
