@@ -10,6 +10,7 @@ import { BorderInnerOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 import { Headers } from "react-csv/lib/core";
 import { formatNumber } from "../../../helpers/functions";
+import useAuthStore from "../../../store/auth";
 
 type TransformedRequest = Omit<RequestWithItems, "request_items"> & {
   request_items: string;
@@ -60,11 +61,14 @@ function Requests() {
     { label: "Warehouse", key: "warehouse" },
   ];
 
+  const { userProfile } = useAuthStore();
+
   return (
     <>
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={requestsKeys.getAllRequests} />
-        <AddNew />
+        {(userProfile?.role === "PRODUCTION" ||
+          userProfile?.role === "SUPER ADMIN") && <AddNew />}
         {transformedData && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink

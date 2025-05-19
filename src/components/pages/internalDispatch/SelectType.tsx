@@ -17,7 +17,7 @@ function SelectType() {
     <div className="h-full flex items-center justify-center">
       <Space>
         <Button size="large" onClick={handleSale}>
-          Sale
+          To Customer
         </Button>{" "}
         /{" "}
         <Button size="large" onClick={handleTransfer}>

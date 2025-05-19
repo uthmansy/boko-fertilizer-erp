@@ -17,6 +17,7 @@ generate_db_type.bat
 dump-command.txt
 backup.dump
 backup.sql
+backup-schema.sql
 *.local
 
 # Editor directories and files

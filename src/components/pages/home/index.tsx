@@ -3,6 +3,8 @@ import { Card, Table } from "antd";
 import { LOGO } from "../../../assets/images";
 import useAuthStore from "../../../store/auth";
 import Analytics from "../financialReports/Analytics";
+import StockRecords from "../stockRecords";
+import ExternalDispatch from "../externalDispatch";
 
 const Home: React.FC = () => {
   const { userProfile } = useAuthStore();
@@ -26,10 +28,13 @@ const Home: React.FC = () => {
       {userProfile?.role === "SUPER ADMIN" ||
       userProfile?.role === "ADMIN" ||
       userProfile?.role === "ACCOUNTING" ||
-      userProfile?.role === "INVENTORY" ||
-      userProfile?.role === "PRODUCTION" ||
       userProfile?.role === "MANAGER" ? (
         <Analytics />
+      ) : userProfile?.role === "INVENTORY" ||
+        userProfile?.role === "PRODUCTION" ? (
+        <StockRecords />
+      ) : userProfile?.role === "LOGISTICS" ? (
+        <ExternalDispatch />
       ) : (
         <div className="flex justify-center items-center p-10">
           <Card

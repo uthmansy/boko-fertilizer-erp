@@ -25,9 +25,10 @@ function SubmissionsTableActions({ submission }: Props) {
         </>
       )}
       {(userProfile?.role === "SUPER ADMIN" ||
-        userProfile?.role === "PRODUCTION") && (
-        <DeleteSubmission submission={submission} />
-      )}
+        userProfile?.role === "PRODUCTION") &&
+        submission.status !== "accepted" && (
+          <DeleteSubmission submission={submission} />
+        )}
     </Space>
   );
 }

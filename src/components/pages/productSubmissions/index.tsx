@@ -9,6 +9,7 @@ import { Button } from "antd";
 import { CSVLink } from "react-csv";
 import { BorderInnerOutlined } from "@ant-design/icons";
 import { Headers } from "react-csv/lib/core";
+import useAuthStore from "../../../store/auth";
 // import AllItems from "./AllItems";
 
 function ProductSubmissions() {
@@ -31,11 +32,14 @@ function ProductSubmissions() {
     { label: "Warehouse", key: "warehouse" },
   ];
 
+  const { userProfile } = useAuthStore();
+
   return (
     <>
       <div className="mb-5 flex space-x-3">
         <RefreshButton queryKey={productSubmissionsKeys.getAllSubmissions} />
-        <AddNew />
+        {(userProfile?.role === "PRODUCTION" ||
+          userProfile?.role === "SUPER ADMIN") && <AddNew />}
         {data && (
           <Button icon={<BorderInnerOutlined />}>
             <CSVLink

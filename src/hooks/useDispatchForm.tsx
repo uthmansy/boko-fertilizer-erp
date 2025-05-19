@@ -62,7 +62,7 @@ function useDispatchForm(): HookReturn {
       return orders;
     },
     onError: () => {
-      message.error("Failed to Load Inventory warehouses");
+      message.error("Failed to Load Inventory Sale Orders");
     },
   });
 
@@ -73,7 +73,7 @@ function useDispatchForm(): HookReturn {
       return orders;
     },
     onError: () => {
-      message.error("Failed to Load Inventory warehouses");
+      message.error("Failed to Load Inventory Transfer Orders");
     },
   });
   const { data: purchaseItems } = useQuery({
@@ -98,7 +98,7 @@ function useDispatchForm(): HookReturn {
       originType === "external"
         ? saleOrders?.filter((order) => order.type === "external")
         : saleOrders?.filter((order) => {
-            if (userProfile?.warehouse) {
+            if (userProfile?.warehouse && userProfile.role !== "SUPER ADMIN") {
               return (
                 order.type === "internal" &&
                 order.warehouse === userProfile.warehouse
